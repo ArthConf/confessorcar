@@ -28,26 +28,66 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
                                 {% for cat in opcoes %}
-                                <a class="dropdown-item" href="{{ cat.get_url }}">{{ cat.categoria_nome }}</a>
+                                <a class="dropdown-item" href="{% url 'produtos:produto_por_categoria' cat.slug %}">{{ cat.categoria_nome }}</a>
                                 {% endfor %}
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'loja' %}" class="nav-link">Loja</a>
+                            <a href="{% url 'produtos:loja' %}" class="nav-link">Loja</a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">Contato</a>
                         </li>
                     </ul>
 
-                                        <!-- Right Side Items -->
+                    <!-- Right Side Items -->
                     <div class="navbar-nav ml-auto">
-                        <a href="#" class="nav-item nav-link">Login</a>
-                        <a href="#" class="nav-item nav-link">Register</a>
-                       
-                        <a href="#" class="nav-item nav-link">
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff %}
+                            <!-- Admin Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown">
+                                    <i class="fas fa-cog"></i> Administração
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="adminDropdown">
+                                    <a class="dropdown-item" href="{% url 'categoria:gerenciar_categorias' %}">
+                                        <i class="fas fa-tags"></i> Gerenciar Categorias
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="fas fa-box"></i> Gerenciar Produtos
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{% url 'admin:index' %}">
+                                        <i class="fas fa-toolbox"></i> Painel Admin
+                                    </a>
+                                </div>
+                            </li>
+                            {% endif %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                                    <i class="fas fa-user"></i> {{ user.username }}
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" href="{% url 'users:dashboard' %}">
+                                        <i class="fas fa-user-circle"></i> Minha Conta
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{% url 'users:logout' %}">
+                                        <i class="fas fa-sign-out-alt"></i> Sair
+                                    </a>
+                                </div>
+                            </li>
+                        {% else %}
+                            <a href="{% url 'users:login' %}" class="nav-item nav-link">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                            <a href="{% url 'users:register' %}" class="nav-item nav-link">
+                                <i class="fas fa-user-plus"></i> Register
+                            </a>
+                        {% endif %}
+                        <a  class="nav-item nav-link">
                             <i class="fas fa-shopping-cart text-primary"></i>
-                            <span class="badge">0</span>
+                            <span class="badge">{% if cart_count %}{{ cart_count }}{% else %}0{% endif %}</span>
                         </a>
                     </div>
                 </div>
@@ -64,7 +104,7 @@
                     <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                         <div class="p-3" style="max-width: 900px;">
                             <h4 class="text-light text-uppercase font-weight-medium mb-3">Compra de carros japoneses</h4>
-                            <a href="" class="btn btn-light py-2 px-3">Compre agora</a>
+                            <a href="{% url 'produtos:loja' %}" class="btn btn-light py-2 px-3">Compre agora</a>
                         </div>
                     </div>
                 </div>
@@ -73,7 +113,7 @@
                     <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                         <div class="p-3" style="max-width: 900px;">
                             <h4 class="text-light text-uppercase font-weight-medium mb-3">Carros em ofertas</h4>
-                            <a href="" class="btn btn-light py-2 px-3">Compre agora</a>
+                            <a href="{% url 'produtos:loja' %}" class="btn btn-light py-2 px-3">Compre agora</a>
                         </div>
                     </div>
                 </div>
@@ -91,6 +131,7 @@
         </div>
     </div>
 </body>
+
 
 <style>
 .logo-img {

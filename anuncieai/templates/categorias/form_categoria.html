@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2>{{ title }}</h2>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    Por favor, corrija os erros abaixo.
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="{{ form.categoria_nome.id_for_label }}">Nome da Categoria</label>
+                    {{ form.categoria_nome }}
+                    {% if form.categoria_nome.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.categoria_nome.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.slug.id_for_label }}">Slug</label>
+                    {{ form.slug }}
+                    {% if form.slug.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.slug.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.categoria_descricao.id_for_label }}">Descrição</label>
+                    {{ form.categoria_descricao }}
+                    {% if form.categoria_descricao.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.categoria_descricao.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.categoria_imagem.id_for_label }}">Imagem</label>
+                    {{ form.categoria_imagem }}
+                    {% if form.categoria_imagem.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.categoria_imagem.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <a href="{% url 'categoria:gerenciar_categorias' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

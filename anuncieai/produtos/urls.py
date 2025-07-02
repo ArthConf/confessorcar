@@ -2,7 +2,7 @@ from django.urls import path
 
 from produtos import views
 
-
+app_name = 'produtos'  # Adicione esta linha
 
 urlpatterns = [
     path('',views.visualizarLoja, name='loja'),

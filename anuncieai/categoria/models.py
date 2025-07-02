@@ -15,4 +15,4 @@ class Categoria(models.Model):
         return self.categoria_nome
     
     def get_url(self):
-        return reverse('produto_por_categoria', args=[self.slug])
+        return reverse('produtos:produto_por_categoria', args=[self.slug])  # Adicionado namespace 'produtos:'

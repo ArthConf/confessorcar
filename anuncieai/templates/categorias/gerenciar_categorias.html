@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Gerenciar Categorias</h2>
+        </div>
+        <div class="col text-right">
+            <a href="{% url 'categoria:adicionar_categoria' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nova Categoria
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Imagem</th>
+                    <th>Nome</th>
+                    <th>Slug</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>
+                        {% if categoria.categoria_imagem %}
+                        <img src="{{ categoria.categoria_imagem.url }}" alt="{{ categoria.categoria_nome }}" style="height: 50px;">
+                        {% else %}
+                        <span class="text-muted">Sem imagem</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ categoria.categoria_nome }}</td>
+                    <td>{{ categoria.slug }}</td>
+                    <td>{{ categoria.categoria_descricao|truncatewords:10 }}</td>
+                    <td>
+                        <a href="{% url 'categoria:editar_categoria' categoria.pk %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'categoria:excluir_categoria' categoria.pk %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Nenhuma categoria cadastrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
