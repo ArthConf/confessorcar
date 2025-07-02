@@ -40,10 +40,11 @@
                         </li>
                     </ul>
 
-                    <!-- Right Side Items -->
+                                        <!-- Right Side Items -->
                     <div class="navbar-nav ml-auto">
                         <a href="#" class="nav-item nav-link">Login</a>
                         <a href="#" class="nav-item nav-link">Register</a>
+                       
                         <a href="#" class="nav-item nav-link">
                             <i class="fas fa-shopping-cart text-primary"></i>
                             <span class="badge">0</span>
@@ -92,12 +93,10 @@
 </body>
 
 <style>
-/* Adicione estes estilos ao seu CSS */
-/* Add these new styles for the logo */
 .logo-img {
-    height: 10rem; /* Ajuste a altura conforme necessário */
+    height: 10rem;
     width: auto;
-    text-align:left;
+    text-align: left;
     object-fit: contain;
 }
 
@@ -106,7 +105,6 @@
     margin-right: 2rem;
 }
 
-/* Rest of your existing styles */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -114,12 +112,6 @@
 .navbar-nav .nav-link {
     font-weight: 500;
     padding: 0.5rem 1rem;
-}
-
-.carousel-item img {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
 }
 
 .dropdown-menu {
@@ -130,5 +122,65 @@
 
 .dropdown-item:hover {
     background-color: #f8f9fa;
+}
+
+/* Ajustes para responsividade */
+@media (max-width: 991.98px) {
+    .logo-img {
+        height: 6rem;
+    }
+    
+    .navbar-collapse {
+        margin-top: 1rem;
+    }
+
+    /* Centralizar itens no mobile */
+    .navbar-nav.ml-auto {
+        margin: 0 auto;
+        text-align: center;
+    }
+}
+
+/* Estilos para os botões de login, registro e carrinho */
+.navbar-nav.ml-auto .nav-link {
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav.ml-auto .nav-link:hover {
+    color: #007bff;
+}
+
+/* Estilo para o badge do carrinho */
+.badge {
+    position: relative;
+    top: -8px;
+    right: 5px;
+    padding: 0.25em 0.4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Ajuste do ícone do carrinho */
+.fa-shopping-cart {
+    font-size: 1.1rem;
+}
+
+/* Ajuste dos ícones de heart e shopping cart */
+.fa-heart,
+.fa-shopping-cart {
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover .fa-heart,
+.nav-link:hover .fa-shopping-cart {
+    color: #0056b3;
 }
 </style>
