@@ -2,44 +2,187 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Minha Conta</h2>
-    
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-
-    <div class="row mt-4">
+    <div class="row">
         <div class="col-md-4">
-            <div class="card">
+            <!-- Perfil do Usuário -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-circle"></i> Perfil do Usuário
+                    </h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Informações Pessoais</h5>
-                    <p><strong>Usuário:</strong> {{ user.username }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <div class="text-center mb-3">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    <p><strong><i class="fas fa-user"></i> Nome:</strong> {{ user.username }}</p>
+                    <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ user.email }}</p>
+                    <p><strong><i class="fas fa-calendar-alt"></i> Membro desde:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
+                    <hr>
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit"></i> Editar Perfil
+                        </a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-key"></i> Alterar Senha
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        {% if user.is_staff %}
-        <div class="col-md-8">
+
+            <!-- Menu do Usuário -->
             <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Administração</h5>
-                    <div class="list-group">
-                        <a href="{% url 'categoria:gerenciar_categorias' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-tags"></i> Gerenciar Categorias
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cog"></i> Menu Rápido
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-cart"></i> Meus Pedidos
+                            <span class="badge bg-primary rounded-pill float-end">0</span>
                         </a>
                         <a href="#" class="list-group-item list-group-item-action">
-                            <i class="fas fa-box"></i> Gerenciar Produtos
+                            <i class="fas fa-heart"></i> Lista de Desejos
+                            <span class="badge bg-primary rounded-pill float-end">0</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-map-marker-alt"></i> Meus Endereços
+                        </a>
+                        <a href="{% url 'users:logout' %}" class="list-group-item list-group-item-action text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Sair
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        {% endif %}
+
+        <div class="col-md-8">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if user.is_staff %}
+            <!-- Painel de Administração -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools"></i> Painel de Administração
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-tags"></i> Categorias
+                                    </h6>
+                                    <p class="card-text">Gerenciar categorias de produtos</p>
+                                    <a href="{% url 'produtos:gerenciar_produtos' %}" class="btn btn-primary btn-sm">
+                                        Gerenciar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-box"></i> Produtos
+                                    </h6>
+                                    <p class="card-text">Gerenciar produtos da loja</p>
+                                    <a href="#" class="btn btn-primary btn-sm">
+                                        Gerenciar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-users"></i> Usuários
+                                    </h6>
+                                    <p class="card-text">Gerenciar usuários do sistema</p>
+                                    <a href="{% url 'admin:auth_user_changelist' %}" class="btn btn-primary btn-sm">
+                                        Gerenciar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-shopping-cart"></i> Pedidos
+                                    </h6>
+                                    <p class="card-text">Gerenciar pedidos dos clientes</p>
+                                    <a href="#" class="btn btn-primary btn-sm">
+                                        Gerenciar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Últimas Atividades -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history"></i> Últimas Atividades
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>Nenhuma atividade recente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    border-bottom: 0;
+}
+
+.list-group-item {
+    border-left: 0;
+    border-right: 0;
+    padding: 1rem 1.25rem;
+}
+
+.list-group-item:first-child {
+    border-top: 0;
+}
+
+.list-group-item:last-child {
+    border-bottom: 0;
+}
+
+.list-group-item i {
+    margin-right: 0.5rem;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+</style>
 {% endblock %}

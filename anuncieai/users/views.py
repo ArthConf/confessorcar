@@ -5,6 +5,10 @@ from django.contrib import messages
 from .forms import LoginForm, RegisterForm
 
 def login_view(request):
+    if request.user.is_authenticated:
+        messages.info(request, 'Você já está logado.')
+        return redirect('home')
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -13,33 +17,49 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, f'Bem-vindo, {username}!')
+                messages.success(request, f'Bem-vindo de volta, {username}!')
+                
+                # Redireciona para a página que o usuário tentou acessar
+                next_page = request.GET.get('next')
+                if next_page:
+                    return redirect(next_page)
                 return redirect('home')
             else:
-                messages.error(request, 'Usuário ou senha inválidos.')
+                messages.error(request, 'Nome de usuário ou senha incorretos.')
     else:
         form = LoginForm()
     
     return render(request, 'users/login.html', {'form': form})
 
 def register_view(request):
+    if request.user.is_authenticated:
+        messages.info(request, 'Você já está registrado e logado.')
+        return redirect('home')
+
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Conta criada com sucesso!')
+            messages.success(request, 'Sua conta foi criada com sucesso! Bem-vindo!')
             return redirect('home')
+        else:
+            messages.error(request, 'Por favor, corrija os erros abaixo.')
     else:
         form = RegisterForm()
     
     return render(request, 'users/register.html', {'form': form})
 
 def logout_view(request):
-    logout(request)
-    messages.info(request, 'Você saiu do sistema.')
+    if request.user.is_authenticated:
+        username = request.user.username
+        logout(request)
+        messages.success(request, f'Até logo, {username}!')
     return redirect('home')
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'users/dashboard.html')
+    context = {
+        'user': request.user
+    }
+    return render(request, 'users/dashboard.html', context)

@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">{{ title }}</h2>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="form-sections">
+                            <!-- Seção: Informações Básicas -->
+                            <div class="section-title">
+                                <i class="fas fa-car"></i> Informações Básicas
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="{{ form.produto_nome.id_for_label }}" class="form-label">Nome do Veículo</label>
+                                    {{ form.produto_nome }}
+                                    {% if form.produto_nome.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.produto_nome.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.categoria.id_for_label }}" class="form-label">Categoria</label>
+                                    {{ form.categoria }}
+                                    {% if form.categoria.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.categoria.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Seção: Detalhes do Veículo -->
+                            <div class="section-title mt-4">
+                                <i class="fas fa-info-circle"></i> Detalhes do Veículo
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="{{ form.ano_fabricacao.id_for_label }}" class="form-label">Ano Fabricação</label>
+                                    {{ form.ano_fabricacao }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.ano_modelo.id_for_label }}" class="form-label">Ano Modelo</label>
+                                    {{ form.ano_modelo }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.quilometragem.id_for_label }}" class="form-label">Quilometragem</label>
+                                    {{ form.quilometragem }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.cor.id_for_label }}" class="form-label">Cor</label>
+                                    {{ form.cor }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.cambio.id_for_label }}" class="form-label">Câmbio</label>
+                                    {{ form.cambio }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.combustivel.id_for_label }}" class="form-label">Combustível</label>
+                                    {{ form.combustivel }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.placa_final.id_for_label }}" class="form-label">Final da Placa</label>
+                                    {{ form.placa_final }}
+                                </div>
+                            </div>
+
+                            <!-- Seção: Preço e Status -->
+                            <div class="section-title mt-4">
+                                <i class="fas fa-tag"></i> Preço e Status
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.preco.id_for_label }}" class="form-label">Preço</label>
+                                    {{ form.preco }}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="status-checks">
+                                        <div class="form-check custom-check">
+                                            {{ form.aceita_troca }}
+                                            <label class="form-check-label" for="{{ form.aceita_troca.id_for_label }}">
+                                                <i class="fas fa-exchange-alt"></i> Aceita Troca
+                                            </label>
+                                        </div>
+                                        <div class="form-check custom-check">
+                                            {{ form.ipva_pago }}
+                                            <label class="form-check-label" for="{{ form.ipva_pago.id_for_label }}">
+                                                <i class="fas fa-receipt"></i> IPVA Pago
+                                            </label>
+                                        </div>
+                                        <div class="form-check custom-check">
+                                            {{ form.esta_disponivel }}
+                                            <label class="form-check-label" for="{{ form.esta_disponivel.id_for_label }}">
+                                                <i class="fas fa-check-circle"></i> Disponível para venda
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção: Descrição e Opcionais -->
+                            <div class="section-title mt-4">
+                                <i class="fas fa-list"></i> Descrição e Opcionais
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="{{ form.descricao.id_for_label }}" class="form-label">Descrição</label>
+                                    {{ form.descricao }}
+                                </div>
+                                <div class="col-12">
+                                    <label for="{{ form.opcionais.id_for_label }}" class="form-label">Opcionais</label>
+                                    {{ form.opcionais }}
+                                </div>
+                            </div>
+
+                            <!-- Seção: Imagens -->
+                            <div class="section-title mt-4">
+                                <i class="fas fa-images"></i> Imagens do Veículo
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="image-upload-container">
+                                        {{ form.imagens }}
+                                        <small class="form-text text-muted">Selecione até 12 imagens do veículo</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                            <a href="{% url 'produtos:gerenciar_produtos' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #0066cc;    /* Azul principal da logo */
+    --secondary-color: #00a0e6;  /* Azul claro da logo */
+    --dark-color: #1a237e;      /* Azul marinho da logo */
+    --light-color: #f0f8ff;     /* Azul muito claro para fundos */
+    --gray-color: #707070;      /* Cinza da logo */
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    background-color: white;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.section-title {
+    color: var(--dark-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid var(--secondary-color);
+    margin-bottom: 1.5rem;
+}
+
+.section-title i {
+    color: var(--secondary-color);
+    margin-right: 0.5rem;
+}
+
+.form-label {
+    color: var(--dark-color);
+    font-weight: 500;
+}
+
+.form-control, .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 160, 230, 0.25);
+}
+
+.custom-check {
+    margin-bottom: 1rem;
+}
+
+.custom-check .form-check-input:checked {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-color);
+    border-color: var(--dark-color);
+}
+
+.btn-outline-secondary {
+    color: var(--gray-color);
+    border-color: var(--gray-color);
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--gray-color);
+    border-color: var(--gray-color);
+    color: white;
+}
+
+.image-upload-container {
+    background-color: var(--light-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px dashed var(--secondary-color);
+}
+
+.status-checks {
+    padding-top: 2rem;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+    }
+}
+</style>
+{% endblock %}

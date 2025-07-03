@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gerenciar Produtos</h2>
+        <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Novo Produto
+        </a>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 100px">Imagem</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Status</th>
+                            <th style="width: 120px">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos %}
+                        <tr>
+                            <td>
+                                {% if produto.imagens %}
+                                <img src="{{ produto.imagens.url }}" 
+                                     alt="{{ produto.produto_nome }}" 
+                                     class="img-thumbnail"
+                                     style="height: 50px; width: 50px; object-fit: cover;">
+                                {% else %}
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-box fa-2x"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                {{ produto.produto_nome }}
+                                <br>
+                                <small class="text-muted">{{ produto.slug }}</small>
+                            </td>
+                            <td class="align-middle">{{ produto.categoria.categoria_nome }}</td>
+                            <td class="align-middle">R$ {{ produto.preco }}</td>
+                            <td class="align-middle">
+                                {% if produto.esta_disponivel %}
+                                <span class="badge bg-success">Disponível</span>
+                                {% else %}
+                                <span class="badge bg-danger">Indisponível</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                <div class="btn-group">
+                                    <a href="{% url 'produtos:editar_produto' produto.pk %}" 
+                                       class="btn btn-sm btn-warning"
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'produtos:excluir_produto' produto.pk %}" 
+                                       class="btn btn-sm btn-danger"
+                                       title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-box-open fa-3x mb-3"></i>
+                                    <p class="mb-0">Nenhum produto cadastrado</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.table th {
+    border-top: none;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.img-thumbnail {
+    padding: 0.25rem;
+}
+
+.badge {
+    padding: 0.5em 0.75em;
+}
+</style>
+{% endblock %}
