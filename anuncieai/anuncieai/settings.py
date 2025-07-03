@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'produtos',
     'carrinhos',
     'users.apps.UsersConfig',
+    
 ]
 
 MIDDLEWARE = [
