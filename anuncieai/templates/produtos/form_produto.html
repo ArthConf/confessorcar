@@ -22,12 +22,12 @@
                         
                         <div class="form-sections">
                             <!-- Seção: Informações Básicas -->
-                            <div class="section-title">
+                            <div class="section-titulo">
                                 <i class="fas fa-car"></i> Informações Básicas
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-8">
-                                    <label for="{{ form.produto_nome.id_for_label }}" class="form-label">Nome do Veículo</label>
+                                    <label for="{{ form.produto_nome.id_for_label }}" class="form-label">Modelo do Veículo</label>
                                     {{ form.produto_nome }}
                                     {% if form.produto_nome.errors %}
                                     <div class="invalid-feedback d-block">{{ form.produto_nome.errors }}</div>
@@ -44,18 +44,24 @@
                             </div>
 
                             <!-- Seção: Detalhes do Veículo -->
-                            <div class="section-title mt-4">
+                            <div class="section-titulo mt-4">
                                 <i class="fas fa-info-circle"></i> Detalhes do Veículo
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <label for="{{ form.ano_fabricacao.id_for_label }}" class="form-label">Ano Fabricação</label>
-                                    {{ form.ano_fabricacao }}
+                                    <select class="form-select" id="{{ form.ano_fabricacao.id_for_label }}" name="ano_fabricacao">
+                                        <option value="">Selecione o ano</option>
+                                        <!-- Será preenchido dinamicamente via JavaScript -->
+                                    </select>
                                 </div>
 
                                 <div class="col-md-3">
                                     <label for="{{ form.ano_modelo.id_for_label }}" class="form-label">Ano Modelo</label>
-                                    {{ form.ano_modelo }}
+                                    <select class="form-select" id="{{ form.ano_modelo.id_for_label }}" name="ano_modelo">
+                                        <option value="">Selecione o ano</option>
+                                        <!-- Será preenchido dinamicamente via JavaScript -->
+                                    </select>
                                 </div>
 
                                 <div class="col-md-3">
@@ -85,7 +91,7 @@
                             </div>
 
                             <!-- Seção: Preço e Status -->
-                            <div class="section-title mt-4">
+                            <div class="section-titulo mt-4">
                                 <i class="fas fa-tag"></i> Preço e Status
                             </div>
                             <div class="row g-3">
@@ -117,33 +123,250 @@
                                 </div>
                             </div>
 
-                            <!-- Seção: Descrição e Opcionais -->
-                            <div class="section-title mt-4">
-                                <i class="fas fa-list"></i> Descrição e Opcionais
+                            <!-- Seção: Opcionais do Veículo -->
+                            <div class="section-titulo mt-4">
+                                <i class="fas fa-list-check"></i> Opcionais do Veículo <span class="optional-counter" id="opcionaisCounter">0 selecionados</span>
                             </div>
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label for="{{ form.descricao.id_for_label }}" class="form-label">Descrição</label>
-                                    {{ form.descricao }}
+                                    <div class="opcionais-container">
+                                    <!-- Opcionais organizados por categoria em grade visível diretamente -->
+                                    <div class="opcionais-category">
+                                        <h6 class="opcionais-category-title"><i class="fas fa-couch"></i> Conforto</h6>
+                                        <div class="opcionais-grid">
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Ar condicionado" id="op_ar_condicionado">
+                                                <label class="form-check-label" for="op_ar_condicionado">Ar condicionado</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Direção hidráulica" id="op_direcao_hidraulica">
+                                                <label class="form-check-label" for="op_direcao_hidraulica">Direção hidráulica</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Direção elétrica" id="op_direcao_eletrica">
+                                                <label class="form-check-label" for="op_direcao_eletrica">Direção elétrica</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Vidros elétricos" id="op_vidros_eletricos">
+                                                <label class="form-check-label" for="op_vidros_eletricos">Vidros elétricos</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Travas elétricas" id="op_travas_eletricas">
+                                                <label class="form-check-label" for="op_travas_eletricas">Travas elétricas</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Bancos em couro" id="op_bancos_couro">
+                                                <label class="form-check-label" for="op_bancos_couro">Bancos em couro</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="opcionais-category">
+                                        <h6 class="opcionais-category-title"><i class="fas fa-shield-alt"></i> Segurança</h6>
+                                        <div class="opcionais-grid">
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Airbag" id="op_airbag">
+                                                <label class="form-check-label" for="op_airbag">Airbag</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Alarme" id="op_alarme">
+                                                <label class="form-check-label" for="op_alarme">Alarme</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="ABS" id="op_abs">
+                                                <label class="form-check-label" for="op_abs">Freios ABS</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Controle de tração" id="op_controle_tracao">
+                                                <label class="form-check-label" for="op_controle_tracao">Controle de tração</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Controle de estabilidade" id="op_controle_estabilidade">
+                                                <label class="form-check-label" for="op_controle_estabilidade">Controle de estabilidade</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Sensor de estacionamento" id="op_sensor_estacionamento">
+                                                <label class="form-check-label" for="op_sensor_estacionamento">Sensor de estacionamento</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="opcionais-category">
+                                        <h6 class="opcionais-category-title"><i class="fas fa-microchip"></i> Tecnologia</h6>
+                                        <div class="opcionais-grid">
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Multimídia" id="op_multimidia">
+                                                <label class="form-check-label" for="op_multimidia">Multimídia</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Bluetooth" id="op_bluetooth">
+                                                <label class="form-check-label" for="op_bluetooth">Bluetooth</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="GPS" id="op_gps">
+                                                <label class="form-check-label" for="op_gps">GPS</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Câmera de ré" id="op_camera_re">
+                                                <label class="form-check-label" for="op_camera_re">Câmera de ré</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Entrada USB" id="op_entrada_usb">
+                                                <label class="form-check-label" for="op_entrada_usb">Entrada USB</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Comando de voz" id="op_comando_voz">
+                                                <label class="form-check-label" for="op_comando_voz">Comando de voz</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="opcionais-category">
+                                        <h6 class="opcionais-category-title"><i class="fas fa-plus-circle"></i> Outros</h6>
+                                        <div class="opcionais-grid">
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Teto solar" id="op_teto_solar">
+                                                <label class="form-check-label" for="op_teto_solar">Teto solar</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Rodas de liga leve" id="op_rodas_liga">
+                                                <label class="form-check-label" for="op_rodas_liga">Rodas de liga leve</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Faróis de neblina" id="op_farois_neblina">
+                                                <label class="form-check-label" for="op_farois_neblina">Faróis de neblina</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input opcional-check" type="checkbox" value="Faróis de LED" id="op_farois_led">
+                                                <label class="form-check-label" for="op_farois_led">Faróis de LED</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" id="limparOpcionais">
+                                                <i class="fas fa-times"></i> Limpar seleção
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Campo original oculto -->
+                                    <div style="display:none;">{{ form.opcionais }}</div>
+                                    
+                                    <!-- Lista de opcionais selecionados -->
+                                    <div class="selected-opcionais mt-3" id="selectedOpcionaisList"></div>
                                 </div>
+                            </div>
+                            </div>
+                            <!-- Seção: Descrição do Veículo -->
+                            <div class="section-titulo mt-4">
+                                <i class="fas fa-align-left"></i> Descrição do Veículo
+                            </div>
+                            <div class="row g-3">
                                 <div class="col-12">
-                                    <label for="{{ form.opcionais.id_for_label }}" class="form-label">Opcionais</label>
-                                    {{ form.opcionais }}
+                                    <label for="{{ form.descricao.id_for_label }}" class="form-label">Informações Relevantes</label>
+                                    <p class="text-muted small">Forneça detalhes adicionais sobre o veículo, como estado de conservação, histórico de manutenção ou qualquer característica especial.</p>
+                                    {{ form.descricao }}
                                 </div>
                             </div>
 
                             <!-- Seção: Imagens -->
-                            <div class="section-title mt-4">
+                            <div class="section-titulo mt-4">
                                 <i class="fas fa-images"></i> Imagens do Veículo
                             </div>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="image-upload-container">
-                                        {{ form.imagens }}
-                                        <small class="form-text text-muted">Selecione até 12 imagens do veículo</small>
+                                        <!-- Alterado para aceitar apenas jpg, jpeg e png -->
+                                        <input type="file" id="custom-image-input" class="d-none" multiple accept=".jpg,.jpeg,.png">
+                                        <label for="custom-image-input" class="btn btn-anuncieai mb-3" id="image-select-button">
+                                            <i class="fas fa-upload"></i> Selecionar Imagens
+                                        </label>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <small class="form-text text-muted">Selecione até 12 imagens do veículo (apenas JPG, JPEG ou PNG)</small>
+                                            <span class="badge image-counter">0/12 imagens</span>
+                                        </div>
+                                        
+                                        <!-- Alerta para erro de formato ou limite de imagens -->
+                                        <div id="image-error-alert" class="alert alert-danger d-none" role="alert">
+                                            <i class="fas fa-exclamation-triangle"></i> <span id="image-error-message"></span>
+                                        </div>
+                                        
+                                        <!-- Contêiner para miniaturas -->
+                                        <div id="image-preview-container" class="row g-2"></div>
+                                        
+                                        <!-- Campo de arquivo oculto original -->
+                                        <div style="display:none;">{{ form.imagens }}</div>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Visualização de imagens já existentes (quando houver) -->
+                            {% if form.instance.id and form.instance.imagens.all %}
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3">Imagens Atuais:</h5>
+                                    <div class="row g-2">
+                                        {% for imagem in form.instance.imagens.all %}
+                                        <div class="col-md-3 col-sm-4 col-6 mb-3">
+                                            <div class="existing-image-card">
+                                                <img src="{{ imagem.imagem.url }}" class="img-thumbnail" alt="Imagem do veículo {{ forloop.counter }}">
+                                                <div class="image-overlay">
+                                                    <button type="button" class="btn btn-sm btn-light view-image-btn" data-bs-toggle="modal" data-bs-target="#imageCarouselModal" data-slide-index="{{ forloop.counter0 }}">
+                                                        <i class="fas fa-search-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    <!-- Modal para o carrossel de imagens existentes -->
+                                    <div class="modal fade" id="imageCarouselModal" tabindex="-1" aria-labelledby="imageCarouselModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="imageCarouselModalLabel">Imagens do Veículo</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="existingImageCarousel" class="carousel slide" data-bs-ride="false">
+                                                        <div class="carousel-inner">
+                                                            {% for imagem in form.instance.imagens.all %}
+                                                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                                                <img src="{{ imagem.imagem.url }}" class="d-block w-100 carousel-img" alt="Imagem do veículo {{ forloop.counter }}">
+                                                                <div class="carousel-caption">
+                                                                    <span class="badge bg-primary">Imagem {{ forloop.counter }} de {{ form.instance.imagens.all|length }}</span>
+                                                                </div>
+                                                            </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#existingImageCarousel" data-bs-slide="prev">
+                                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                            <span class="visually-hidden">Anterior</span>
+                                                        </button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#existingImageCarousel" data-bs-slide="next">
+                                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                            <span class="visually-hidden">Próximo</span>
+                                                        </button>
+                                                        <div class="carousel-indicators">
+                                                            {% for imagem in form.instance.imagens.all %}
+                                                            <button type="button" data-bs-target="#existingImageCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ forloop.counter }}"></button>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
@@ -161,13 +384,32 @@
     </div>
 </div>
 
+<!-- Modal para visualização de novas imagens -->
+<div class="modal fade" id="previewImageModal" tabindex="-1" aria-labelledby="previewImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewImageModalLabel">Visualização da Imagem</h5>
+                <button type="button" class="btn-close" id="closePreviewModalX" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <img id="previewModalImage" src="" class="img-fluid w-100" alt="Prévia da imagem">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closePreviewModalBtn">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 :root {
-    --primary-color: #0066cc;    /* Azul principal da logo */
-    --secondary-color: #00a0e6;  /* Azul claro da logo */
-    --dark-color: #1a237e;      /* Azul marinho da logo */
-    --light-color: #f0f8ff;     /* Azul muito claro para fundos */
-    --gray-color: #707070;      /* Cinza da logo */
+    /* Cores atualizadas baseadas no logotipo AnuncieAi */
+    --primary-color: #0a1e36;    /* Azul escuro do "Anuncie" */
+    --secondary-color: #30c5f5;  /* Azul claro/ciano do "Ai" */
+    --third-color: #0066cc;      /* Azul médio do gradiente */
+    --light-color: #f0f8ff;      /* Azul muito claro para fundos */
+    --gray-color: #707070;       /* Cinza do logotipo */
 }
 
 .card {
@@ -181,23 +423,25 @@
     padding: 2rem;
 }
 
-.section-title {
-    color: var(--dark-color);
+/* Correção para títulos das seções */
+.section-titulo {
+    color: var(--primary-color);
     font-size: 1.2rem;
     font-weight: 600;
     padding: 0.5rem 0;
     border-bottom: 2px solid var(--secondary-color);
     margin-bottom: 1.5rem;
+    text-decoration: none !important; /* Corrigido: valor explícito 'none' com !important */
 }
 
-.section-title i {
+.section-titulo i {
     color: var(--secondary-color);
     margin-right: 0.5rem;
 }
 
-.form-label {
-    color: var(--dark-color);
-    font-weight: 500;
+/* Garantir que todos os textos não tenham decoração indesejada */
+.form-label, .section-titulo, h1, h2, h3, h4, h5, h6, p, span, div, label {
+    text-decoration: none !important;
 }
 
 .form-control, .form-select {
@@ -207,9 +451,92 @@
     transition: all 0.3s ease;
 }
 
+/* Melhorias para selects */
+.form-select {
+    height: 48px;
+    padding-right: 30px;
+    background-position: right 0.75rem center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Estilização para o input-group com ícones */
+.input-group-text {
+    background-color: var(--light-color);
+    border-color: #dee2e6;
+    color: var(--gray-color);
+}
+
+/* Melhoria para área de opcionais */
+.opcionais-container {
+    background-color: rgba(48, 197, 245, 0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 1rem;
+}
+
+.opcionais-panel {
+    position: relative;
+    width: 100%;
+    max-width: none;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-top: 0;
+    display: block;
+}
+
+.opcionais-category {
+    margin-bottom: 1.5rem;
+}
+
+.opcionais-category-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--secondary-color);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.opcionais-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .opcionais-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+/* Estilo para opcionais selecionados */
+.selected-opcionais {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.optional-counter {
+    font-size: 0.85rem;
+    padding: 2px 10px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--third-color) 100%);
+    color: white;
+    border-radius: 15px;
+    margin-left: 10px;
+    display: inline-block;
+}
+
 .form-control:focus, .form-select:focus {
     border-color: var(--secondary-color);
-    box-shadow: 0 0 0 0.2rem rgba(0, 160, 230, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(48, 197, 245, 0.25);
 }
 
 .custom-check {
@@ -221,9 +548,13 @@
     border-color: var(--secondary-color);
 }
 
+.form-check-label {
+    text-decoration: none !important;
+}
+
 .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--third-color);
+    border-color: var(--third-color);
     padding: 0.75rem 1.5rem;
     font-weight: 500;
     border-radius: 8px;
@@ -231,8 +562,8 @@
 }
 
 .btn-primary:hover {
-    background-color: var(--dark-color);
-    border-color: var(--dark-color);
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .btn-outline-secondary {
@@ -249,11 +580,199 @@
     color: white;
 }
 
+/* Botão de upload com gradiente do logotipo */
+.btn-anuncieai {
+    color: white;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--third-color) 50%, var(--secondary-color) 100%);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Efeito de hover para o botão */
+.btn-anuncieai:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--third-color) 50%, var(--primary-color) 100%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.btn-anuncieai:hover:before {
+    opacity: 1;
+}
+
+.btn-anuncieai:hover {
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-anuncieai:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 .image-upload-container {
-    background-color: var(--light-color);
+    background-color: rgba(48, 197, 245, 0.05); /* Azul claro bem suave */
     padding: 1.5rem;
     border-radius: 8px;
     border: 2px dashed var(--secondary-color);
+    text-align: center;
+}
+
+.image-counter {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--third-color) 100%);
+    color: white;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Estilos para miniaturas de imagens */
+.image-thumbnail-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.image-thumbnail {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid var(--secondary-color);
+    transition: all 0.2s ease;
+}
+
+.thumbnail-actions {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+}
+
+.remove-image-btn {
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-image-btn {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-image-btn:hover {
+    background-color: rgba(220, 53, 69, 1);
+}
+
+.view-image-btn:hover {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+/* Botão desabilitado */
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Estilos para o carrossel */
+.carousel-img {
+    max-height: 500px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+}
+
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 5px;
+    bottom: 10px;
+}
+
+.carousel-indicators {
+    bottom: -40px;
+}
+
+.carousel-indicators button {
+    background-color: var(--gray-color);
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    margin: 0 5px;
+}
+
+.carousel-indicators button.active {
+    background-color: var(--secondary-color);
+}
+
+/* Estilo para imagens existentes */
+.existing-image-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.existing-image-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.existing-image-card:hover .image-overlay {
+    opacity: 1;
+}
+
+.existing-image-card:hover img {
+    transform: scale(1.05);
 }
 
 .status-checks {
@@ -266,15 +785,888 @@
     margin-top: 0.25rem;
 }
 
-/* Responsividade */
+/* Estilos para o dropdown de opcionais */
+.opcionais-dropdown-menu {
+    width: 800px;
+    max-width: 100%;
+    padding: 1rem;
+}
+
+.opcionais-group {
+    margin-bottom: 1rem;
+}
+
+.opcionais-dropdown {
+    position: relative;
+    padding-right: 30px;
+}
+
+.selected-count {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.dropdown-header {
+    font-weight: 600;
+    color: var(--primary-color);
+    padding-left: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+}
+
+.form-check {
+    margin-bottom: 6px;
+}
+
+.form-check-input:checked {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.opcional-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--light-color);
+    border: 1px solid var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: 30px;
+    padding: 3px 12px 3px 10px;
+    font-size: 0.85rem;
+    gap: 5px;
+}
+
+.opcional-tag .remove-opcional {
+    cursor: pointer;
+    color: var(--secondary-color);
+    font-size: 12px;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.opcional-tag .remove-opcional:hover {
+    color: var(--primary-color);
+    background-color: rgba(0,0,0,0.1);
+}
+
+/* Responsividade para o dropdown de opcionais */
+@media (max-width: 768px) {
+    .opcionais-dropdown-menu {
+        width: 100%;
+    }
+}
+
+/* Responsividade geral */
 @media (max-width: 768px) {
     .card-body {
         padding: 1rem;
     }
     
-    .section-title {
+    .section-titulo {
         font-size: 1.1rem;
+    }
+    
+    .carousel-img {
+        max-height: 300px;
+    }
+}
+
+.opcionais-select-container {
+    position: relative;
+}
+
+.opcionais-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-width: 800px;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    margin-top: 0.25rem;
+    z-index: 1050;
+}
+
+.opcionais-panel.show {
+    display: block;
+}
+
+/* Cores para o contador */
+#opcionaisCounter {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--third-color) 100%);
+    color: white;
+}
+
+/* Responsive handling for panel */
+@media (max-width: 992px) {
+    .opcionais-panel {
+        position: fixed;
+        top: 10%;
+        left: 5%;
+        right: 5%;
+        width: 90%;
+        max-width: none;
+        max-height: 80%;
+        overflow-y: auto;
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== FUNÇÕES PARA CAMPOS DE ANOS =====
+    function initYearSelectors() {
+        const currentYear = new Date().getFullYear();
+        const startYear = 1950;
+        
+        // Substituir os campos de ano por selects
+        replaceYearField('ano_fabricacao', startYear, currentYear + 1);
+        replaceYearField('ano_modelo', startYear, currentYear + 1);
+    }
+    
+    // Função para substituir um campo de entrada por um select de anos
+    function replaceYearField(fieldName, startYear, endYear) {
+        const originalInput = document.querySelector(`input[name="${fieldName}"]`);
+        if (!originalInput) return;
+        
+        // Obter o valor atual, se existir
+        const currentValue = originalInput.value || '';
+        
+        // Criar o novo select
+        const select = document.createElement('select');
+        select.name = fieldName;
+        select.id = originalInput.id || fieldName;
+        select.className = 'form-select';
+        
+        // Adicionar opção vazia
+        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = 'Selecione o ano';
+        select.appendChild(emptyOption);
+        
+        // Adicionar as opções de anos (do mais recente para o mais antigo)
+        for (let year = endYear; year >= startYear; year--) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            if (year.toString() === currentValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        }
+        
+        // Substituir o campo original pelo select
+        originalInput.parentNode.replaceChild(select, originalInput);
+    }
+
+    fillYearSelectors();
+    // ===== FUNÇÕES PARA FORMATAÇÃO DE VALORES MONETÁRIOS E NUMÉRICOS =====
+    
+    // Função para formatar um campo para exibição de valores monetários
+    function setupCurrencyField(fieldName) {
+        const originalInput = document.querySelector(`input[name="${fieldName}"]`);
+        if (!originalInput) return;
+        
+        // Obter o valor atual, se existir
+        const currentValue = originalInput.value || '';
+        
+        // Criar o container de input-group
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
+        
+        // Criar o prefixo R$
+        const prefix = document.createElement('span');
+        prefix.className = 'input-group-text';
+        prefix.textContent = 'R$';
+        
+        // Criar o campo visível formatado
+        const formattedInput = document.createElement('input');
+        formattedInput.type = 'text';
+        formattedInput.className = 'form-control';
+        formattedInput.placeholder = 'Ex: 100.000,00';
+        formattedInput.id = 'formatted_' + fieldName;
+        
+        // Configurar valor inicial formatado
+        if (currentValue) {
+            try {
+                const numValue = parseFloat(currentValue);
+                if (!isNaN(numValue)) {
+                    formattedInput.value = numValue.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            } catch(e) {
+                console.error('Erro ao formatar valor inicial:', e);
+            }
+        }
+        
+        // Esconder o campo original
+        originalInput.type = 'hidden';
+        
+        // Adicionar eventos para formatação
+        formattedInput.addEventListener('input', function() {
+            formatCurrencyInput(this, originalInput);
+        });
+        
+        formattedInput.addEventListener('blur', function() {
+            formatCurrencyInput(this, originalInput, true);
+        });
+        
+        // Montar a estrutura
+        inputGroup.appendChild(prefix);
+        inputGroup.appendChild(formattedInput);
+        originalInput.parentNode.insertBefore(inputGroup, originalInput);
+        inputGroup.appendChild(originalInput); // Move o campo original para dentro do grupo
+    }
+    
+    // Função para formatar um campo para exibição de quilometragem
+    function setupMileageField(fieldName) {
+        const originalInput = document.querySelector(`input[name="${fieldName}"]`);
+        if (!originalInput) return;
+        
+        // Obter o valor atual, se existir
+        const currentValue = originalInput.value || '';
+        
+        // Criar o container de input-group
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
+        
+        // Criar o campo visível formatado
+        const formattedInput = document.createElement('input');
+        formattedInput.type = 'text';
+        formattedInput.className = 'form-control';
+        formattedInput.placeholder = 'Ex: 74.856';
+        formattedInput.id = 'formatted_' + fieldName;
+        
+        // Criar o sufixo km
+        const suffix = document.createElement('span');
+        suffix.className = 'input-group-text';
+        suffix.textContent = 'km';
+        
+        // Configurar valor inicial formatado
+        if (currentValue) {
+            try {
+                const numValue = parseInt(currentValue);
+                if (!isNaN(numValue)) {
+                    formattedInput.value = numValue.toLocaleString('pt-BR');
+                }
+            } catch(e) {
+                console.error('Erro ao formatar valor inicial:', e);
+            }
+        }
+        
+        // Esconder o campo original
+        originalInput.type = 'hidden';
+        
+        // Adicionar eventos para formatação
+        formattedInput.addEventListener('input', function() {
+            formatMileageInput(this, originalInput);
+        });
+        
+        formattedInput.addEventListener('blur', function() {
+            formatMileageInput(this, originalInput, true);
+        });
+        
+        // Montar a estrutura
+        inputGroup.appendChild(formattedInput);
+        inputGroup.appendChild(suffix);
+        originalInput.parentNode.insertBefore(inputGroup, originalInput);
+        inputGroup.appendChild(originalInput); // Move o campo original para dentro do grupo
+    }
+    
+    // Função para formatar valor monetário no input
+    function formatCurrencyInput(formattedField, originalField, isBlur = false) {
+        // Obter apenas os números do valor
+        let value = formattedField.value.replace(/\D/g, '');
+        
+        // Converter para decimal (assumindo 2 casas decimais)
+        let numValue = parseInt(value, 10) / 100;
+        if (isNaN(numValue)) {
+            numValue = 0;
+        }
+        
+        // Formatar o valor visível
+        if (isBlur || value.length > 0) {
+            formattedField.value = numValue.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // Atualizar o campo original para o backend
+        originalField.value = numValue.toString().replace(',', '.');
+    }
+    
+    // Função para preencher os seletores de ano
+    function fillYearSelectors() {
+        const currentYear = new Date().getFullYear();
+        const startYear = 1950;
+        
+        const anoFabSelect = document.getElementById('{{ form.ano_fabricacao.id_for_label }}');
+        const anoModSelect = document.getElementById('{{ form.ano_modelo.id_for_label }}');
+        
+        if (anoFabSelect && anoModSelect) {
+            // Limpar opções existentes exceto a primeira
+            while (anoFabSelect.options.length > 1) {
+                anoFabSelect.remove(1);
+            }
+            
+            while (anoModSelect.options.length > 1) {
+                anoModSelect.remove(1);
+            }
+            
+            // Adicionar anos (do mais recente para o mais antigo)
+            for (let year = currentYear + 1; year >= startYear; year--) {
+                const optionFab = document.createElement('option');
+                optionFab.value = year;
+                optionFab.text = year;
+                
+                const optionMod = document.createElement('option');
+                optionMod.value = year;
+                optionMod.text = year;
+                
+                anoFabSelect.add(optionFab);
+                anoModSelect.add(optionMod);
+            }
+            
+            // Selecionar valores atuais se existirem
+            if ('{{ form.ano_fabricacao.value }}') {
+                anoFabSelect.value = '{{ form.ano_fabricacao.value }}';
+            }
+            
+            if ('{{ form.ano_modelo.value }}') {
+                anoModSelect.value = '{{ form.ano_modelo.value }}';
+            }
+        }
+    }
+
+    // Função para formatar quilometragem no input
+    function formatMileageInput(formattedField, originalField, isBlur = false) {
+        // Obter apenas os números do valor
+        let value = formattedField.value.replace(/\D/g, '');
+        
+        // Converter para número
+        let numValue = parseInt(value, 10);
+        if (isNaN(numValue)) {
+            numValue = 0;
+        }
+        
+        // Formatar o valor visível
+        if (isBlur || value.length > 0) {
+            formattedField.value = numValue.toLocaleString('pt-BR');
+        }
+        
+        // Atualizar o campo original para o backend
+        originalField.value = numValue.toString();
+    }
+
+    // ===== INICIALIZAÇÃO DOS NOVOS CAMPOS =====
+    // Inicializar seletores de ano
+    initYearSelectors();
+    
+    // Configurar formatação de preço
+    setupCurrencyField('preco');
+    
+    // Configurar formatação de quilometragem
+    setupMileageField('quilometragem');
+    
+    // ===== PARTE 1: CORREÇÃO DO MODAL =====
+    
+    // Referências para o modal de visualização de imagens
+    const previewImageModal = document.getElementById('previewImageModal');
+    const closePreviewModalX = document.getElementById('closePreviewModalX');
+    const closePreviewModalBtn = document.getElementById('closePreviewModalBtn');
+    
+    // Função universal para fechar o modal
+    function hideModal(modal) {
+        if (!modal) return;
+        
+        // Remover classes que mostram o modal
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        
+        // Remover backdrop
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) backdrop.remove();
+        
+        // Remover classe modal-open do body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+    
+    // Função universal para mostrar o modal
+    function showModal(modal) {
+        if (!modal) return;
+        
+        // Adicionar backdrop se não existir
+        if (!document.querySelector('.modal-backdrop')) {
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+        }
+        
+        // Adicionar classes para mostrar o modal
+        modal.classList.add('show');
+        modal.style.display = 'block';
+        
+        // Adicionar classe modal-open ao body
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = '17px'; // Compensação da barra de rolagem
+    }
+    
+    // Função para criar miniaturas que use o showModal
+    function createThumbnail(file, fileIndex, container, fileListArray) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            // Criar coluna para a miniatura
+            const col = document.createElement('div');
+            col.className = 'col-md-3 col-sm-4 col-6 mb-3';
+            col.dataset.fileIndex = fileIndex;
+            
+            // Criar container para a miniatura
+            const thumbnailContainer = document.createElement('div');
+            thumbnailContainer.className = 'image-thumbnail-container';
+            
+            // Criar imagem miniatura
+            const img = document.createElement('img');
+            img.className = 'image-thumbnail';
+            img.src = e.target.result;
+            img.alt = 'Prévia da imagem';
+            
+            // Criar div para botões
+            const actions = document.createElement('div');
+            actions.className = 'thumbnail-actions';
+            
+            // Botão para remover imagem
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-image-btn';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.type = 'button';
+            removeBtn.onclick = function() {
+                // Remover do array de arquivos
+                fileListArray.splice(fileIndex, 1);
+                // Remover miniatura
+                col.remove();
+                // Reindexar miniaturas
+                const items = container.querySelectorAll('[data-file-index]');
+                items.forEach((item, idx) => {
+                    item.dataset.fileIndex = idx;
+                });
+                
+                // Atualizar contador de imagens
+                const imageCounter = document.querySelector('.image-counter');
+                if (imageCounter) {
+                    imageCounter.textContent = `${fileListArray.length}/12 imagens`;
+                }
+            };
+            
+            // Botão para visualizar imagem
+            const viewBtn = document.createElement('button');
+            viewBtn.className = 'view-image-btn';
+            viewBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
+            viewBtn.type = 'button';
+            viewBtn.onclick = function() {
+                // Configurar e mostrar o modal
+                const modalImage = document.getElementById('previewModalImage');
+                if (modalImage) {
+                    modalImage.src = e.target.result;
+                    showModal(previewImageModal);
+                }
+            };
+            
+            // Adicionar botões à div de ações
+            actions.appendChild(viewBtn);
+            actions.appendChild(removeBtn);
+            
+            // Montar a estrutura
+            thumbnailContainer.appendChild(img);
+            thumbnailContainer.appendChild(actions);
+            col.appendChild(thumbnailContainer);
+            
+            // Adicionar ao container
+            if (container) {
+                container.appendChild(col);
+            }
+        };
+        
+        reader.readAsDataURL(file);
+    }
+    
+    // Configurar event listeners para fechar o modal
+    if (closePreviewModalX) {
+        closePreviewModalX.addEventListener('click', function() {
+            hideModal(previewImageModal);
+        });
+    }
+    
+    if (closePreviewModalBtn) {
+        closePreviewModalBtn.addEventListener('click', function() {
+            hideModal(previewImageModal);
+        });
+    }
+    
+    // Fechar ao clicar fora do modal
+    window.addEventListener('click', function(event) {
+        if (event.target === previewImageModal) {
+            hideModal(previewImageModal);
+        }
+    });
+    
+    // Fechar com a tecla Escape
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            hideModal(previewImageModal);
+        }
+    });
+
+    // ===== PARTE 2: INTEGRAÇÃO COM O RESTO DO CÓDIGO =====
+    
+    // Configuração para o upload de imagens com miniaturas
+    const customImageInput = document.getElementById('custom-image-input');
+    const originalImageInput = document.querySelector('input[type="file"][name$="imagens"]');
+    const previewContainer = document.getElementById('image-preview-container');
+    const fileListArray = [];
+    
+    if (customImageInput && originalImageInput && previewContainer) {
+        // Quando o usuário seleciona novas imagens
+        customImageInput.addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (!files || files.length === 0) return;
+            
+            // Processar cada arquivo selecionado
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Verificar se é uma imagem JPG, JPEG ou PNG
+                if (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/png') {
+                    // Adicionar ao array de arquivos
+                    fileListArray.push(file);
+                    
+                    // Criar a miniatura usando nossa nova função
+                    createThumbnail(file, fileListArray.length - 1, previewContainer, fileListArray);
+                }
+            }
+            
+            // Atualizar o input original com os arquivos selecionados
+            const dataTransfer = new DataTransfer();
+            fileListArray.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+            originalImageInput.files = dataTransfer.files;
+            
+            // Atualizar contador de imagens
+            const imageCounter = document.querySelector('.image-counter');
+            if (imageCounter) {
+                imageCounter.textContent = `${fileListArray.length}/12 imagens`;
+            }
+        });
+    }
+    
+    // Botões de visualização de imagens existentes
+    const existingViewButtons = document.querySelectorAll('.existing-image-card .view-image-btn');
+    existingViewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Modificamos para usar a abordagem manual em vez de data-bs-*
+            const slideIndex = parseInt(this.dataset.slideIndex || 0);
+            const imageUrl = this.closest('.existing-image-card').querySelector('img').src;
+            
+            // Configurar e mostrar o modal
+            const modalImage = document.getElementById('previewModalImage');
+            if (modalImage) {
+                modalImage.src = imageUrl;
+                showModal(previewImageModal);
+            }
+        });
+    });
+
+     // ===== PARTE 3: GERENCIAMENTO DOS OPCIONAIS COM IMPLEMENTAÇÃO MANUAL DO DROPDOWN =====
+    
+    // Elementos do DOM para opcionais (IDs corretos para a nova implementação)
+    const opcionalChecks = document.querySelectorAll('.opcional-check');
+    const campoOpcionais = document.querySelector('textarea[name$="opcionais"]'); // Campo original do Django
+    const selectedOpcionaisList = document.getElementById('selectedOpcionaisList');
+    const limparOpcionaisBtn = document.getElementById('limparOpcionais');
+    const confirmarOpcionaisBtn = document.getElementById('confirmarOpcionais');
+    const addOpcionalBtn = document.getElementById('addOpcionalBtn');
+    const opcionaisToggle = document.getElementById('opcionaisToggle'); // CORREÇÃO: ID correto do botão toggle
+    const opcionaisPanelDropdown = document.getElementById('opcionaisPanelDropdown'); // CORREÇÃO: ID correto do painel dropdown
+    const selectedCountBadge = document.getElementById('opcionaisCounter'); // CORREÇÃO: ID correto do contador
+    
+    // Controle manual do dropdown dos opcionais
+    if (opcionaisToggle && opcionaisPanelDropdown) {
+        // Abrir dropdown manualmente
+        opcionaisToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Impedir propagação do evento para não fechar imediatamente
+            
+            // Toggle do dropdown
+            opcionaisPanelDropdown.classList.toggle('show');
+            
+            // Ajustar posição para móveis e telas pequenas
+            if (window.innerWidth < 768) {
+                if (opcionaisPanelDropdown.classList.contains('show')) {
+                    opcionaisPanelDropdown.style.position = 'fixed';
+                    opcionaisPanelDropdown.style.top = '10%';
+                    opcionaisPanelDropdown.style.left = '5%';
+                    opcionaisPanelDropdown.style.width = '90%';
+                    opcionaisPanelDropdown.style.maxHeight = '80vh';
+                    opcionaisPanelDropdown.style.overflowY = 'auto';
+                    opcionaisPanelDropdown.style.zIndex = '1050';
+                }
+            }
+        });
+        
+        // Fechar ao clicar fora
+        document.addEventListener('click', function(event) {
+            if (!opcionaisToggle.contains(event.target) && 
+                !opcionaisPanelDropdown.contains(event.target)) {
+                opcionaisPanelDropdown.classList.remove('show');
+            }
+        });
+        
+        // Fechar ao pressionar ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && opcionaisPanelDropdown.classList.contains('show')) {
+                opcionaisPanelDropdown.classList.remove('show');
+            }
+        });
+    }
+    
+    // Array para armazenar os opcionais selecionados
+    let opcionaisSelecionados = [];
+    
+    // Inicialização: carregar opcionais existentes, se houver
+    if (campoOpcionais && opcionalChecks && selectedOpcionaisList) {
+        initializeOpcionais();
+        
+        // Event listeners para os checkboxes
+        opcionalChecks.forEach(check => {
+            check.addEventListener('change', function() {
+                updateOpcionaisSelecionados();
+            });
+        });
+        
+        // Event listener para o botão de limpar
+        if (limparOpcionaisBtn) {
+            limparOpcionaisBtn.addEventListener('click', function() {
+                opcionalChecks.forEach(check => {
+                    check.checked = false;
+                });
+                opcionaisSelecionados = [];
+                updateOpcionaisSelecionados();
+            });
+        }
+        
+        // Event listener para o botão de confirmar
+        if (confirmarOpcionaisBtn) {
+            confirmarOpcionaisBtn.addEventListener('click', function() {
+                // Atualizar o campo original
+                updateCampoOriginal();
+                
+                // Fechar dropdown manualmente
+                if (opcionaisPanelDropdown) {
+                    opcionaisPanelDropdown.classList.remove('show');
+                }
+            });
+        }
+        
+    }
+    
+    // Função para inicializar os opcionais do campo original, se houver
+    function initializeOpcionais() {
+        if (campoOpcionais && campoOpcionais.value) {
+            try {
+                // Tentar primeiro interpretar diretamente como JSON
+                let jsonData = JSON.parse(campoOpcionais.value);
+                if (Array.isArray(jsonData)) {
+                    opcionaisSelecionados = jsonData;
+                    console.log("Opcionais carregados de JSON:", opcionaisSelecionados);
+                } else {
+                    throw new Error("JSON não é um array");
+                }
+            } catch (e) {
+                console.log("Erro ao interpretar JSON, tentando outros métodos:", e);
+                
+                // Caso especial para strings JSON mal-formadas como ['["item1"', '"item2"]']
+                if (campoOpcionais.value.includes('["') && campoOpcionais.value.includes('"]')) {
+                    try {
+                        // Tenta extrair e reconstruir o array
+                        const cleanedStr = campoOpcionais.value
+                            .replace(/[\[\]']/g, '') // Remove colchetes e aspas simples
+                            .split(',') // Divide em itens
+                            .map(item => item.trim().replace(/"/g, '')) // Remove aspas duplas e espaços
+                            .filter(item => item); // Remove itens vazios
+                        
+                        opcionaisSelecionados = cleanedStr;
+                        console.log("Reconstruído de string mal-formada:", opcionaisSelecionados);
+                    } catch (e2) {
+                        console.log("Erro ao reconstruir:", e2);
+                        
+                        // Por último, tenta como texto separado
+                        opcionaisSelecionados = campoOpcionais.value
+                            .split(/[\n,;]+/)
+                            .map(item => item.trim())
+                            .filter(item => item.length > 0);
+                            
+                        console.log("Interpretado como texto separado:", opcionaisSelecionados);
+                    }
+                } else {
+                    // Caso padrão: tratar como texto com separadores
+                    opcionaisSelecionados = campoOpcionais.value
+                        .split(/[\n,;]+/)
+                        .map(item => item.trim())
+                        .filter(item => item.length > 0);
+                        
+                    console.log("Interpretado como texto separado:", opcionaisSelecionados);
+                }
+            }
+            
+            // Marcar checkboxes correspondentes
+            opcionaisSelecionados.forEach(opcional => {
+                opcionalChecks.forEach(check => {
+                    if (check.value === opcional) {
+                        check.checked = true;
+                    }
+                });
+            });
+            
+            // Atualizar interface
+            renderOpcionaisUI();
+            
+            // Debug - mostra o que foi carregado
+            console.log("Opcionais carregados finais:", opcionaisSelecionados);
+        }
+    }
+    
+    // Função para atualizar a lista de opcionais selecionados
+    function updateOpcionaisSelecionados() {
+        if (!opcionalChecks) return;
+        
+        // Limpar a lista atual
+        opcionaisSelecionados = [];
+        
+        // Adicionar todos os checkboxes marcados
+        opcionalChecks.forEach(check => {
+            if (check.checked) {
+                opcionaisSelecionados.push(check.value);
+            }
+        });
+        
+        // Debug - mostra os opcionais atuais
+        console.log("Opcionais atualizados:", opcionaisSelecionados);
+        
+        // Atualizar UI
+        renderOpcionaisUI();
+        updateCampoOriginal();
+    }
+    
+    // Função para renderizar a UI dos opcionais
+    function renderOpcionaisUI() {
+        if (!selectedOpcionaisList) {
+            console.error("Elemento selectedOpcionaisList não encontrado");
+            return;
+        }
+        
+        if (!selectedCountBadge) {
+            console.error("Elemento selectedCountBadge não encontrado");
+            return;
+        }
+        
+        // Atualizar contador
+        selectedCountBadge.textContent = opcionaisSelecionados.length + ' selecionados';
+        
+        // Limpar a lista atual
+        selectedOpcionaisList.innerHTML = '';
+        
+        // Debug
+        console.log("Renderizando", opcionaisSelecionados.length, "opcionais");
+        
+        // Criar elementos para cada opcional
+        opcionaisSelecionados.forEach(opcional => {
+            const tag = document.createElement('span');
+            tag.className = 'opcional-tag';
+            tag.innerHTML = `
+                <i class="fas fa-check-circle" style="color:var(--secondary-color)"></i>
+                ${opcional}
+                <span class="remove-opcional" data-value="${opcional}">
+                    <i class="fas fa-times"></i>
+                </span>
+            `;
+            selectedOpcionaisList.appendChild(tag);
+            
+            // Adicionar evento para remover
+            const removeBtn = tag.querySelector('.remove-opcional');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    const valor = this.dataset.value;
+                    
+                    // Desmarcar checkbox correspondente
+                    opcionalChecks.forEach(check => {
+                        if (check.value === valor) {
+                            check.checked = false;
+                        }
+                    });
+                    
+                    // Remover da lista
+                    const index = opcionaisSelecionados.indexOf(valor);
+                    if (index > -1) {
+                        opcionaisSelecionados.splice(index, 1);
+                    }
+                    
+                    // Atualizar UI
+                    renderOpcionaisUI();
+                    updateCampoOriginal();
+                });
+            }
+        });
+    }
+    
+    // Substitua a função updateCampoOriginal atual por esta:
+    function updateCampoOriginal() {
+        if (campoOpcionais) {
+            // Converter para formato JSON para garantir compatibilidade com JSONField
+            campoOpcionais.value = JSON.stringify(opcionaisSelecionados);
+            
+            // Forçar um evento de alteração para garantir que o Django perceba a mudança
+            const event = new Event('change', { bubbles: true });
+            campoOpcionais.dispatchEvent(event);
+            
+            // Debug
+            console.log("Campo original atualizado com (JSON):", campoOpcionais.value);
+        }
+    }
+
+    // Verificação inicial - forçar uma renderização após o carregamento da página
+    setTimeout(function() {
+        if (opcionalChecks && opcionalChecks.length > 0) {
+            updateOpcionaisSelecionados();
+            console.log("Renderização forçada de opcionais realizada");
+        }
+    }, 500);
+    
+    document.querySelector('form').addEventListener('submit', function(e) {
+
+        // Antes de enviar o formulário, atualizar o campo de opcionais
+        if (campoOpcionais && opcionaisSelecionados) {
+            // Garantir que o campo tem o formato JSON para o backend
+            campoOpcionais.value = JSON.stringify(opcionaisSelecionados);
+            console.log('Enviando formulário com opcionais:', campoOpcionais.value);
+        }
+    });
+});
+</script>
 {% endblock %}

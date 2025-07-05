@@ -66,20 +66,39 @@ def gerenciar_produtos(request):
 def adicionar_produto(request):
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES)
+        print(f"Form data: {request.POST}")
+        
         if form.is_valid():
-            produto = form.save()
+            print("Form is valid! Cleaned data:", form.cleaned_data)
             
-            # Processar múltiplas imagens
-            imagens = request.FILES.getlist('imagens')
-            for i, imagem in enumerate(imagens[:12]):  # Limita a 12 imagens
-                ProdutoImagem.objects.create(
-                    produto=produto,
-                    imagem=imagem,
-                    ordem=i
-                )
-            
-            messages.success(request, f'Produto "{produto.produto_nome}" adicionado com sucesso!')
-            return redirect('produtos:gerenciar_produtos')
+            try:
+                produto = form.save()
+                print(f"Produto salvo com ID: {produto.id}, Nome: {produto.produto_nome}")
+                
+                # Processar múltiplas imagens
+                imagens = request.FILES.getlist('imagens')
+                print(f"Imagens para processar: {len(imagens)}")
+                
+                for i, imagem in enumerate(imagens[:12]):  # Limita a 12 imagens
+                    try:
+                        img = ProdutoImagem.objects.create(
+                            produto=produto,
+                            imagem=imagem,
+                            ordem=i
+                        )
+                        print(f"Imagem {i+1} salva com ID: {img.id}")
+                    except Exception as e:
+                        print(f"Erro ao salvar imagem {i+1}: {e}")
+                
+                messages.success(request, f'Produto "{produto.produto_nome}" adicionado com sucesso!')
+                return redirect('produtos:gerenciar_produtos')
+            except Exception as e:
+                print(f"ERRO ao salvar produto: {e}")
+                messages.error(request, f'Erro ao salvar produto: {e}')
+        else:
+            print("Form is invalid! Errors:", form.errors)
+            for field, errors in form.errors.items():
+                print(f"Campo {field}: {errors}")
     else:
         form = ProdutoForm()
     
@@ -95,6 +114,7 @@ def editar_produto(request, pk):
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES, instance=produto)
         if form.is_valid():
+            # O método save do formulário agora cuida do slug automaticamente
             produto = form.save()
             
             # Processar múltiplas imagens
@@ -159,3 +179,12 @@ def reordenar_imagens(request, produto_pk):
             ProdutoImagem.objects.filter(pk=imagem_id).update(ordem=index)
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def marcar_produto_vendido(request, pk):
+    if request.method == 'POST':
+        produto = get_object_or_404(Produto, pk=pk)
+        produto.esta_disponivel = False
+        produto.save()
+        messages.success(request, f'Veículo "{produto.produto_nome}" marcado como vendido com sucesso!')
+    return redirect('produtos:gerenciar_produtos')

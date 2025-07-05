@@ -89,7 +89,7 @@ class Produto(models.Model):
     ]
 
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    produto_nome = models.CharField(max_length=200, unique=True)
+    produto_nome = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
     descricao = models.TextField(max_length=500, blank=True)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
@@ -130,10 +130,6 @@ class Produto(models.Model):
     ipva_pago = models.BooleanField('IPVA Pago', default=False)
     opcionais = models.JSONField('Opcionais', default=list, blank=True)
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.produto_nome)
-        super().save(*args, **kwargs)
 
     def get_url(self):
         return reverse('produtos:produto_detalhe', args=[self.categoria.slug, self.slug])

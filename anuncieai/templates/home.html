@@ -1,68 +1,1056 @@
 {% extends 'base.html' %}
-
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 
-
- <div class="text-center mb-4">
-            <h2 class="section-title px-5"><span class="px-2">Categorias</span></h2>
+<!-- Full Width Carousel -->
+<div class="container-fluid px-0 hero-carousel">
+    <div id="header-carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#header-carousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+            <button type="button" data-bs-target="#header-carousel" data-bs-slide-to="1"></button>
         </div>
-<!-- Categories Start -->
-    <div class="container-fluid pt-5">
-        <div class="row px-xl-5 pb-3">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="overlay"></div>
+                <img class="w-100" src="{% static 'img/nissan_ofertas.jpg' %}" alt="Carros Japoneses">
+                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                    <div class="p-3" style="max-width: 900px;">
+                        <div class="hero-badge">ALTA PERFORMANCE</div>
+                        <h2 class="text-light text-uppercase font-weight-bold mb-4">Carros Japoneses Premium</h2>
+                        <p class="text-light mb-4">Experiência de direção que combina tecnologia, desempenho e conforto</p>
+                        <a href="{% url 'produtos:loja' %}" class="btn btn-racing py-2 px-4">
+                            <span>COMPRAR AGORA</span>
+                            <i class="fas fa-chevron-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="overlay"></div>
+                <img class="w-100" src="{% static 'img/imagens_vendas.png' %}" alt="Ofertas Especiais">
+                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                    <div class="p-3" style="max-width: 900px;">
+                        <div class="hero-badge">OFERTAS EXCLUSIVAS</div>
+                        <h2 class="text-light text-uppercase font-weight-bold mb-4">Carros em Promoção</h2>
+                        <p class="text-light mb-4">As melhores condições do mercado com garantia de qualidade</p>
+                        <a href="{% url 'produtos:loja' %}" class="btn btn-racing py-2 px-4">
+                            <span>VER OFERTAS</span>
+                            <i class="fas fa-tag ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
+            <div class="control-btn">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+        </a>
+        <a class="carousel-control-next" href="#header-carousel" data-slide="next">
+            <div class="control-btn">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Features Banner -->
+<div class="container-fluid features-banner">
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="icon-container">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Veículos Verificados</h5>
+                        <p>Anúncios confiáveis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="icon-container">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Proteção ao Comprador</h5>
+                        <p>Transações seguras</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="icon-container">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Melhores Preços</h5>
+                        <p>Direto dos anunciantes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="icon-container">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Intermediação</h5>
+                        <p>Suporte durante a compra</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Section -->
+<div class="container-fluid py-5 categories-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-titulo">CATEGORIAS DE VEÍCULOS</h2>
+            <div class="section-separator">
+                <span class="separator-line"></span>
+                <i class="fas fa-car-side separator-icon"></i>
+                <span class="separator-line"></span>
+            </div>
+            <p class="section-subtitle">Encontre o tipo de veículo ideal para você</p>
+        </div>
+        
+        <div class="row g-4 mt-4">
             {% for categoria in categorias %}
-            <div class="col-lg-4 col-md-6 pb-1">
-                <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                    <p class="text-right">{{ categoria.produto_count }} Products</p>
-                    <a href="{{ categoria.get_url }}" class="cat-img position-relative overflow-hidden mb-3">
+            <div class="col-lg-4 col-md-6">
+                <div class="category-card">
+                    <div class="category-badge">{{ categoria.produto_count }} VEÍCULOS</div>
+                    <a href="{{ categoria.get_url }}" class="category-img">
                         {% if categoria.categoria_imagem %}
                             <img class="img-fluid" src="{{ categoria.categoria_imagem.url }}" alt="{{ categoria.categoria_nome }}">
                         {% else %}
                             <img class="img-fluid" src="{% static 'img/default-category.jpg' %}" alt="{{ categoria.categoria_nome }}">
                         {% endif %}
                     </a>
-                    <h5 class="font-weight-semi-bold m-0">{{ categoria.categoria_nome }}</h5>
+                    <div class="category-info">
+                        <h3>{{ categoria.categoria_nome }}</h3>
+                        <a href="{{ categoria.get_url }}" class="category-btn">EXPLORAR <i class="fas fa-arrow-right"></i></a>
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
-    <!-- Categories End -->
+</div>
 
-    <!-- Products Start -->
-    <div class="container-fluid pt-5">
-        <div class="text-center mb-4">
-            <h2 class="section-title px-5"><span class="px-2">Nossos Produtos</span></h2>
+<!-- Products Section -->
+<div class="container-fluid py-5 products-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-titulo">VEÍCULOS EM DESTAQUE</h2>
+            <div class="section-separator">
+                <span class="separator-line"></span>
+                <i class="fas fa-tachometer-alt separator-icon"></i>
+                <span class="separator-line"></span>
+            </div>
+            <p class="section-subtitle">Confira os melhores anúncios da nossa plataforma</p>
         </div>
-    
-        <div class="row px-xl-5 pb-3">
+        
+        <div class="row g-4 mt-4">
             {% for prod in produtos %}
-            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-                <div class="card product-item border-0 mb-4 h-100">
-                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0" style="height: 300px;">
-                        <img class="img-fluid w-100 h-100" src="{{ prod.imagens.url }}" alt="" style="object-fit: cover;">
-                    </div>
-                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                        <h6 class="text-truncate mb-3 px-3">{{ prod.produto_nome }}</h6>
-                        <div class="d-flex justify-content-center">
-                            <h6>R$ {{ prod.preco|floatformat:2 }}</h6>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="product-card">
+                    <div class="product-top">
+                        {% if prod.get_primeira_imagem %}
+                            <img src="{{ prod.get_primeira_imagem.url }}" alt="{{ prod.produto_nome }}" class="product-img">
+                        {% else %}
+                            <img src="{% static 'img/default-vehicle.jpg' %}" alt="{{ prod.produto_nome }}" class="product-img">
+                        {% endif %}
+                        
+                        {% if prod.esta_disponivel %}
+                            <div class="product-label">DISPONÍVEL</div>
+                        {% else %}
+                            <div class="product-label sold">VENDIDO</div>
+                        {% endif %}
+                        
+                        <div class="product-actions">
+                            <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}" class="action-btn view-btn">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="#" class="action-btn fav-btn">
+                                <i class="fas fa-heart"></i>
+                            </a>
                         </div>
                     </div>
-                    <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                    <div class="product-info">
+                        <div class="product-specs">
+                            <div class="spec">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>{{ prod.ano_fabricacao }}/{{ prod.ano_modelo }}</span>
+                            </div>
+                            <div class="spec">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>{{ prod.combustivel }}</span>
+                            </div>
+                            {% if prod.quilometragem %}
+                            <div class="spec">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>{{ prod.quilometragem|intcomma }} km</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <h4 class="product-title">{{ prod.produto_nome }}</h4>
+                        <div class="product-price">R$ {{ prod.preco|floatformat:0|intcomma }}</div>
+                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}" class="btn-view-details">
+                            VER DETALHES <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'produtos:loja' %}" class="btn btn-racing py-2 px-4">
+                <span>VER TODOS OS VEÍCULOS</span>
+                <i class="fas fa-search ms-2"></i>
+            </a>
+        </div>
     </div>
-    <!-- Products End -->
+</div>
 
-    <!--footer-->
-
-
+<!-- CTA Banner -->
+<div class="container-fluid cta-banner">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8 col-md-7">
+                <h2>ANUNCIE OU ENCONTRE SEU PRÓXIMO CARRO</h2>
+                <p>A melhor plataforma para conectar compradores e vendedores de veículos</p>
+            </div>
+            <div class="col-lg-4 col-md-5 text-center text-md-end">
+                <a href="{% url 'produtos:loja' %}" class="btn btn-light-racing py-2 px-4">
+                    <span>EXPLORAR ANÚNCIOS</span>
+                    <i class="fas fa-chevron-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+/* ==== VARIÁVEIS DE CORES ==== */
+:root {
+    /* Cores da marca AnuncieAi */
+    --primary: #0a1e36;
+    --secondary: #30c5f5;
+    --third: #0066cc;
     
+    /* Cores esportivas complementares */
+    --racing-red: #ff0000;
+    --racing-yellow: #ffcc00;
+    --racing-gray: #333333;
+    --racing-black: #111111;
+    --racing-white: #f8f8f8;
+    
+    /* Gradientes */
+    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--third) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, #00b3e6 100%);
+    --gradient-racing: linear-gradient(135deg, var(--racing-red) 0%, #d10000 100%);
+}
 
+/* ==== ESTILOS GERAIS ==== */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f3f3f3;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* ==== CAROUSEL HERO ==== */
+.hero-carousel {
+    position: relative;
+    margin-bottom: 0;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.carousel-item {
+    height: 600px;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+    z-index: 1;
+}
+
+.carousel-caption {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    right: 0;
+    z-index: 2;
+    text-align: center;
+}
+
+.carousel-caption h2 {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    animation: fadeInDown 1s;
+}
+
+.carousel-caption p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    animation: fadeInUp 1s;
+}
+
+.hero-badge {
+    display: inline-block;
+    background-color: var(--racing-red);
+    color: #fff;
+    padding: 8px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    border-radius: 0;
+    position: relative;
+    animation: fadeInUp 0.5s;
+}
+
+.hero-badge:before, 
+.hero-badge:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 10px;
+    height: 100%;
+}
+
+.hero-badge:before {
+    left: -10px;
+    border-left: 10px solid transparent;
+    border-bottom: 100% solid var(--racing-red);
+}
+
+.hero-badge:after {
+    right: -10px;
+    border-right: 10px solid transparent;
+    border-top: 100% solid var(--racing-red);
+}
+
+/* CORREÇÃO: Controles do carrossel em azul e funcionais */
+.carousel-control-prev, .carousel-control-next {
+    width: auto;
+    z-index: 10;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    background-color: var(--secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    color: #fff;
+    font-size: 18px;
+    opacity: 0.9;
+    margin: 0 15px;
+}
+
+.control-btn:hover {
+    background-color: var(--third);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.carousel-indicators {
+    margin-bottom: 30px;
+}
+
+.carousel-indicators button {
+    width: 30px;
+    height: 5px;
+    border-radius: 0;
+    margin: 0 5px;
+    background-color: rgba(255,255,255,0.4);
+}
+
+.carousel-indicators button.active {
+    background-color: var(--secondary);
+    width: 40px;
+}
+
+/* ==== BOTÕES ==== */
+.btn-racing {
+    background: var(--gradient-secondary);
+    color: #fff;
+    border: none;
+    border-radius: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 30px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    z-index: 1;
+    box-shadow: 0 5px 15px rgba(48, 197, 245, 0.3);
+}
+
+.btn-racing:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.6s;
+    z-index: -1;
+}
+
+.btn-racing:hover {
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(48, 197, 245, 0.4);
+}
+
+.btn-racing:hover:before {
+    left: 100%;
+}
+
+.btn-racing i {
+    font-size: 14px;
+}
+
+.btn-light-racing {
+    background: #fff;
+    color: var(--primary);
+    border: none;
+    border-radius: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 30px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-light-racing:hover {
+    background: var(--third);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* ==== FEATURES BANNER ==== */
+.features-banner {
+    background: var(--gradient-primary);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    z-index: 2;
+    margin-top: -1px;
+}
+
+.features-banner:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('{% static "img/pattern-grid.png" %}');
+    opacity: 0.05;
+    z-index: -1;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    transition: all 0.3s;
+}
+
+.icon-container {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    border: 2px solid var(--secondary);
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.feature-item:hover .icon-container {
+    background: var(--secondary);
+    transform: rotateY(180deg);
+}
+
+.icon-container i {
+    color: #fff;
+    font-size: 26px;
+    transition: all 0.3s;
+}
+
+.feature-item:hover .icon-container i {
+    transform: rotateY(-180deg);
+}
+
+.feature-text {
+    color: #fff;
+}
+
+.feature-text h5 {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+.feature-text p {
+    opacity: 0.7;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+/* ==== SECTION HEADERS ==== */
+.section-header {
+    margin-bottom: 40px;
+}
+
+.section-titulo {
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 36px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.separator-line {
+    height: 2px;
+    width: 50px;
+    background: var(--secondary);
+    position: relative;
+}
+
+.separator-icon {
+    font-size: 20px;
+    color: var(--secondary);
+    margin: 0 15px;
+}
+
+.section-subtitle {
+    color: var(--racing-gray);
+    font-size: 16px;
+    margin: 0 auto;
+    max-width: 700px;
+}
+
+/* ==== CATEGORIES SECTION ==== */
+.categories-section {
+    background-color: var(--racing-white);
+    position: relative;
+    z-index: 1;
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+.categories-section:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: url('{% static "img/tread-pattern.png" %}') repeat-x;
+    opacity: 0.03;
+    z-index: -1;
+}
+
+.category-card {
+    position: relative;
+    border-radius: 0;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+    height: 300px;
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.category-badge {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    background: var(--third);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 6px 15px;
+    z-index: 2;
+    letter-spacing: 1px;
+    clip-path: polygon(10% 0%, 100% 0, 100% 100%, 10% 100%, 0 50%);
+}
+
+.category-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.category-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s;
+}
+
+.category-card:hover .category-img img {
+    transform: scale(1.1);
+}
+
+/* CORREÇÃO: Melhor legibilidade para títulos de categoria */
+.category-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.7), rgba(0,0,0,0.2));
+    color: #fff;
+    z-index: 2;
+    transition: all 0.3s;
+}
+
+/* Quando hover, deixa o fundo ainda mais escuro para destacar o texto */
+.category-card:hover .category-info {
+    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+    padding-bottom: 30px;
+}
+
+.category-info h3 {
+    font-size: 24px;
+    font-weight: 800; /* Mais bold */
+    margin-bottom: 10px;
+    color: white; /* Garantir que seja branco puro */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.9); /* Sombra mais forte */
+    letter-spacing: 0.5px; /* Espaçamento entre letras */
+    background-color: rgba(0,0,0,0.4); /* Fundo semi-transparente */
+    display: inline-block; /* Para o fundo não pegar toda largura */
+    padding: 5px 10px; /* Espaçamento interno */
+    margin-left: -10px; /* Ajuste para o padding */
+    border-left: 3px solid var(--secondary); /* Borda à esquerda na cor azul da marca */
+}
+
+.category-btn {
+    color: var(--secondary);
+    font-weight: 700; /* Mais bold */
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.3); /* Leve fundo para legibilidade */
+    padding: 4px 8px;
+    border-radius: 3px;
+}
+
+.category-btn i {
+    margin-left: 8px;
+    transition: all 0.3s;
+}
+
+.category-btn:hover {
+    color: #fff;
+}
+
+.category-btn:hover i {
+    transform: translateX(5px);
+}
+
+/* ==== PRODUCTS SECTION ==== */
+.products-section {
+    background-color: #fff;
+    position: relative;
+    z-index: 1;
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+.products-section:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: url('{% static "img/tread-pattern.png" %}') repeat-x;
+    opacity: 0.03;
+    z-index: -1;
+}
+
+.product-card {
+    position: relative;
+    background: #fff;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+    transition: all 0.3s;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.product-top {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.1);
+}
+
+.product-label {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    background: var(--third);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 5px 15px;
+    z-index: 2;
+    clip-path: polygon(10% 0%, 100% 0, 100% 100%, 10% 100%, 0 50%);
+}
+
+.product-label.sold {
+    background: var(--racing-red);
+}
+
+.product-actions {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0;
+    background: rgba(0,0,0,0.6);
+    transition: all 0.3s;
+    z-index: 2;
+}
+
+.product-card:hover .product-actions {
+    bottom: 0;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    transition: all 0.3s;
+}
+
+.view-btn:hover {
+    background: var(--third);
+    color: #fff;
+}
+
+.fav-btn:hover {
+    background: var(--racing-red);
+    color: #fff;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-specs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.spec {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #777;
+}
+
+.spec i {
+    color: var(--third);
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.product-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+    height: 48px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--racing-red);
+    margin-bottom: 20px;
+}
+
+.btn-view-details {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--third);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    border: none;
+}
+
+.btn-view-details i {
+    margin-left: 5px;
+    transition: all 0.3s;
+}
+
+.btn-view-details:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-view-details:hover i {
+    transform: translateX(5px);
+}
+
+/* ==== CTA BANNER ==== */
+/* CORREÇÃO: Melhor legibilidade para o CTA */
+.cta-banner {
+    background: url('{% static "img/cta-background.jpg" %}') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    color: #fff;
+    z-index: 1;
+}
+
+.cta-banner:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(10, 30, 54, 0.9), rgba(0, 102, 204, 0.7));
+    z-index: -1;
+}
+
+.cta-banner h2 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.cta-banner p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* ==== ANIMATIONS ==== */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==== RESPONSIVE STYLES ==== */
+@media (max-width: 1199px) {
+    .carousel-caption h2 {
+        font-size: 42px;
+    }
+    
+    .feature-item {
+        padding: 10px 0;
+    }
+    
+    .icon-container {
+        width: 50px;
+        height: 50px;
+        margin-right: 15px;
+    }
+    
+    .icon-container i {
+        font-size: 22px;
+    }
+    
+    .feature-text h5 {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 991px) {
+    .carousel-item {
+        height: 500px;
+    }
+    
+    .carousel-caption h2 {
+        font-size: 36px;
+    }
+    
+    .section-titulo {
+        font-size: 32px;
+    }
+    
+    .feature-item {
+        margin-bottom: 10px;
+    }
+    
+    .category-card {
+        height: 250px;
+    }
+    
+    .category-info h3 {
+        font-size: 22px;
+    }
+    
+    .cta-banner h2 {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 767px) {
+    .carousel-item {
+        height: 450px;
+    }
+    
+    .carousel-caption h2 {
+        font-size: 30px;
+    }
+    
+    .hero-badge {
+        font-size: 12px;
+        padding: 6px 15px;
+    }
+    
+    .section-titulo {
+        font-size: 28px;
+    }
+    
+    .cta-banner h2 {
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 575px) {
+    .carousel-item {
+        height: 400px;
+    }
+    
+    .carousel-caption h2 {
+        font-size: 26px;
+    }
+    
+    .section-titulo {
+        font-size: 24px;
+    }
+    
+    .product-specs {
+        flex-wrap: wrap;
+    }
+    
+    .spec {
+        width: 50%;
+        margin-bottom: 5px;
+    }
+}
+</style>
 {% endblock %}

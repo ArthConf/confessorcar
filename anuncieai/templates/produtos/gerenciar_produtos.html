@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-
 {% block content %}
+{% load humanize %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Gerenciar Produtos</h2>
-        <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Novo Produto
+        <h2 class="text-primary"><i class="fas fa-car-alt me-2"></i>Gerenciar Veículos</h2>
+        <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-anuncieai">
+            <i class="fas fa-plus"></i> Novo Veículo
         </a>
     </div>
 
@@ -19,57 +19,79 @@
     {% endif %}
 
     <div class="card">
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
                         <tr>
-                            <th style="width: 100px">Imagem</th>
-                            <th>Nome</th>
+                            <th style="width: 140px">Imagem</th>
+                            <th>Modelo</th>
                             <th>Categoria</th>
                             <th>Preço</th>
                             <th>Status</th>
-                            <th style="width: 120px">Ações</th>
+                            <th style="width: 180px" class="text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for produto in produtos %}
                         <tr>
                             <td>
-                                {% if produto.imagens %}
-                                <img src="{{ produto.imagens.url }}" 
+                                {% if produto.get_primeira_imagem %}
+                                <img src="{{ produto.get_primeira_imagem.url }}" 
                                      alt="{{ produto.produto_nome }}" 
-                                     class="img-thumbnail"
-                                     style="height: 50px; width: 50px; object-fit: cover;">
+                                     class="img-thumbnail produto-thumbnail">
                                 {% else %}
-                                <div class="text-center text-muted">
-                                    <i class="fas fa-box fa-2x"></i>
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-car text-muted"></i>
                                 </div>
                                 {% endif %}
                             </td>
-                            <td class="align-middle">
-                                {{ produto.produto_nome }}
-                                <br>
-                                <small class="text-muted">{{ produto.slug }}</small>
+                            <td>
+                                <div class="fw-bold">{{ produto.produto_nome }}</div>
+                                <div class="text-muted small">
+                                    <span class="me-2"><i class="fas fa-calendar-alt"></i> {{ produto.ano_fabricacao }}/{{ produto.ano_modelo }}</span>
+                                    {% if produto.quilometragem %}
+                                    <span class="me-2"><i class="fas fa-tachometer-alt"></i> {{ produto.quilometragem|intcomma }} km</span>
+                                    {% endif %}
+                                </div>
                             </td>
-                            <td class="align-middle">{{ produto.categoria.categoria_nome }}</td>
-                            <td class="align-middle">R$ {{ produto.preco }}</td>
-                            <td class="align-middle">
+                            <td>
+                                <span class="categoria-badge">{{ produto.categoria.categoria_nome }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold">R$ {{ produto.preco|floatformat:2|intcomma }}</span>
+                            </td>
+                            <td>
                                 {% if produto.esta_disponivel %}
-                                <span class="badge bg-success">Disponível</span>
+                                <span class="badge bg-success status-badge">Disponível</span>
                                 {% else %}
-                                <span class="badge bg-danger">Indisponível</span>
+                                <span class="badge bg-danger status-badge">Indisponível</span>
                                 {% endif %}
                             </td>
-                            <td class="align-middle">
-                                <div class="btn-group">
+                            <td>
+                                <div class="d-flex justify-content-center gap-1">
                                     <a href="{% url 'produtos:editar_produto' produto.pk %}" 
-                                       class="btn btn-sm btn-warning"
+                                       class="btn btn-sm btn-outline-primary"
                                        title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    {% if produto.esta_disponivel %}
+                                    <button type="button" 
+                                           class="btn btn-sm btn-outline-success marcar-vendido-btn"
+                                           data-produto-id="{{ produto.pk }}"
+                                           title="Marcar como Vendido">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                    {% endif %}
+                                    <a href="{% url 'produtos:produto_detalhe' produto.categoria.slug produto.slug %}" 
+                                    class="btn btn-sm btn-outline-info"
+                                    target="_blank"
+                                    rel="noopener"
+                                    title="Visualizar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                     <a href="{% url 'produtos:excluir_produto' produto.pk %}" 
-                                       class="btn btn-sm btn-danger"
+                                       class="btn btn-sm btn-outline-danger"
                                        title="Excluir">
                                         <i class="fas fa-trash"></i>
                                     </a>
@@ -78,10 +100,13 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-4">
-                                <div class="text-muted">
-                                    <i class="fas fa-box-open fa-3x mb-3"></i>
-                                    <p class="mb-0">Nenhum produto cadastrado</p>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-car-side fa-3x mb-3"></i>
+                                    <p class="mb-0">Nenhum veículo cadastrado</p>
+                                    <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-sm btn-anuncieai mt-3">
+                                        <i class="fas fa-plus"></i> Adicionar Veículo
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -93,26 +118,355 @@
     </div>
 </div>
 
+<!-- Modal de confirmação para marcar como vendido -->
+<div class="modal fade" id="marcarVendidoModal" tabindex="-1" aria-labelledby="marcarVendidoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="marcarVendidoModalLabel">Marcar veículo como vendido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja marcar este veículo como vendido?</p>
+                <p class="text-muted small">O veículo será marcado como indisponível e não aparecerá mais no site.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="marcarVendidoForm" action="{% url 'produtos:marcar_vendido' 0 %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Confirmar Venda
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
+:root {
+    /* Cores exatas da logo AnuncieAi */
+    --primary-color: #0a1e36;    /* Azul escuro do "Anuncie" */
+    --secondary-color: #30c5f5;  /* Azul claro/ciano do "Ai" */
+    --third-color: #0066cc;      /* Azul médio do gradiente */
+    --light-color: #f0f8ff;      /* Azul muito claro para fundos */
+    --gray-color: #707070;       /* Cinza do logotipo */
+    --gradient-primary: linear-gradient(135deg, #0a1e36 0%, #0066cc 50%, #30c5f5 100%);
+    --gradient-hover: linear-gradient(135deg, #30c5f5 0%, #0066cc 50%, #0a1e36 100%);
+}
+
+/* Estilos gerais */
+h2.text-primary {
+    color: var(--primary-color) !important;
+}
+
+h2.text-primary i {
+    color: var(--secondary-color);
+}
+
+/* Estilos da tabela */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    border: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 1rem;
+    background-color: #f5f9ff; /* Fundo mais azulado para o cabeçalho */
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(48, 197, 245, 0.05);
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(0, 102, 204, 0.1);
+}
+
+/* Estilo para o card */
 .card {
     border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(10, 30, 54, 0.08);
+    overflow: hidden;
 }
 
-.table th {
-    border-top: none;
+/* Estilo para miniatura */
+.produto-thumbnail {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--secondary-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 102, 204, 0.1);
 }
 
-.btn-group .btn {
-    padding: 0.25rem 0.5rem;
+.produto-thumbnail:hover {
+    transform: scale(1.05);
+    border-color: var(--third-color);
+    box-shadow: 0 5px 15px rgba(48, 197, 245, 0.2);
 }
 
-.img-thumbnail {
-    padding: 0.25rem;
+.no-image-placeholder {
+    width: 120px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f8ff;
+    border-radius: 8px;
+    border: 1px dashed var(--secondary-color);
 }
 
-.badge {
-    padding: 0.5em 0.75em;
+.no-image-placeholder i {
+    font-size: 2rem;
+    color: var(--third-color);
+    opacity: 0.5;
+}
+
+/* Estilo para badges e status */
+.status-badge {
+    padding: 0.5em 0.8em;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.bg-success {
+    background: linear-gradient(to right, #2ecc71, #27ae60) !important;
+}
+
+.badge.bg-danger {
+    background: linear-gradient(to right, #e74c3c, #c0392b) !important;
+}
+
+.categoria-badge {
+    background-color: var(--light-color);
+    color: var(--primary-color);
+    padding: 0.4em 1em;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-left: 3px solid var(--secondary-color);
+}
+
+/* Estilo para botões */
+.btn-anuncieai {
+    color: white;
+    background: var(--gradient-primary);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.2);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-anuncieai:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-hover);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.btn-anuncieai:hover:before {
+    opacity: 1;
+}
+
+.btn-anuncieai:hover {
+    box-shadow: 0 6px 15px rgba(48, 197, 245, 0.3);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-anuncieai:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Melhorando os botões de ação */
+.btn-outline-primary {
+    color: var(--third-color);
+    border-color: var(--third-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--third-color);
+    border-color: var(--third-color);
+    color: white;
+}
+
+.btn-outline-info {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-info:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-outline-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.btn-outline-danger:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+.btn-sm {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Estado vazio */
+.empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: var(--gray-color);
+    background-color: #f8fbff;
+    border-radius: 8px;
+}
+
+.empty-state i {
+    color: var(--secondary-color);
+    filter: drop-shadow(0 3px 5px rgba(48, 197, 245, 0.2));
+}
+
+/* Estilizando o modal */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background-color: var(--light-color);
+    border-bottom: 1px solid rgba(48, 197, 245, 0.2);
+}
+
+.modal-header h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(48, 197, 245, 0.2);
+}
+
+/* Melhorando as informações do veículo */
+.fw-bold {
+    color: var(--primary-color);
+}
+
+.text-muted.small i {
+    color: var(--secondary-color);
+}
+
+/* Ajustes nos alertas */
+.alert {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.alert-success {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border-left: 4px solid #27ae60;
+}
+
+.alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border-left: 4px solid #c0392b;
+}
+
+.alert-warning {
+    background-color: rgba(241, 196, 15, 0.1);
+    color: #f39c12;
+    border-left: 4px solid #f39c12;
+}
+
+.alert-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    border-left: 4px solid #2980b9;
+}
+
+/* Efeito sutil na tabela para linhas alternadas */
+.table tbody tr:nth-child(odd) {
+    background-color: rgba(240, 248, 255, 0.3);
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: white;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Manipulação do botão "Marcar como Vendido"
+    const marcarVendidoBtns = document.querySelectorAll('.marcar-vendido-btn');
+    const marcarVendidoForm = document.getElementById('marcarVendidoForm');
+    const marcarVendidoModal = new bootstrap.Modal(document.getElementById('marcarVendidoModal'));
+    
+    marcarVendidoBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const produtoId = this.getAttribute('data-produto-id');
+            // Atualiza o action do formulário com o ID correto
+            marcarVendidoForm.action = marcarVendidoForm.action.replace('/0/', '/' + produtoId + '/');
+            // Exibe o modal
+            marcarVendidoModal.show();
+        });
+    });
+    
+    // Formatar preços na tabela (caso os filtros do Django não funcionem)
+    document.querySelectorAll('td:nth-child(4)').forEach(td => {
+        const priceText = td.textContent.trim();
+        if (priceText.startsWith('R$')) {
+            const priceValue = parseFloat(priceText.replace('R$', '').trim());
+            if (!isNaN(priceValue)) {
+                td.textContent = 'R$ ' + priceValue.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

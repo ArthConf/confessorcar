@@ -1,227 +1,588 @@
 {% load static %}
 
-<body>
-    <!-- Navbar Start -->
-    <div class="container-fluid">
-        <!-- Top Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light py-3">
-            <div class="container">
-                <!-- Logo -->
-                <a href="{% url 'home' %}" class="navbar-brand">
-                    <img src="{% static 'img/logo_anuncieai.png' %}" alt="AnuncieAI Logo" class="logo-img">
-                </a>
-
-                <!-- Toggle Button for Mobile -->
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Navigation Links -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a href="{% url 'home' %}" class="nav-link">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown">
-                                Categorias
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                                {% for cat in opcoes %}
-                                <a class="dropdown-item" href="{% url 'produtos:produto_por_categoria' cat.slug %}">{{ cat.categoria_nome }}</a>
-                                {% endfor %}
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'produtos:loja' %}" class="nav-link">Loja</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">Contato</a>
-                        </li>
-                    </ul>
-
-                    <!-- Right Side Items -->
-                    <div class="navbar-nav ml-auto">
-                        {% if user.is_authenticated %}
-                            {% if user.is_staff %}
-                            <!-- Admin Dropdown -->
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown">
-                                    <i class="fas fa-cog"></i> Administração
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="adminDropdown">
-                                    <a class="dropdown-item" href="{% url 'categoria:gerenciar_categorias' %}">
-                                        <i class="fas fa-tags"></i> Gerenciar Categorias
-                                    </a>
-                                    <a class="dropdown-item" href="{% url 'produtos:gerenciar_produtos' %}">
-                                        <i class="fas fa-box"></i> Gerenciar Produtos
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url 'admin:index' %}">
-                                        <i class="fas fa-toolbox"></i> Painel Admin
-                                    </a>
-                                </div>
-                            </li>
-                            {% endif %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
-                                    <i class="fas fa-user"></i> {{ user.username }}
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                                    <a class="dropdown-item" href="{% url 'users:dashboard' %}">
-                                        <i class="fas fa-user-circle"></i> Minha Conta
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url 'users:logout' %}">
-                                        <i class="fas fa-sign-out-alt"></i> Sair
-                                    </a>
-                                </div>
-                            </li>
-                        {% else %}
-                            <a href="{% url 'users:login' %}" class="nav-item nav-link">
-                                <i class="fas fa-sign-in-alt"></i> Login
-                            </a>
-                            <a href="{% url 'users:register' %}" class="nav-item nav-link">
-                                <i class="fas fa-user-plus"></i> Register
-                            </a>
-                        {% endif %}
-                        <!--<a  class="nav-item nav-link">
-                            <i class="fas fa-shopping-cart text-primary"></i>
-                            <span class="badge">{% if cart_count %}{{ cart_count }}{% else %}0{% endif %}</span>
-                        </a>-->
+<!-- Navbar Start - Versão Esportiva -->
+<div class="navbar-container">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="topbar-contact">
+                        <a href="tel:+5565992490737"><i class="fas fa-phone-alt"></i> (65) 9 992490737</a>
+                        <a href="mailto:arthur-confessor@hotmail.com"><i class="fas fa-envelope"></i>arthur-confessor@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="topbar-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/arthconf?igsh=OW8yeXR5aW1lM3Z3&utm_source=qr"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@arthuroctavio8491"><i class="fab fa-youtube"></i></a>
+                        <a href="https://wa.me/5565992490737?text=Ol%C3%A1%2C%20quero%20saber%20como%20anunciar"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
             </div>
-        </nav>
-    </div>
-
-    <!-- Full Width Carousel -->
-    <div class="container-fluid px-0">
-        <div id="header-carousel" class="carousel slide" data-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img class="w-100" src="{% static 'img/nissan_ofertas.jpg' %}" alt="Image" style="height: 500px; object-fit: cover;">
-                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                        <div class="p-3" style="max-width: 900px;">
-                            <h4 class="text-light text-uppercase font-weight-medium mb-3">Compra de carros japoneses</h4>
-                            <a href="{% url 'produtos:loja' %}" class="btn btn-light py-2 px-3">Compre agora</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img class="w-100" src="{% static 'img/imagens_vendas.png' %}" alt="Image" style="height: 500px; object-fit: cover;">
-                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                        <div class="p-3" style="max-width: 900px;">
-                            <h4 class="text-light text-uppercase font-weight-medium mb-3">Carros em ofertas</h4>
-                            <a href="{% url 'produtos:loja' %}" class="btn btn-light py-2 px-3">Compre agora</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
-                <div class="btn btn-dark" style="width: 45px; height: 45px;">
-                    <span class="carousel-control-prev-icon mb-n2"></span>
-                </div>
-            </a>
-            <a class="carousel-control-next" href="#header-carousel" data-slide="next">
-                <div class="btn btn-dark" style="width: 45px; height: 45px;">
-                    <span class="carousel-control-next-icon mb-n2"></span>
-                </div>
-            </a>
         </div>
     </div>
-</body>
 
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <!-- Logo -->
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <img src="{% static 'img/logo_anuncieai.png' %}" alt="AnuncieAI Logo" class="logo-img">
+            </a>
+
+            <!-- Toggle Button for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a href="{% url 'home' %}" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categorias
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                            {% for cat in opcoes %}
+                            <a class="dropdown-item" href="{% url 'produtos:produto_por_categoria' cat.slug %}">{{ cat.categoria_nome }}</a>
+                            {% endfor %}
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'produtos:loja' %}" class="nav-link">Loja</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Suporte</a>
+                    </li>
+                </ul>
+
+                <!-- Right Side Items -->
+                <div class="navbar-nav ms-auto action-items">
+                    {% if user.is_authenticated %}
+                        <!-- Favoritos para todos os usuários logados -->
+                        <div class="nav-item action-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-heart icon-action"></i>
+                                <span class="action-text">Favoritos</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Separador -->
+                        <div class="nav-separator"></div>
+                        
+                        <!-- Botão Anuncie para usuários logados -->
+                        <div class="nav-item action-item">
+                            <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-anunciar">
+                                <i class="fas fa-plus-circle"></i> Anuncie
+                            </a>
+                        </div>
+                        
+                        <!-- Separador -->
+                        <div class="nav-separator"></div>
+                        
+                        {% if user.is_staff %}
+                        <!-- Admin Dropdown -->
+                        <div class="nav-item dropdown action-item">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog icon-action"></i>
+                                <span class="action-text">Admin</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                                <a class="dropdown-item" href="{% url 'categoria:gerenciar_categorias' %}">
+                                    <i class="fas fa-tags"></i> Gerenciar Categorias
+                                </a>
+                                <a class="dropdown-item" href="{% url 'produtos:gerenciar_produtos' %}">
+                                    <i class="fas fa-car"></i> Gerenciar Produtos
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'admin:index' %}">
+                                    <i class="fas fa-toolbox"></i> Painel Admin
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Separador -->
+                        <div class="nav-separator"></div>
+                        {% endif %}
+                        
+                        <!-- User Dropdown -->
+                        <div class="nav-item dropdown action-item">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle icon-action"></i>
+                                <span class="action-text">{{ user.username }}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'users:dashboard' %}">
+                                    <i class="fas fa-tachometer-alt"></i> Minha Conta
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-car"></i> Meus Anúncios
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'users:logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Sair
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'users:login' %}" class="btn btn-login me-2">
+                            <i class="fas fa-sign-in-alt"></i> Entrar
+                        </a>
+                        <a href="{% url 'users:register' %}" class="btn btn-register">
+                            <i class="fas fa-user-plus"></i> Cadastrar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
 
 <style>
-.logo-img {
-    height: 10rem;
-    width: auto;
-    text-align: left;
-    object-fit: contain;
+:root {
+    --primary: #0a1e36;    /* Azul escuro do "Anuncie" */
+    --secondary: #30c5f5;  /* Azul claro/ciano do "Ai" */
+    --third: #0066cc;      /* Azul médio do gradiente */
+    --racing-red: #ff0000; /* Vermelho racing */
+    --text-light: #f8f9fa; /* Texto claro */
+    --text-dark: #343a40;  /* Texto escuro */
+    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--third) 70%, var(--secondary) 100%);
 }
 
-.navbar-brand {
-    padding: 0;
-    margin-right: 2rem;
+/* Topbar */
+.topbar {
+    background-color: var(--primary);
+    color: var(--text-light);
+    padding: 8px 0;
+    font-size: 14px;
 }
 
+.topbar-contact a {
+    color: var(--text-light);
+    margin-right: 20px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.topbar-contact a:hover {
+    color: var(--secondary);
+}
+
+.topbar-contact i {
+    margin-right: 5px;
+    color: var(--secondary);
+}
+
+.topbar-social {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.topbar-social a {
+    color: var(--text-light);
+    margin-left: 15px;
+    transition: all 0.3s ease;
+}
+
+.topbar-social a:hover {
+    color: var(--secondary);
+    transform: translateY(-3px);
+}
+
+/* Main Navbar */
 .navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    transition: all 0.3s ease;
 }
 
-.navbar-nav .nav-link {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
+.navbar.scrolled {
+    padding: 10px 0;
+    background-color: rgba(255, 255, 255, 0.98);
 }
 
-.dropdown-menu {
-    border-radius: 0;
+/* Logo aumentado sem aumentar o container */
+.navbar-brand {
+    position: relative;
+    padding: 0;
+    margin-right: 1rem;
+    overflow: visible;
+    height: 60px; /* Mantém a altura do container original */
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 90px; /* Imagem maior que o container */
+    width: auto;
+    object-fit: contain;
+    transition: all 0.3s ease;
+    position: absolute; /* Permite que a imagem saia do fluxo normal */
+    top: 50%; /* Centraliza verticalmente */
+    transform: translateY(-50%); /* Ajusta o deslocamento */
+    z-index: 5; /* Garante que fique acima de outros elementos */
+    left: 0;
+}
+
+/* Efeito de redução no scroll */
+.navbar.scrolled .logo-img {
+    height: 75px; /* Um pouco menor quando o usuário rola a página */
+}
+
+.navbar-toggler {
     border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 0;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Navigation Links */
+.navbar-nav .nav-link {
+    font-weight: 600;
+    font-size: 15px; /* Diminuído de 16px para 15px */
+    text-transform: uppercase;
+    padding: 8px 16px; /* Diminuído de 10px 20px para 8px 16px */
+    color: var(--text-dark);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 16px; /* Ajustado para o novo padding */
+    width: 0;
+    height: 2px;
+    background-color: var(--secondary);
+    transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--third);
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: calc(100% - 32px); /* Ajustado para o novo padding */
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--third);
+}
+
+.navbar-nav .nav-link.active::after {
+    width: calc(100% - 32px); /* Ajustado para o novo padding */
+}
+
+/* Action Items */
+.action-items {
+    display: flex;
+    align-items: center;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+/* Texto dos botões de ação diminuído */
+.action-text {
+    font-size: 14px; /* Diminuído de tamanho padrão */
+    font-weight: 500;
+}
+
+.action-item .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px; /* Diminuído de 8px 12px para 6px 10px */
+    color: var(--text-dark);
+    border-radius: 0;
+    transition: all 0.3s ease;
+    background: none;
+}
+
+/* Separador vertical entre itens */
+.nav-separator {
+    height: 26px; /* Diminuído de 30px para 26px */
+    width: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 0 8px; /* Diminuído de 10px para 8px */
+}
+
+/* Ícones de ação */
+.icon-action {
+    font-size: 20px; /* Diminuído ligeiramente de 22px para 20px */
+    margin-right: 6px; /* Diminuído de 8px para 6px */
+    transition: transform 0.3s ease;
+}
+
+/* Cor dos ícones */
+.fa-heart {
+    color: var(--racing-red);
+}
+
+.fa-cog {
+    color: var(--primary);
+}
+
+.fa-user-circle {
+    color: var(--third);
+}
+
+/* Hover nos links de ação */
+.action-item .nav-link:hover {
+    color: var(--third);
+}
+
+.action-item .nav-link:hover .icon-action {
+    transform: scale(1.15);
+}
+
+.action-item .nav-link:hover .fa-heart {
+    color: var(--racing-red);
+    transform: scale(1.2);
+}
+
+.action-item .nav-link:hover .fa-cog {
+    color: var(--primary);
+    transform: rotate(45deg);
+}
+
+.action-item .nav-link:hover .fa-user-circle {
+    color: var(--third);
+    transform: scale(1.15);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 8px; /* Diminuído de 10px para 8px */
+    margin-top: 15px;
+    background-color: #fff;
+}
+
+.dropdown-item {
+    font-weight: 500;
+    padding: 6px 12px; /* Diminuído de 8px 15px para 6px 12px */
+    color: var(--text-dark);
+    border-radius: 5px;
+    transition: all 0.2s ease;
+    font-size: 14px; /* Adicionado para diminuir o tamanho */
+}
+
+.dropdown-item i {
+    margin-right: 6px; /* Diminuído de 8px para 6px */
+    color: var(--third);
 }
 
 .dropdown-item:hover {
-    background-color: #f8f9fa;
+    background-color: rgba(48, 197, 245, 0.1);
+    color: var(--third);
+    transform: translateX(5px);
 }
 
-/* Ajustes para responsividade */
-@media (max-width: 991.98px) {
-    .logo-img {
-        height: 6rem;
+.dropdown-divider {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin: 6px 0; /* Diminuído de 8px para 6px */
+}
+
+/* Botão Anunciar */
+.btn-anunciar {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 4px; /* Diminuído de 5px para 4px */
+    padding: 7px 14px; /* Diminuído de 10px 20px para 7px 14px */
+    font-weight: 600;
+    font-size: 13px; /* Diminuído para tamanho menor */
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    box-shadow: 0 3px 8px rgba(0, 102, 204, 0.2); /* Sombra menor */
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    text-decoration: none;
+}
+
+.btn-anunciar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.6s ease;
+    z-index: -1;
+}
+
+.btn-anunciar:hover {
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 12px rgba(0, 102, 204, 0.3);
+}
+
+.btn-anunciar:hover::before {
+    left: 100%;
+}
+
+.btn-anunciar i {
+    margin-right: 6px; /* Diminuído de 8px para 6px */
+    font-size: 14px; /* Diminuído de 18px para 14px */
+}
+
+/* Botões Login/Register */
+.btn-login, .btn-register {
+    font-weight: 600;
+    padding: 7px 14px; /* Diminuído de 10px 20px para 7px 14px */
+    border: none;
+    border-radius: 4px; /* Diminuído de 5px para 4px */
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 13px; /* Diminuído para tamanho menor */
+}
+
+.btn-login {
+    background-color: transparent;
+    color: var(--third);
+    border: 1px solid var(--third);
+}
+
+.btn-login:hover {
+    background-color: var(--third);
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 102, 204, 0.2); /* Sombra menor */
+}
+
+.btn-register {
+    background-color: var(--third);
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 102, 204, 0.2); /* Sombra menor */
+}
+
+.btn-register:hover {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 5px 12px rgba(10, 30, 54, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Responsividade */
+@media (max-width: 991px) {
+    .topbar {
+        display: none;
     }
     
     .navbar-collapse {
-        margin-top: 1rem;
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
-
-    /* Centralizar itens no mobile */
-    .navbar-nav.ml-auto {
-        margin: 0 auto;
+    
+    .navbar-nav .nav-link {
+        padding: 10px 12px; /* Diminuído */
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .navbar-nav .nav-link::after {
+        display: none;
+    }
+    
+    .action-items {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .action-item {
+        margin: 5px 0;
+        width: 100%;
+    }
+    
+    .nav-separator {
+        display: none;
+    }
+    
+    .action-item .nav-link {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .btn-anunciar {
+        width: 100%;
         text-align: center;
+        margin: 8px 0;
+    }
+    
+    .btn-login, .btn-register {
+        width: 100%;
+        text-align: center;
+        margin: 4px 0;
     }
 }
 
-/* Estilos para os botões de login, registro e carrinho */
-.navbar-nav.ml-auto .nav-link {
-    padding: 0.5rem 1rem;
-    transition: color 0.3s ease;
+@media (max-width: 576px) {
+    .logo-img {
+        height: 60px; /* Ainda grande, mas um pouco menor para mobile */
+    }
+    
+    .navbar-brand {
+        margin-right: 0;
+    }
 }
 
-.navbar-nav.ml-auto .nav-link:hover {
-    color: #007bff;
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Estilo para o badge do carrinho */
-.badge {
-    position: relative;
-    top: -8px;
-    right: 5px;
-    padding: 0.25em 0.4em;
-    font-size: 75%;
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 0.25rem;
-    background-color: #dc3545;
-    color: white;
-}
-
-/* Ajuste do ícone do carrinho */
-.fa-shopping-cart {
-    font-size: 1.1rem;
-}
-
-/* Ajuste dos ícones de heart e shopping cart */
-.fa-heart,
-.fa-shopping-cart {
-    transition: color 0.3s ease;
-}
-
-.nav-link:hover .fa-heart,
-.nav-link:hover .fa-shopping-cart {
-    color: #0056b3;
+.dropdown-menu {
+    animation: fadeIn 0.3s ease forwards;
+    transform-origin: top center;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona classe ao navbar quando scroll
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+    
+    // Ativa o item atual do menu
+    const currentLocation = window.location.pathname;
+    const menuItems = document.querySelectorAll('.navbar-nav .nav-link');
+    const menuLength = menuItems.length;
+    
+    for (let i = 0; i < menuLength; i++) {
+        if (menuItems[i].getAttribute('href') === currentLocation) {
+            menuItems[i].classList.add('active');
+        }
+    }
+});
+</script>

@@ -12,7 +12,7 @@ urlpatterns = [
     path('excluir/<int:pk>/', views.excluir_produto, name='excluir_produto'),
     path('<slug:categoria_slug>/', views.visualizarLoja, name='produto_por_categoria'),
     path('<slug:categoria_slug>/<slug:produto_slug>/', views.produto_detalhe, name='produto_detalhe'),
-    
+    path('produto/<int:pk>/marcar-vendido/', views.marcar_produto_vendido, name='marcar_vendido'),
     # Novas URLs para gerenciamento de imagens
     path('imagem/remover/<int:produto_pk>/<int:imagem_pk>/', 
          views.remover_imagem, 
