@@ -1,289 +1,1391 @@
 {% extends "base.html" %}
-
-
 {% load static %}
+{% load humanize %}
 
 {% block content %}
-
-   <!-- Page Header Start -->
-<div class="container-fluid bg-secondary mb-5">
-    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
-        <h1 class="font-weight-semi-bold text-uppercase mb-3">Detalhes do Produto</h1>
-        <div class="d-inline-flex">
-            <p class="m-0"><a href="{% url 'home' %}">Home</a></p>
-            <p class="m-0 px-2">-</p>
-            <p class="m-0">{{ produto.produto_nome }}</p>
+<!-- Vehicle Detail Hero Banner -->
+<div class="vehicle-hero">
+    <div class="overlay"></div>
+    <div class="vehicle-hero-img" style="background-image: url('{{ produto.get_primeira_imagem.url }}');"></div>
+    <div class="container">
+        <div class="vehicle-hero-content">
+            <div class="breadcrumb-wrapper">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'produtos:produto_por_categoria' produto.categoria.slug %}">{{ produto.categoria.categoria_nome }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ produto.produto_nome }}</li>
+                    </ol>
+                </nav>
+            </div>
+            <h1 class="vehicle-title">{{ produto.produto_nome }}</h1>
+            {% if produto.esta_disponivel %}
+                <span class="vehicle-badge available">DISPONÍVEL</span>
+            {% else %}
+                <span class="vehicle-badge sold">VENDIDO</span>
+            {% endif %}
+            <div class="price-tag">R$ {{ produto.preco|floatformat:0|intcomma }}</div>
         </div>
     </div>
 </div>
-<!-- Page Header End -->
 
-<div class="container-fluid py-5">
-    <div class="row px-xl-5">
-        <div class="col-lg-5 pb-5">
-            <div class="border">
-                <img class="w-100 h-100" src="{{ produto.imagens.url }}" alt="{{ produto.produto_nome }}">
-            </div>
-        </div>
-        <div class="col-lg-7 pb-5">
-            <h3 class="font-weight-semi-bold">{{ produto.produto_nome }}</h3>
-            <div class="d-flex mb-3">
-                <div class="text-primary mr-2">
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star-half-alt"></small>
-                    <small class="far fa-star"></small>
-                </div>
-            </div>
-            <h3 class="font-weight-semi-bold mb-4">R$ {{ produto.preco }}</h3>
-            <p class="mb-4">{{ produto.descricao }}</p>
-            <div class="d-flex mb-3">
-                <p class="text-dark font-weight-medium mb-0 mr-3">Tamanhos:</p>
-                <form>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-1" name="size">
-                        <label class="custom-control-label" for="size-1">XS</label>
+<!-- Vehicle Details Main Section -->
+<div class="container py-5">
+    <div class="row">
+        <!-- Left Column - Gallery & Info -->
+        <div class="col-lg-8">
+            <!-- Image Gallery -->
+            <div class="vehicle-gallery card mb-4">
+                <div class="card-body p-0">
+                    <div class="main-image-container">
+                        <div class="swiper-container gallery-main">
+                            <div class="swiper-wrapper">
+                                {% for imagem in produto.imagensproduto_set.all %}
+                                <div class="swiper-slide">
+                                    <img src="{{ imagem.imagem.url }}" alt="{{ produto.produto_nome }}" class="img-fluid">
+                                </div>
+                                {% empty %}
+                                <div class="swiper-slide">
+                                    <img src="{{ produto.get_primeira_imagem.url }}" alt="{{ produto.produto_nome }}" class="img-fluid">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="swiper-button-next"><i class="fas fa-chevron-right"></i></div>
+                            <div class="swiper-button-prev"><i class="fas fa-chevron-left"></i></div>
+                        </div>
                     </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-2" name="size">
-                        <label class="custom-control-label" for="size-2">S</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-3" name="size">
-                        <label class="custom-control-label" for="size-3">M</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-4" name="size">
-                        <label class="custom-control-label" for="size-4">L</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-5" name="size">
-                        <label class="custom-control-label" for="size-5">XL</label>
-                    </div>
-                </form>
-            </div>
-            <div class="d-flex mb-4">
-                <p class="text-dark font-weight-medium mb-0 mr-3">Cores:</p>
-                <form>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-1" name="color">
-                        <label class="custom-control-label" for="color-1">Preto</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-2" name="color">
-                        <label class="custom-control-label" for="color-2">Branco</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-3" name="color">
-                        <label class="custom-control-label" for="color-3">Vermelho</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-4" name="color">
-                        <label class="custom-control-label" for="color-4">Azul</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-5" name="color">
-                        <label class="custom-control-label" for="color-5">Verde</label>
-                    </div>
-                </form>
-            </div>
-            <div class="d-flex align-items-center mb-4 pt-2">
-                <div class="input-group quantity mr-3" style="width: 130px;">
-                    <div class="input-group-btn">
-                        <button class="btn btn-primary btn-minus">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                    <input type="text" class="form-control bg-secondary text-center" value="1">
-                    <div class="input-group-btn">
-                        <button class="btn btn-primary btn-plus">
-                            <i class="fa fa-plus"></i>
-                        </button>
+                    
+                    <div class="gallery-thumbs-container">
+                        <div class="swiper-container gallery-thumbs">
+                            <div class="swiper-wrapper">
+                                {% for imagem in produto.imagensproduto_set.all %}
+                                <div class="swiper-slide">
+                                    <img src="{{ imagem.imagem.url }}" alt="{{ produto.produto_nome }}" class="img-fluid">
+                                </div>
+                                {% empty %}
+                                <div class="swiper-slide">
+                                    <img src="{{ produto.get_primeira_imagem.url }}" alt="{{ produto.produto_nome }}" class="img-fluid">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Adicionar ao Carrinho</button>
             </div>
-            <div class="d-flex pt-2">
-                <p class="text-dark font-weight-medium mb-0 mr-2">Compartilhar:</p>
-                <div class="d-inline-flex">
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-pinterest"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row px-xl-5">
-        <div class="col">
-            <div class="nav nav-tabs justify-content-center border-secondary mb-4">
-                <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Descrição</a>
-                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Informações</a>
-                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Avaliações (0)</a>
-            </div>
-            <div class="tab-content">
-                <div class="tab-pane fade show active" id="tab-pane-1">
-                    <h4 class="mb-3">Descrição do Produto</h4>
-                    <p>{{ produto.descricao }}</p>
-                </div>
-                <div class="tab-pane fade" id="tab-pane-2">
-                    <h4 class="mb-3">Informações Adicionais</h4>
-                    <p>Informações adicionais sobre o produto podem ser adicionadas aqui.</p>
-                </div>
-                <div class="tab-pane fade" id="tab-pane-3">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4 class="mb-4">1 avaliação para "{{ produto.produto_nome }}"</h4>
-                            <div class="media mb-4">
-                                <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
-                                <div class="media-body">
-                                    <h6>John Doe<small> - <i>01 Jan 2045</i></small></h6>
-                                    <div class="text-primary mb-2">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
-                                        <i class="far fa-star"></i>
+
+            <!-- Vehicle Highlights & Description -->
+            <div class="vehicle-highlights mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="vehicleDetailsTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="highlights-tab" data-bs-toggle="tab" href="#highlights" role="tab" aria-controls="highlights" aria-selected="true">Destaques</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="description-tab" data-bs-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="false">Descrição</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="specs-tab" data-bs-toggle="tab" href="#specs" role="tab" aria-controls="specs" aria-selected="false">Ficha Técnica</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="vehicleDetailsTabContent">
+                            <!-- Highlights Tab -->
+                            <div class="tab-pane fade show active" id="highlights" role="tabpanel" aria-labelledby="highlights-tab">
+                                <div class="highlights-grid">
+                                    <div class="highlight-item">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <div class="highlight-content">
+                                            <h4>Ano</h4>
+                                            <p>{{ produto.ano_fabricacao }}/{{ produto.ano_modelo }}</p>
+                                        </div>
                                     </div>
-                                    <p>Diam amet duo labore stet elitr ea clita ipsum, tempor labore accusam ipsum et no at. Kasd diam tempor rebum magna dolores sed sed eirmod ipsum.</p>
+                                    
+                                    <div class="highlight-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <div class="highlight-content">
+                                            <h4>Quilometragem</h4>
+                                            <p>{{ produto.quilometragem|intcomma }} km</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="highlight-item">
+                                        <i class="fas fa-gas-pump"></i>
+                                        <div class="highlight-content">
+                                            <h4>Combustível</h4>
+                                            <p>{{ produto.combustivel }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="highlight-item">
+                                        <i class="fas fa-cog"></i>
+                                        <div class="highlight-content">
+                                            <h4>Câmbio</h4>
+                                            <p>{{ produto.cambio }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="highlight-item">
+                                        <i class="fas fa-palette"></i>
+                                        <div class="highlight-content">
+                                            <h4>Cor</h4>
+                                            <p>{{ produto.cor }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="highlight-item">
+                                        <i class="fas fa-door-closed"></i>
+                                        <div class="highlight-content">
+                                            <h4>Portas</h4>
+                                            <p>{{ produto.portas }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h4 class="mb-4">Deixe uma avaliação</h4>
-                            <small>Seu email não será publicado. Campos obrigatórios marcados com *</small>
-                            <div class="d-flex my-3">
-                                <p class="mb-0 mr-2">Sua Avaliação * :</p>
-                                <div class="text-primary">
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                    <i class="far fa-star"></i>
+                            
+                            <!-- Description Tab -->
+                            <div class="tab-pane fade" id="description" role="tabpanel" aria-labelledby="description-tab">
+                                <div class="vehicle-description">
+                                    <p>{{ produto.descricao|linebreaksbr }}</p>
                                 </div>
                             </div>
-                            <form>
-                                <div class="form-group">
-                                    <label for="message">Sua Avaliação *</label>
-                                    <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
+                            
+                            <!-- Full Specifications Tab -->
+                            <div class="tab-pane fade" id="specs" role="tabpanel" aria-labelledby="specs-tab">
+                                <div class="specifications">
+                                    <div class="specs-section">
+                                        <h4>Informações Gerais</h4>
+                                        <div class="specs-grid">
+                                            <div class="spec-item">
+                                                <span class="spec-label">Marca</span>
+                                                <span class="spec-value">{{ produto.marca }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Modelo</span>
+                                                <span class="spec-value">{{ produto.modelo }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Ano de Fabricação</span>
+                                                <span class="spec-value">{{ produto.ano_fabricacao }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Ano do Modelo</span>
+                                                <span class="spec-value">{{ produto.ano_modelo }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Quilometragem</span>
+                                                <span class="spec-value">{{ produto.quilometragem|intcomma }} km</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Placa</span>
+                                                <span class="spec-value">{{ produto.placa_final }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="specs-section">
+                                        <h4>Características</h4>
+                                        <div class="specs-grid">
+                                            <div class="spec-item">
+                                                <span class="spec-label">Combustível</span>
+                                                <span class="spec-value">{{ produto.combustivel }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Câmbio</span>
+                                                <span class="spec-value">{{ produto.cambio }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Cor</span>
+                                                <span class="spec-value">{{ produto.cor }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Portas</span>
+                                                <span class="spec-value">{{ produto.portas }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Potência</span>
+                                                <span class="spec-value">{{ produto.potencia }}</span>
+                                            </div>
+                                            <div class="spec-item">
+                                                <span class="spec-label">Cilindrada</span>
+                                                <span class="spec-value">{{ produto.cilindrada }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="specs-section">
+                                        <h4>Opcionais</h4>
+                                        <div class="options-list">
+                                            {% if produto.opcionais %}
+                                                {% for opcional in produto.opcionais_list %}
+                                                    <div class="option-item">
+                                                        <i class="fas fa-check"></i>
+                                                        <span>{{ opcional }}</span>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p>Não foram informados opcionais para este veículo.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="name">Seu Nome *</label>
-                                    <input type="text" class="form-control" id="name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Seu Email *</label>
-                                    <input type="email" class="form-control" id="email">
-                                </div>
-                                <div class="form-group mb-0">
-                                    <input type="submit" value="Enviar Avaliação" class="btn btn-primary px-3">
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Right Column - Contact & Information -->
+        <div class="col-lg-4">
+            <!-- Seller & Contact Information -->
+            <div class="card mb-4 seller-card">
+                <div class="card-body">
+                    <h3 class="seller-title">Informações do Anunciante</h3>
+                    
+                    <div class="seller-info">
+                        <div class="seller-avatar">
+                            {% if produto.user.profile.avatar %}
+                                <img src="{{ produto.user.profile.avatar.url }}" alt="{{ produto.user.get_full_name }}" class="img-fluid">
+                            {% else %}
+                                <img src="{% static 'img/default-user.png' %}" alt="{{ produto.user.username }}" class="img-fluid">
+                            {% endif %}
+                        </div>
+                        <div class="seller-details">
+                            <h4>{{ produto.user.get_full_name|default:produto.user.username }}</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> {{ produto.localizacao }}</p>
+                            <p><i class="fas fa-calendar"></i> Anunciante desde {{ produto.user.date_joined|date:"F Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-actions">
+                        <a href="https://wa.me/{{ produto.whatsapp|cut:' '|cut:'-'|cut:'(' }}" class="btn btn-whatsapp btn-block">
+                            <i class="fab fa-whatsapp"></i> Conversar pelo WhatsApp
+                        </a>
+                        <button class="btn btn-outline-racing btn-block mt-2">
+                            <i class="fas fa-phone-alt"></i> Ver Telefone
+                        </button>
+                        <button class="btn btn-outline-racing btn-block mt-2">
+                            <i class="fas fa-envelope"></i> Enviar Mensagem
+                        </button>
+                    </div>
+                    
+                    <div class="safety-tips mt-4">
+                        <h5><i class="fas fa-shield-alt"></i> Dicas de Segurança</h5>
+                        <ul>
+                            <li>Nunca faça transferências antecipadas</li>
+                            <li>Verifique o veículo pessoalmente</li>
+                            <li>Desconfie de preços muito abaixo do mercado</li>
+                            <li>Verifique a documentação do veículo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vehicle Price & Status Card -->
+            <div class="card mb-4 price-card">
+                <div class="card-body">
+                    <h3 class="price-title">Valor do Veículo</h3>
+                    <div class="price-value">R$ {{ produto.preco|floatformat:0|intcomma }}</div>
+                    
+                    {% if produto.esta_disponivel %}
+                        <div class="status-badge available">
+                            <i class="fas fa-check-circle"></i> DISPONÍVEL
+                        </div>
+                    {% else %}
+                        <div class="status-badge sold">
+                            <i class="fas fa-times-circle"></i> VENDIDO
+                        </div>
+                    {% endif %}
+                    
+                    <div class="actions mt-3">
+                        <button class="btn btn-outline-racing btn-block">
+                            <i class="fas fa-heart"></i> Adicionar aos Favoritos
+                        </button>
+                        <button class="btn btn-outline-racing btn-block mt-2">
+                            <i class="fas fa-share-alt"></i> Compartilhar Anúncio
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QR Code Card -->
+            <div class="card mb-4 qrcode-card">
+                <div class="card-body text-center">
+                    <h3 class="qrcode-title">Compartilhar via QR Code</h3>
+                    <div class="qrcode-img">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ request.build_absolute_uri }}" alt="QR Code" class="img-fluid">
+                    </div>
+                    <p class="qrcode-text">Escaneie para ver este anúncio no seu celular</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Vehicles Section -->
+    <div class="related-vehicles mt-5">
+        <div class="section-header text-center">
+            <h2 class="section-titulo">VEÍCULOS SEMELHANTES</h2>
+            <div class="section-separator">
+                <span class="separator-line"></span>
+                <i class="fas fa-car-side separator-icon"></i>
+                <span class="separator-line"></span>
+            </div>
+            <p class="section-subtitle">Outras opções que podem te interessar</p>
+        </div>
+        
+        <div class="related-vehicles-slider">
+            <div class="swiper-container related-swiper">
+                <div class="swiper-wrapper">
+                    {% for related_produto in related_produtos %}
+                    <div class="swiper-slide">
+                        <div class="product-card">
+                            <div class="product-top">
+                                {% if related_produto.get_primeira_imagem %}
+                                    <img src="{{ related_produto.get_primeira_imagem.url }}" alt="{{ related_produto.produto_nome }}" class="product-img">
+                                {% else %}
+                                    <img src="{% static 'img/default-vehicle.jpg' %}" alt="{{ related_produto.produto_nome }}" class="product-img">
+                                {% endif %}
+                                
+                                {% if related_produto.esta_disponivel %}
+                                    <div class="product-label">DISPONÍVEL</div>
+                                {% else %}
+                                    <div class="product-label sold">VENDIDO</div>
+                                {% endif %}
+                                
+                                <div class="product-actions">
+                                    <a href="{% url 'produtos:produto_detalhe' related_produto.categoria.slug related_produto.slug %}" class="action-btn view-btn">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="action-btn fav-btn">
+                                        <i class="fas fa-heart"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-specs">
+                                    <div class="spec">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span>{{ related_produto.ano_fabricacao }}/{{ related_produto.ano_modelo }}</span>
+                                    </div>
+                                    <div class="spec">
+                                        <i class="fas fa-gas-pump"></i>
+                                        <span>{{ related_produto.combustivel }}</span>
+                                    </div>
+                                    <div class="spec">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>{{ related_produto.quilometragem|intcomma }} km</span>
+                                    </div>
+                                </div>
+                                <h4 class="product-title">{{ related_produto.produto_nome }}</h4>
+                                <div class="product-price">R$ {{ related_produto.preco|floatformat:0|intcomma }}</div>
+                                <a href="{% url 'produtos:produto_detalhe' related_produto.categoria.slug related_produto.slug %}" class="btn-view-details">
+                                    VER DETALHES <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+            <div class="swiper-button-next related-next"><i class="fas fa-chevron-right"></i></div>
+            <div class="swiper-button-prev related-prev"><i class="fas fa-chevron-left"></i></div>
         </div>
     </div>
 </div>
-<!-- Shop Detail End -->
 
+<!-- CSS Styles -->
+<style>
+:root {
+    /* Cores da marca AnuncieAi */
+    --primary: #0a1e36;
+    --secondary: #30c5f5;
+    --third: #0066cc;
+    
+    /* Cores esportivas complementares */
+    --racing-red: #ff0000;
+    --racing-yellow: #ffcc00;
+    --racing-gray: #333333;
+    --racing-black: #111111;
+    --racing-white: #f8f8f8;
+    
+    /* Gradientes */
+    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--third) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, #00b3e6 100%);
+    --gradient-racing: linear-gradient(135deg, var(--racing-red) 0%, #d10000 100%);
+}
 
-    <!-- Products Start -->
-    <div class="container-fluid py-5">
-        <div class="text-center mb-4">
-            <h2 class="section-title px-5"><span class="px-2">You May Also Like</span></h2>
-        </div>
-        <div class="row px-xl-5">
-            <div class="col">
-                <div class="owl-carousel related-carousel">
-                    <div class="card product-item border-0">
-                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid w-100" src="img/product-1.jpg" alt="">
-                        </div>
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-                            <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                        </div>
-                    </div>
-                    <div class="card product-item border-0">
-                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid w-100" src="img/product-2.jpg" alt="">
-                        </div>
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-                            <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                        </div>
-                    </div>
-                    <div class="card product-item border-0">
-                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid w-100" src="img/product-3.jpg" alt="">
-                        </div>
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-                            <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                        </div>
-                    </div>
-                    <div class="card product-item border-0">
-                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid w-100" src="img/product-4.jpg" alt="">
-                        </div>
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-                            <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                        </div>
-                    </div>
-                    <div class="card product-item border-0">
-                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid w-100" src="img/product-5.jpg" alt="">
-                        </div>
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-                            <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Products End -->
+/* Vehicle Hero Banner */
+.vehicle-hero {
+    position: relative;
+    height: 500px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.vehicle-hero-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: all 0.5s ease;
+}
+
+.vehicle-hero:hover .vehicle-hero-img {
+    transform: scale(1.05);
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+    z-index: 1;
+}
+
+.vehicle-hero-content {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    color: white;
+    padding: 0 15px;
+}
+
+.breadcrumb-wrapper {
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: white;
+    font-weight: 600;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+    color: rgba(255,255,255,0.5);
+}
+
+.vehicle-title {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    letter-spacing: 1px;
+    max-width: 800px;
+}
+
+.vehicle-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.vehicle-badge.available {
+    background: var(--secondary);
+    color: white;
+}
+
+.vehicle-badge.sold {
+    background: var(--racing-red);
+    color: white;
+}
+
+.price-tag {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    background: rgba(0,0,0,0.3);
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Gallery Styles */
+.vehicle-gallery {
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+}
+
+.main-image-container {
+    height: 400px;
+    overflow: hidden;
+    position: relative;
+}
+
+.gallery-main .swiper-slide {
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+}
+
+.gallery-main .swiper-slide img {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.gallery-thumbs-container {
+    padding: 10px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.gallery-thumbs {
+    height: 80px;
+}
+
+.gallery-thumbs .swiper-slide {
+    height: 80px;
+    opacity: 0.6;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.gallery-thumbs .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-thumbs .swiper-slide-thumb-active {
+    opacity: 1;
+    border-color: var(--secondary);
+}
+
+.swiper-button-next, .swiper-button-prev {
+    color: white;
+    background: rgba(0,0,0,0.3);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.swiper-button-next:after, .swiper-button-prev:after {
+    content: '';
+}
+
+.swiper-button-next i, .swiper-button-prev i {
+    font-size: 18px;
+}
+
+.swiper-button-next:hover, .swiper-button-prev:hover {
+    background: var(--secondary);
+    transform: scale(1.1);
+}
+
+/* Vehicle Highlights & Description */
+.vehicle-highlights {
+    overflow: hidden;
+}
+
+.card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid #eee;
+    padding: 0;
+}
+
+.nav-tabs {
+    border-bottom: none;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--racing-gray);
+    font-weight: 600;
+    padding: 15px 20px;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--third);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--third);
+    border-bottom: 3px solid var(--third);
+    background: transparent;
+}
+
+.highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 10px;
+}
+
+.highlight-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.highlight-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.highlight-item i {
+    font-size: 24px;
+    color: var(--third);
+    margin-right: 15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 102, 204, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.highlight-content h4 {
+    font-size: 14px;
+    margin-bottom: 0;
+    color: #777;
+    font-weight: 500;
+}
+
+.highlight-content p {
+    font-size: 16px;
+    margin-bottom: 0;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.vehicle-description {
+    padding: 20px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--racing-gray);
+}
+
+/* Specifications */
+.specifications {
+    padding: 10px;
+}
+
+.specs-section {
+    margin-bottom: 30px;
+}
+
+.specs-section h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.spec-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.spec-item:hover {
+    background: rgba(48, 197, 245, 0.05);
+}
+
+.spec-label {
+    font-weight: 500;
+    color: #777;
+}
+
+.spec-value {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.options-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.option-item:hover {
+    background: rgba(48, 197, 245, 0.05);
+}
+
+.option-item i {
+    color: var(--secondary);
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+/* Seller Card */
+.seller-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.seller-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.seller-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.seller-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+    border: 3px solid var(--secondary);
+    flex-shrink: 0;
+}
+
+.seller-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.seller-details h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.seller-details p {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #777;
+}
+
+.seller-details p i {
+    color: var(--secondary);
+    width: 20px;
+    margin-right: 5px;
+}
+
+.contact-actions {
+    margin-top: 20px;
+}
+
+.btn {
+    border-radius: 4px;
+    font-weight: 600;
+    padding: 12px 20px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+    border: none;
+}
+
+.btn-whatsapp:hover {
+    background: #128C7E;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+}
+
+.btn-outline-racing {
+    border: 2px solid var(--third);
+    color: var(--third);
+    background: transparent;
+}
+
+.btn-outline-racing:hover {
+    background: var(--third);
+    color: white;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.safety-tips {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--racing-yellow);
+}
+
+.safety-tips h5 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.safety-tips h5 i {
+    color: var(--racing-yellow);
+    margin-right: 5px;
+}
+
+.safety-tips ul {
+    padding-left: 25px;
+    margin-bottom: 0;
+}
+
+.safety-tips li {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #777;
+}
+
+/* Price Card */
+.price-card {
+    background: white;
+}
+
+.price-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.price-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--racing-red);
+    margin-bottom: 15px;
+}
+
+.status-badge {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-badge.available {
+    background: rgba(48, 197, 245, 0.1);
+    color: var(--third);
+    border: 1px solid rgba(48, 197, 245, 0.3);
+}
+
+.status-badge.sold {
+    background: rgba(255, 0, 0, 0.1);
+    color: var(--racing-red);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.status-badge i {
+    margin-right: 5px;
+}
+
+/* QR Code Card */
+.qrcode-card {
+    background: white;
+    text-align: center;
+}
+
+.qrcode-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.qrcode-img {
+    margin: 15px 0;
+}
+
+.qrcode-text {
+    font-size: 14px;
+    color: #777;
+}
+
+/* Related Vehicles Section */
+.related-vehicles {
+    padding-top: 30px;
+    margin-top: 50px;
+    border-top: 1px solid #eee;
+}
+
+.section-header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.section-titulo {
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.separator-line {
+    height: 2px;
+    width: 50px;
+    background: var(--secondary);
+    position: relative;
+}
+
+.separator-icon {
+    font-size: 20px;
+    color: var(--secondary);
+    margin: 0 15px;
+}
+
+.section-subtitle {
+    color: var(--racing-gray);
+    font-size: 16px;
+    margin: 0 auto;
+    max-width: 700px;
+}
+
+.related-vehicles-slider {
+    position: relative;
+    padding: 0 40px;
+}
+
+.related-next, .related-prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.related-next {
+    right: 0;
+}
+
+.related-prev {
+    left: 0;
+}
+
+/* Product Card */
+.product-card {
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    margin: 15px 0;
+    transition: all 0.3s;
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.product-top {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.1);
+}
+
+.product-label {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    background: var(--third);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 5px 15px;
+    z-index: 2;
+    clip-path: polygon(10% 0%, 100% 0, 100% 100%, 10% 100%, 0 50%);
+}
+
+.product-label.sold {
+    background: var(--racing-red);
+}
+
+.product-actions {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0;
+    background: rgba(0,0,0,0.6);
+    transition: all 0.3s;
+    z-index: 2;
+}
+
+.product-card:hover .product-actions {
+    bottom: 0;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    transition: all 0.3s;
+}
+
+.view-btn:hover {
+    background: var(--third);
+    color: #fff;
+}
+
+.fav-btn:hover {
+    background: var(--racing-red);
+    color: #fff;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-specs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.spec {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #777;
+}
+
+.spec i {
+    color: var(--third);
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.product-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+    height: 48px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--racing-red);
+    margin-bottom: 20px;
+}
+
+.btn-view-details {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--third);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.btn-view-details i {
+    margin-left: 5px;
+    transition: all 0.3s;
+}
+
+.btn-view-details:hover {
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-view-details:hover i {
+    transform: translateX(5px);
+}
+
+/* Responsive Media Queries */
+@media (max-width: 991px) {
+    .vehicle-hero {
+        height: 400px;
+    }
+    
+    .vehicle-title {
+        font-size: 32px;
+    }
+    
+    .highlights-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .options-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .vehicle-hero {
+        height: 300px;
+    }
+    
+    .vehicle-title {
+        font-size: 28px;
+    }
+    
+    .price-tag {
+        font-size: 24px;
+    }
+    
+    .highlights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .main-image-container {
+        height: 300px;
+    }
+    
+    .gallery-main .swiper-slide {
+        height: 300px;
+    }
+    
+    .gallery-thumbs-container {
+        padding: 5px;
+    }
+    
+    .gallery-thumbs {
+        height: 60px;
+    }
+    
+    .gallery-thumbs .swiper-slide {
+        height: 60px;
+    }
+}
+</style>
+
+<!-- JavaScript for Gallery & Slider -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load Swiper JS if not available
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.src = url;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function initGallery() {
+        // Check if Swiper is available
+        if (typeof Swiper === 'undefined') {
+            console.log('Loading Swiper JS...');
+            loadScript('https://unpkg.com/swiper@8/swiper-bundle.min.js', function() {
+                initSwipers();
+            });
+            
+            // Load Swiper CSS
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://unpkg.com/swiper@8/swiper-bundle.min.css';
+            document.head.appendChild(link);
+        } else {
+            initSwipers();
+        }
+    }
+
+    function initSwipers() {
+        // Initialize thumbnail slider
+        var galleryThumbs = new Swiper('.gallery-thumbs', {
+            spaceBetween: 10,
+            slidesPerView: 'auto',
+            freeMode: true,
+            watchSlidesProgress: true
+        });
+        
+        // Initialize main gallery slider
+        var galleryMain = new Swiper('.gallery-main', {
+            spaceBetween: 10,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            thumbs: {
+                swiper: galleryThumbs
+            }
+        });
+        
+        // Initialize related vehicles slider
+        var relatedSwiper = new Swiper('.related-swiper', {
+            spaceBetween: 20,
+            slidesPerView: 1,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.related-next',
+                prevEl: '.related-prev',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                },
+                992: {
+                    slidesPerView: 3,
+                },
+                1200: {
+                    slidesPerView: 4,
+                }
+            }
+        });
+    }
+    
+    // Initialize gallery when document is ready
+    initGallery();
+    
+    // Bootstrap tabs functionality
+    var vehicleTabs = document.querySelectorAll('#vehicleDetailsTabs .nav-link');
+    vehicleTabs.forEach(function(tab) {
+        tab.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // Remove active class from all tabs and tab panes
+            vehicleTabs.forEach(function(t) {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            
+            document.querySelectorAll('.tab-pane').forEach(function(pane) {
+                pane.classList.remove('show', 'active');
+            });
+            
+            // Add active class to current tab
+            this.classList.add('active');
+            this.setAttribute('aria-selected', 'true');
+            
+            // Show current tab pane
+            var targetId = this.getAttribute('href').substring(1);
+            document.getElementById(targetId).classList.add('show', 'active');
+        });
+    });
+});
+</script>
 {% endblock %}

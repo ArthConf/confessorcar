@@ -1,8 +1,31 @@
 {% load static %}
 
-<!-- Navbar Start -->
-<div class="container-fluid">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light py-3">
+<!-- Navbar Start - Versão Esportiva -->
+<div class="navbar-container">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="topbar-contact">
+                        <a href="tel:+5565992490737"><i class="fas fa-phone-alt"></i> (65) 9 992490737</a>
+                        <a href="mailto:arthur-confessor@hotmail.com"><i class="fas fa-envelope"></i>arthur-confessor@hotmail.com</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="topbar-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/arthconf?igsh=OW8yeXR5aW1lM3Z3&utm_source=qr"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@arthuroctavio8491"><i class="fab fa-youtube"></i></a>
+                        <a href="https://wa.me/5565992490737?text=Ol%C3%A1%2C%20quero%20saber%20como%20anunciar"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <!-- Logo -->
             <a href="{% url 'home' %}" class="navbar-brand">
@@ -10,7 +33,7 @@
             </a>
 
             <!-- Toggle Button for Mobile -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -21,7 +44,7 @@
                         <a href="{% url 'home' %}" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Categorias
                         </a>
                         <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
@@ -34,128 +57,707 @@
                         <a href="{% url 'produtos:loja' %}" class="nav-link">Loja</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Contato</a>
+                        <a href="#" class="nav-link">Suporte</a>
                     </li>
                 </ul>
 
-               <!-- Right Side Items -->
-                <div class="navbar-nav ml-auto">
+                <!-- Right Side Items -->
+                <div class="navbar-nav ms-auto action-items">
                     {% if user.is_authenticated %}
+                        <!-- Favoritos para todos os usuários logados -->
+                        <div class="nav-item action-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-heart icon-action"></i>
+                                <span class="action-text">Favoritos</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Separador -->
+                        <div class="nav-separator"></div>
+                        
+                        <!-- Botão Anuncie para usuários logados -->
+                        <div class="nav-item action-item">
+                            <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-anunciar">
+                                <i class="fas fa-plus-circle"></i> Anuncie
+                            </a>
+                        </div>
+                        
+                        <!-- Separador -->
+                        <div class="nav-separator"></div>
+                        
                         {% if user.is_staff %}
                         <!-- Admin Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown">
-                                <i class="fas fa-cog"></i> Administração
+                        <div class="nav-item dropdown action-item">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog icon-action"></i>
+                                <span class="action-text">Admin</span>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="adminDropdown">
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
                                 <a class="dropdown-item" href="{% url 'categoria:gerenciar_categorias' %}">
                                     <i class="fas fa-tags"></i> Gerenciar Categorias
                                 </a>
                                 <a class="dropdown-item" href="{% url 'produtos:gerenciar_produtos' %}">
-                                    <i class="fas fa-box"></i> Gerenciar Produtos
+                                    <i class="fas fa-car"></i> Gerenciar Produtos
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{% url 'admin:index' %}">
                                     <i class="fas fa-toolbox"></i> Painel Admin
                                 </a>
                             </div>
-                        </li>
+                        </div>
+                        
+                        <!-- Separador -->
+                        <div class="nav-separator"></div>
                         {% endif %}
-                        <a href="#" class="nav-item nav-link">Minha Conta</a>
-                        <a href="{% url 'admin:logout' %}" class="nav-item nav-link">Sair</a>
+                        
+                        <!-- User Dropdown -->
+                        <div class="nav-item dropdown action-item">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle icon-action"></i>
+                                <span class="action-text">{{ user.username }}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'users:dashboard' %}">
+                                    <i class="fas fa-tachometer-alt"></i> Minha Conta
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-car"></i> Meus Anúncios
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'users:logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Sair
+                                </a>
+                            </div>
+                        </div>
                     {% else %}
-                        <a href="{% url 'admin:login' %}" class="nav-item nav-link">Login</a>
-                        <a href="#" class="nav-item nav-link">Register</a>
+                        <a href="{% url 'users:login' %}" class="btn btn-login me-2">
+                            <i class="fas fa-sign-in-alt"></i> Entrar
+                        </a>
+                        <a href="{% url 'users:register' %}" class="btn btn-register">
+                            <i class="fas fa-user-plus"></i> Cadastrar
+                        </a>
                     {% endif %}
-                    <!--<a href="#" class="nav-item nav-link">
-                        <i class="fas fa-shopping-cart text-primary"></i>
-                        <span class="badge">{% if cart_count %}{{ cart_count }}{% else %}0{% endif %}</span>
-                    </a>-->
                 </div>
             </div>
         </div>
     </nav>
 </div>
-<!-- Navbar End -->
 
 <style>
-.logo-img {
-    height: 10rem;
-    width: auto;
-    text-align: left;
-    object-fit: contain;
+:root {
+    --primary: #0a1e36;    /* Azul escuro do "Anuncie" */
+    --secondary: #30c5f5;  /* Azul claro/ciano do "Ai" */
+    --third: #0066cc;      /* Azul médio do gradiente */
+    --racing-red: #ff0000; /* Vermelho racing */
+    --text-light: #f8f9fa; /* Texto claro */
+    --text-dark: #343a40;  /* Texto escuro */
+    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--third) 70%, var(--secondary) 100%);
 }
 
-.navbar-brand {
-    padding: 0;
-    margin-right: 2rem;
+/* Topbar */
+.topbar {
+    background-color: var(--primary);
+    color: var(--text-light);
+    padding: 8px 0;
+    font-size: 14px;
 }
 
-.navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.navbar-nav .nav-link {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-}
-
-.dropdown-menu {
-    border-radius: 0;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.dropdown-item:hover {
-    background-color: #f8f9fa;
-}
-
-/* Ajustes para responsividade */
-@media (max-width: 991.98px) {
-    .logo-img {
-        height: 6rem;
-    }
-    
-    .navbar-collapse {
-        margin-top: 1rem;
-    }
-
-    /* Centralizar itens no mobile */
-    .navbar-nav.ml-auto {
-        margin: 0 auto;
-        text-align: center;
-    }
-}
-
-/* Estilos para os botões de login e registro */
-.navbar-nav.ml-auto .nav-link {
-    padding: 0.5rem 1rem;
+.topbar-contact a {
+    color: var(--text-light);
+    margin-right: 20px;
+    text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.navbar-nav.ml-auto .nav-link:hover {
-    color: #007bff;
+.topbar-contact a:hover {
+    color: var(--secondary);
 }
 
-/* Estilo para o badge do carrinho */
-.badge {
+.topbar-contact i {
+    margin-right: 5px;
+    color: var(--secondary);
+}
+
+.topbar-social {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.topbar-social a {
+    color: var(--text-light);
+    margin-left: 15px;
+    transition: all 0.3s ease;
+}
+
+.topbar-social a:hover {
+    color: var(--secondary);
+    transform: translateY(-3px);
+}
+
+/* Main Navbar */
+.navbar {
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    padding: 10px 0;
+    background-color: rgba(255, 255, 255, 0.98);
+}
+
+/* Logo aumentado sem aumentar o container */
+.navbar-brand {
     position: relative;
-    top: -8px;
-    right: 5px;
-    padding: 0.25em 0.4em;
-    font-size: 75%;
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 0.25rem;
-    background-color: #dc3545;
-    color: white;
+    padding: 0;
+    margin-right: 1rem;
+    overflow: visible;
+    height: 60px; /* Mantém a altura do container original */
+    display: flex;
+    align-items: center;
 }
 
-/* Ajuste do ícone do carrinho */
-.fa-shopping-cart {
-    font-size: 1.1rem;
+.logo-img {
+    height: 90px; /* Imagem maior que o container */
+    width: auto;
+    object-fit: contain;
+    transition: all 0.3s ease;
+    position: absolute; /* Permite que a imagem saia do fluxo normal */
+    top: 50%; /* Centraliza verticalmente */
+    transform: translateY(-50%); /* Ajusta o deslocamento */
+    z-index: 5; /* Garante que fique acima de outros elementos */
+    left: 0;
+}
+
+/* Efeito de redução no scroll */
+.navbar.scrolled .logo-img {
+    height: 75px; /* Um pouco menor quando o usuário rola a página */
+}
+
+.navbar-toggler {
+    border: none;
+    padding: 0;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Navigation Links */
+.navbar-nav .nav-link {
+    font-weight: 600;
+    font-size: 15px; /* Diminuído de 16px para 15px */
+    text-transform: uppercase;
+    padding: 8px 16px; /* Diminuído de 10px 20px para 8px 16px */
+    color: var(--text-dark);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 16px; /* Ajustado para o novo padding */
+    width: 0;
+    height: 2px;
+    background-color: var(--secondary);
+    transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--third);
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: calc(100% - 32px); /* Ajustado para o novo padding */
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--third);
+}
+
+.navbar-nav .nav-link.active::after {
+    width: calc(100% - 32px); /* Ajustado para o novo padding */
+}
+
+/* Action Items */
+.action-items {
+    display: flex;
+    align-items: center;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+/* Texto dos botões de ação diminuído */
+.action-text {
+    font-size: 14px; /* Diminuído de tamanho padrão */
+    font-weight: 500;
+}
+
+.action-item .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px; /* Diminuído de 8px 12px para 6px 10px */
+    color: var(--text-dark);
+    border-radius: 0;
+    transition: all 0.3s ease;
+    background: none;
+}
+
+/* Separador vertical entre itens */
+.nav-separator {
+    height: 26px; /* Diminuído de 30px para 26px */
+    width: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 0 8px; /* Diminuído de 10px para 8px */
+}
+
+/* Ícones de ação */
+.icon-action {
+    font-size: 20px; /* Diminuído ligeiramente de 22px para 20px */
+    margin-right: 6px; /* Diminuído de 8px para 6px */
+    transition: transform 0.3s ease;
+}
+
+/* Cor dos ícones */
+.fa-heart {
+    color: var(--racing-red);
+}
+
+.fa-cog {
+    color: var(--primary);
+}
+
+.fa-user-circle {
+    color: var(--third);
+}
+
+/* Hover nos links de ação */
+.action-item .nav-link:hover {
+    color: var(--third);
+}
+
+.action-item .nav-link:hover .icon-action {
+    transform: scale(1.15);
+}
+
+.action-item .nav-link:hover .fa-heart {
+    color: var(--racing-red);
+    transform: scale(1.2);
+}
+
+.action-item .nav-link:hover .fa-cog {
+    color: var(--primary);
+    transform: rotate(45deg);
+}
+
+.action-item .nav-link:hover .fa-user-circle {
+    color: var(--third);
+    transform: scale(1.15);
+}
+
+.dropdown {
+    position: relative;
+    z-index: 1050 !important; /* Valor maior que o z-index do modal (normalmente 1040) */
+    
+}
+
+/* Conectar visualmente o dropdown-toggle ao menu com um preenchimento virtual */
+.dropdown-menu:before {
+    content: '';
+    position: absolute;
+    top: -10px; /* Conecta ao padding-bottom do dropdown */
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: transparent; /* Invisível, mas detecta hover */
+}
+
+.dropdown-menu {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 8px;
+    margin-top: 15px;
+    background-color: #fff;
+    z-index: 1051 !important; /* Garantir que fique acima de tudo */
+}
+
+.dropdown-item {
+    font-weight: 500;
+    padding: 6px 12px; /* Diminuído de 8px 15px para 6px 12px */
+    color: var(--text-dark);
+    border-radius: 5px;
+    transition: all 0.2s ease;
+    font-size: 14px; /* Adicionado para diminuir o tamanho */
+}
+
+.dropdown-item i {
+    margin-right: 6px; /* Diminuído de 8px para 6px */
+    color: var(--third);
+}
+
+.dropdown-item:hover {
+    background-color: rgba(48, 197, 245, 0.1);
+    color: var(--third);
+    transform: translateX(5px);
+}
+
+.dropdown-divider {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin: 6px 0; /* Diminuído de 8px para 6px */
+}
+
+/* Botão Anunciar */
+.btn-anunciar {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 4px; /* Diminuído de 5px para 4px */
+    padding: 7px 14px; /* Diminuído de 10px 20px para 7px 14px */
+    font-weight: 600;
+    font-size: 13px; /* Diminuído para tamanho menor */
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    box-shadow: 0 3px 8px rgba(0, 102, 204, 0.2); /* Sombra menor */
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    text-decoration: none;
+}
+
+.btn-anunciar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.6s ease;
+    z-index: -1;
+}
+
+.btn-anunciar:hover {
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 12px rgba(0, 102, 204, 0.3);
+}
+
+.btn-anunciar:hover::before {
+    left: 100%;
+}
+
+.btn-anunciar i {
+    margin-right: 6px; /* Diminuído de 8px para 6px */
+    font-size: 14px; /* Diminuído de 18px para 14px */
+}
+
+/* Botões Login/Register */
+.btn-login, .btn-register {
+    font-weight: 600;
+    padding: 7px 14px; /* Diminuído de 10px 20px para 7px 14px */
+    border: none;
+    border-radius: 4px; /* Diminuído de 5px para 4px */
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 13px; /* Diminuído para tamanho menor */
+}
+
+.btn-login {
+    background-color: transparent;
+    color: var(--third);
+    border: 1px solid var(--third);
+}
+
+.btn-login:hover {
+    background-color: var(--third);
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 102, 204, 0.2); /* Sombra menor */
+}
+
+.btn-register {
+    background-color: var(--third);
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 102, 204, 0.2); /* Sombra menor */
+}
+
+.btn-register:hover {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 5px 12px rgba(10, 30, 54, 0.3);
+    transform: translateY(-3px);
+}
+
+/* CORREÇÃO: Garantir que os menus dropdown funcionem e fechem ao tirar o mouse */
+.dropdown-menu.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Responsividade */
+@media (max-width: 991px) {
+    .topbar {
+        display: none;
+    }
+    
+    .navbar-collapse {
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 10px 12px; /* Diminuído */
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .navbar-nav .nav-link::after {
+        display: none;
+    }
+    
+    .action-items {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .action-item {
+        margin: 5px 0;
+        width: 100%;
+    }
+    
+    .nav-separator {
+        display: none;
+    }
+    
+    .action-item .nav-link {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .btn-anunciar {
+        width: 100%;
+        text-align: center;
+        margin: 8px 0;
+    }
+    
+    .btn-login, .btn-register {
+        width: 100%;
+        text-align: center;
+        margin: 4px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .logo-img {
+        height: 60px; /* Ainda grande, mas um pouco menor para mobile */
+    }
+    
+    .navbar-brand {
+        margin-right: 0;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu {
+    animation: fadeIn 0.3s ease forwards;
+    transform-origin: top center;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona classe ao navbar quando scroll
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+    
+    // Ativa o item atual do menu
+    const currentLocation = window.location.pathname;
+    const menuItems = document.querySelectorAll('.navbar-nav .nav-link');
+    const menuLength = menuItems.length;
+    
+    for (let i = 0; i < menuLength; i++) {
+        if (menuItems[i].getAttribute('href') === currentLocation) {
+            menuItems[i].classList.add('active');
+        }
+    }
+    
+    // CORREÇÃO: Inicializar manualmente os dropdowns do Bootstrap
+    function initBootstrapDropdowns() {
+        // Verificar se o Bootstrap está disponível
+        if (typeof bootstrap !== 'undefined') {
+            console.log('Bootstrap disponível, inicializando dropdowns...');
+            
+            // Inicializar todos os dropdowns
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            var dropdownList = dropdownElementList.map(function(dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl, {
+                    autoClose: 'outside', // Fecha quando clica fora
+                    hover: true // Habilita hover quando disponível
+                });
+            });
+            
+            // Adicionar comportamento de hover para dispositivos desktop
+            if (window.innerWidth >= 992) {
+                setupHoverDropdowns();
+            }
+        } else {
+            console.error('Bootstrap não disponível! Carregando manualmente...');
+            
+            // Carregar Bootstrap manualmente
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js';
+            script.onload = function() {
+                console.log('Bootstrap carregado com sucesso!');
+                initBootstrapDropdowns(); // Tentar novamente após carregar
+                
+                // Adicionar comportamento de hover após carregar o Bootstrap
+                if (window.innerWidth >= 992) {
+                    setupHoverDropdowns();
+                }
+            };
+            document.head.appendChild(script);
+            
+            // Se Popper.js for necessário separadamente:
+            var popperScript = document.createElement('script');
+            popperScript.src = 'https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js';
+            document.head.appendChild(popperScript);
+        }
+    }
+    
+    // Função para adicionar comportamento de hover aos dropdowns
+    function setupHoverDropdowns() {
+        var dropdownItems = document.querySelectorAll('.nav-item.dropdown, .action-item.dropdown');
+        
+        dropdownItems.forEach(function(item) {
+            // Mostra dropdown quando o mouse passa por cima
+            item.addEventListener('mouseenter', function(e) {
+                if (window.innerWidth < 992) return; // Apenas para desktop
+                
+                var toggle = this.querySelector('.dropdown-toggle');
+                var menu = this.querySelector('.dropdown-menu');
+                
+                if (toggle && menu) {
+                    menu.classList.add('show');
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
+            
+            // Esconde dropdown quando o mouse sai
+            item.addEventListener('mouseleave', function(e) {
+                if (window.innerWidth < 992) return; // Apenas para desktop
+                
+                var toggle = this.querySelector('.dropdown-toggle');
+                var menu = this.querySelector('.dropdown-menu');
+                
+                if (toggle && menu) {
+                    menu.classList.remove('show');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    
+                    // Pequeno atraso para caso o mouse volte rapidamente
+                    setTimeout(function() {
+                        if (!item.matches(':hover')) {
+                            menu.classList.remove('show');
+                            toggle.setAttribute('aria-expanded', 'false');
+                        }
+                    }, 50);
+                }
+            });
+        });
+    }
+    
+    // Adicionar manipuladores de clique alternativos para os dropdowns
+    function setupManualDropdowns() {
+        var dropdowns = document.querySelectorAll('.dropdown-toggle');
+        dropdowns.forEach(function(dropdown) {
+            dropdown.addEventListener('click', function(e) {
+                if (typeof bootstrap === 'undefined' || window.innerWidth < 992) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Encontrar o menu relacionado
+                    var menu = this.nextElementSibling;
+                    if (menu && menu.classList.contains('dropdown-menu')) {
+                        // Toggle do menu
+                        if (menu.classList.contains('show')) {
+                            menu.classList.remove('show');
+                            this.setAttribute('aria-expanded', 'false');
+                        } else {
+                            // Fechar todos os outros menus
+                            document.querySelectorAll('.dropdown-menu.show').forEach(function(openMenu) {
+                                openMenu.classList.remove('show');
+                                openMenu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                            });
+                            
+                            // Abrir este menu
+                            menu.classList.add('show');
+                            this.setAttribute('aria-expanded', 'true');
+                            
+                            // Adicionar evento para fechar ao clicar fora
+                            document.addEventListener('click', function closeMenu(evt) {
+                                if (!menu.contains(evt.target) && evt.target !== dropdown) {
+                                    menu.classList.remove('show');
+                                    dropdown.setAttribute('aria-expanded', 'false');
+                                    document.removeEventListener('click', closeMenu);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Adicionar eventos de fechamento quando clica em outro lugar
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+                    menu.classList.remove('show');
+                    if (menu.previousElementSibling) {
+                        menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        });
+    }
+    
+    // Inicializar os dropdowns
+    initBootstrapDropdowns();
+    
+    // Backup com JavaScript puro
+    setupManualDropdowns();
+    
+    // Ajustar comportamento em redimensionamento de tela
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 992) {
+            setupHoverDropdowns();
+        }
+    });
+});
+</script>

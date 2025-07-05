@@ -252,6 +252,7 @@
         </div>
     </div>
 </div>
+
 <style>
 /* ==== VARIÁVEIS DE CORES ==== */
 :root {
@@ -1097,7 +1098,14 @@ a {
 
 .modal-admin .modal-header {
     background: var(--gradient-primary);
-    color: white;
+    color: white !important;  /* Garantindo que o texto seja branco */
+}
+
+/* Adicione esta classe para garantir que o título do modal seja branco */
+.modal-admin .modal-header .modal-title {
+    color: white !important;
+    font-weight: 600;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .modal-admin .btn-outline-primary {
@@ -1156,9 +1164,12 @@ a {
     font-size: 12px;
     font-weight: 600;
 }
+
 </style>
 <!-- Modal para gerenciar carrossel (apenas administradores) -->
 {% if user.is_staff %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <div class="modal fade modal-admin" id="carouselAdminModal" tabindex="-1" aria-labelledby="carouselAdminModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1258,9 +1269,57 @@ a {
                                             <div class="mb-3">
                                                 <label for="image" class="form-label">Imagem</label>
                                                 <input type="file" class="form-control" id="image" name="image" accept="image/*">
-                                                <div class="form-text">Tamanho recomendado: 1920x600px</div>
-                                                <div id="image-preview" class="mt-2 d-none">
-                                                    <img src="" alt="Preview" class="img-fluid" style="max-height: 150px;">
+                                                <div class="form-text mb-2">Tamanho recomendado: 1920x600px</div>
+                                                
+                                                <!-- Área de prévia e edição da imagem -->
+                                                <div id="image-editor-container" class="mt-3 d-none">
+                                                    <div class="image-editor-wrapper" style="height: 300px; background-color: #f8f9fa; position: relative;">
+                                                        <img id="image-to-edit" src="" alt="Image to edit" style="max-width: 100%; max-height: 100%;">
+                                                    </div>
+                                                    
+                                                    <div class="image-editor-controls mt-3">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="d-flex align-items-center mb-2">
+                                                                    <label class="me-2 mb-0">Zoom:</label>
+                                                                    <input type="range" class="form-range" id="image-zoom" min="0.1" max="2" step="0.1" value="1">
+                                                                </div>
+                                                                
+                                                                <div class="d-flex align-items-center">
+                                                                    <label class="me-2 mb-0">Aspecto:</label>
+                                                                    <select class="form-select form-select-sm" id="image-aspect">
+                                                                        <option value="16/5">Padrão (16:5)</option>
+                                                                        <option value="16/9">Widescreen (16:9)</option>
+                                                                        <option value="4/3">Padrão (4:3)</option>
+                                                                        <option value="1">Quadrado (1:1)</option>
+                                                                        <option value="NaN">Livre</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-md-6 text-end">
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="rotate-left">
+                                                                    <i class="fas fa-undo"></i> Girar
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary" id="crop-button">
+                                                                    <i class="fas fa-crop-alt"></i> Cortar
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Prévia final da imagem cortada -->
+                                                    <div class="mt-3">
+                                                        <p class="fw-bold mb-2">Prévia final:</p>
+                                                        <div class="position-relative bg-dark" style="height: 150px;">
+                                                            <div id="final-preview" class="position-absolute top-50 start-50 translate-middle text-center" style="max-width: 100%; max-height: 100%;">
+                                                                <img id="cropped-image" src="" alt="Cropped Preview" class="img-fluid" style="max-height: 150px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Campo oculto para armazenar a imagem cortada -->
+                                                    <input type="hidden" id="cropped-image-data" name="cropped_image_data">
                                                 </div>
                                             </div>
                                         </div>
@@ -1285,11 +1344,6 @@ a {
                                                 <div class="form-text">Nome da URL (ex: produtos:loja)</div>
                                             </div>
                                             
-                                            <div class="mb-3">
-                                                <label for="button_icon" class="form-label">Ícone do Botão</label>
-                                                <input type="text" class="form-control" id="button_icon" name="button_icon" value="fas fa-chevron-right">
-                                                <div class="form-text">Classe do FontAwesome (ex: fas fa-chevron-right)</div>
-                                            </div>
                                         </div>
                                     </div>
                                     
@@ -1316,6 +1370,8 @@ a {
                             </div>
                             
                             <div class="mt-4">
+                                <input type="hidden" id="button_icon" name="button_icon" value="fas fa-chevron-right">
+    
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Salvar
                                 </button>
@@ -1545,27 +1601,136 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Pré-visualizar a imagem selecionada
-        const imageInput = document.getElementById('image');
-        if (imageInput) {
-            imageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const preview = document.getElementById('image-preview');
-                        if (preview) {
-                            const img = preview.querySelector('img');
-                            if (img) {
-                                img.src = e.target.result;
-                                preview.classList.remove('d-none');
-                            }
-                        }
-                    };
-                    reader.readAsDataURL(file);
+       // Pré-visualizar a imagem selecionada
+        // Editor de imagem com Cropper.js
+let cropper = null;
+const imageInput = document.getElementById('image');
+const imageToEdit = document.getElementById('image-to-edit');
+const imageEditorContainer = document.getElementById('image-editor-container');
+const croppedImage = document.getElementById('cropped-image');
+const croppedImageData = document.getElementById('cropped-image-data');
+const imageZoom = document.getElementById('image-zoom');
+const imageAspect = document.getElementById('image-aspect');
+const rotateLeftBtn = document.getElementById('rotate-left');
+const cropButton = document.getElementById('crop-button');
+
+if (imageInput) {
+    imageInput.addEventListener('change', function(e) {
+        const file = this.files[0];
+        if (file) {
+            // Limpar cropper anterior se existir
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Mostrar container do editor
+                if (imageEditorContainer) {
+                    imageEditorContainer.classList.remove('d-none');
                 }
-            });
+                
+                // Definir imagem para edição
+                if (imageToEdit) {
+                    imageToEdit.src = e.target.result;
+                    
+                    // Inicializar o cropper depois que a imagem for carregada
+                    imageToEdit.onload = function() {
+                        cropper = new Cropper(imageToEdit, {
+                            aspectRatio: 16 / 5, // Proporção padrão para banners (ajustável)
+                            viewMode: 1,
+                            guides: true,
+                            autoCropArea: 0.8,
+                            responsive: true,
+                            center: true,
+                            highlight: false,
+                            background: false,
+                            cropBoxResizable: true,
+                            dragMode: 'move',
+                            toggleDragModeOnDblclick: true,
+                            ready: function() {
+                                // Atualizar a prévia quando o cropper estiver pronto
+                                updateCroppedPreview();
+                            },
+                            cropend: function() {
+                                // Atualizar a prévia após o corte
+                                updateCroppedPreview();
+                            }
+                        });
+                    };
+                }
+            };
+            reader.readAsDataURL(file);
         }
+    });
+    
+    // Função para atualizar a prévia da imagem cortada
+    function updateCroppedPreview() {
+        if (!cropper) return;
+        
+        const canvas = cropper.getCroppedCanvas({
+            width: 1920,
+            height: 600,
+            minWidth: 960,
+            minHeight: 300,
+            maxWidth: 3840,
+            maxHeight: 1200,
+            fillColor: '#000',
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+        
+        if (canvas) {
+            // Exibir a prévia cortada
+            croppedImage.src = canvas.toDataURL('image/jpeg', 0.9);
+            
+            // Armazenar os dados para envio
+            croppedImageData.value = canvas.toDataURL('image/jpeg', 0.9);
+        }
+    }
+    
+    // Controles do editor
+    if (imageZoom) {
+        imageZoom.addEventListener('input', function() {
+            if (cropper) {
+                cropper.zoomTo(parseFloat(this.value));
+            }
+        });
+    }
+    
+    if (imageAspect) {
+        imageAspect.addEventListener('change', function() {
+            if (cropper) {
+                // Definir nova proporção
+                const value = this.value;
+                cropper.setAspectRatio(value === 'NaN' ? NaN : eval(value));
+                
+                // Atualizar a prévia com a nova proporção
+                setTimeout(updateCroppedPreview, 200);
+            }
+        });
+    }
+    
+    if (rotateLeftBtn) {
+        rotateLeftBtn.addEventListener('click', function() {
+            if (cropper) {
+                cropper.rotate(-90);
+                // Atualizar a prévia após a rotação
+                setTimeout(updateCroppedPreview, 200);
+            }
+        });
+    }
+    
+    if (cropButton) {
+        cropButton.addEventListener('click', function() {
+            if (cropper) {
+                // Aplicar o corte atual e atualizar a prévia
+                updateCroppedPreview();
+            }
+        });
+    }
+}
         
         // Configurar o modal de exclusão
         const deleteButtons = document.querySelectorAll('.delete-slide');

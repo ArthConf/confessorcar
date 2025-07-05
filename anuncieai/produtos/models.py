@@ -2,6 +2,7 @@ from django.db import models
 from categoria.models import Categoria
 from django.urls import reverse
 from django.utils.text import slugify
+from django.contrib.auth.models import User
 
 class ProdutoImagem(models.Model):
     produto = models.ForeignKey('Produto', related_name='imagens_produto', on_delete=models.CASCADE)
@@ -13,6 +14,37 @@ class ProdutoImagem(models.Model):
         verbose_name = 'Imagem do Produto'
         verbose_name_plural = 'Imagens do Produto'
 
+
+# Adicionar esta constante antes da classe Produto
+ESTADO_CHOICES = [
+    ('AC', 'Acre'),
+    ('AL', 'Alagoas'),
+    ('AP', 'Amapá'),
+    ('AM', 'Amazonas'),
+    ('BA', 'Bahia'),
+    ('CE', 'Ceará'),
+    ('DF', 'Distrito Federal'),
+    ('ES', 'Espírito Santo'),
+    ('GO', 'Goiás'),
+    ('MA', 'Maranhão'),
+    ('MT', 'Mato Grosso'),
+    ('MS', 'Mato Grosso do Sul'),
+    ('MG', 'Minas Gerais'),
+    ('PA', 'Pará'),
+    ('PB', 'Paraíba'),
+    ('PR', 'Paraná'),
+    ('PE', 'Pernambuco'),
+    ('PI', 'Piauí'),
+    ('RJ', 'Rio de Janeiro'),
+    ('RN', 'Rio Grande do Norte'),
+    ('RS', 'Rio Grande do Sul'),
+    ('RO', 'Rondônia'),
+    ('RR', 'Roraima'),
+    ('SC', 'Santa Catarina'),
+    ('SP', 'São Paulo'),
+    ('SE', 'Sergipe'),
+    ('TO', 'Tocantins'),
+]
 class Produto(models.Model):
     OPCIONAIS_CHOICES = [
         ("Ar-condicionado", "Ar-condicionado"),
@@ -88,6 +120,7 @@ class Produto(models.Model):
         ("Engate para reboque", "Engate para reboque"),
     ]
 
+    # Campos principais
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     produto_nome = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
@@ -97,7 +130,12 @@ class Produto(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     modificado_em = models.DateTimeField(auto_now=True)
 
-    # Campos existentes do veículo
+    # Campos de usuário e localização
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='produtos')
+    cidade = models.CharField('Cidade', max_length=100, blank=True)
+    estado = models.CharField('Estado', max_length=2, choices=ESTADO_CHOICES, blank=True)
+
+    # Campos de características do veículo
     CAMBIO_CHOICES = [
         ('manual', 'Manual'),
         ('automatico', 'Automático'),
@@ -129,7 +167,11 @@ class Produto(models.Model):
     aceita_troca = models.BooleanField('Aceita Troca', default=False)
     ipva_pago = models.BooleanField('IPVA Pago', default=False)
     opcionais = models.JSONField('Opcionais', default=list, blank=True)
-
+    
+    # Campos adicionais para portas e motorização
+    portas = models.PositiveSmallIntegerField('Número de Portas', blank=True, null=True)
+    potencia = models.CharField('Potência do Motor', max_length=20, blank=True)
+    cilindrada = models.CharField('Cilindrada', max_length=20, blank=True)
 
     def get_url(self):
         return reverse('produtos:produto_detalhe', args=[self.categoria.slug, self.slug])
@@ -137,9 +179,36 @@ class Produto(models.Model):
     def get_primeira_imagem(self):
         primeira_imagem = self.imagens_produto.first()
         return primeira_imagem.imagem if primeira_imagem else None
+        
+    @property
+    def localizacao(self):
+        """Retorna a localização formatada: Cidade/Estado"""
+        if self.cidade and self.estado:
+            return f"{self.cidade}/{self.estado}"
+        return "Não informado"
+    
+    @property
+    def whatsapp(self):
+        """Retorna o número de WhatsApp do anunciante"""
+        if hasattr(self.user, 'profile') and self.user.profile.whatsapp:
+            return self.user.profile.whatsapp
+        return None
+    
+    @property
+    def opcionais_list(self):
+        """Retorna a lista de opcionais como uma lista de strings"""
+        if isinstance(self.opcionais, list):
+            return self.opcionais
+        return []
 
     def __str__(self):
         return self.produto_nome
+
+    def save(self, *args, **kwargs):
+        # Gerar slug se não existir
+        if not self.slug:
+            self.slug = slugify(self.produto_nome)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Produto'
