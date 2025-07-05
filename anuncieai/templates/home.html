@@ -6,42 +6,57 @@
 
 <!-- Full Width Carousel -->
 <div class="container-fluid px-0 hero-carousel">
-    <div id="header-carousel" class="carousel slide" data-ride="carousel">
+    {% if user.is_staff %}
+    <div class="admin-carousel-controls">
+        <button type="button" class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#carouselAdminModal">
+            <i class="fas fa-edit"></i> Gerenciar Carrossel
+        </button>
+    </div>
+    {% endif %}
+    <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#header-carousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
-            <button type="button" data-bs-target="#header-carousel" data-bs-slide-to="1"></button>
+            {% for slide in carousel_slides %}
+            <button type="button" data-bs-target="#header-carousel" data-bs-slide-to="{{ forloop.counter0 }}" 
+                {% if forloop.first %}class="active" aria-current="true"{% endif %}></button>
+            {% endfor %}
         </div>
         <div class="carousel-inner">
-            <div class="carousel-item active">
+            {% for slide in carousel_slides %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
                 <div class="overlay"></div>
-                <img class="w-100" src="{% static 'img/nissan_ofertas.jpg' %}" alt="Carros Japoneses">
+                <img class="w-100" src="{{ slide.image.url }}" alt="{{ slide.title }}">
                 <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                     <div class="p-3" style="max-width: 900px;">
-                        <div class="hero-badge">ALTA PERFORMANCE</div>
-                        <h2 class="text-light text-uppercase font-weight-bold mb-4">Carros Japoneses Premium</h2>
-                        <p class="text-light mb-4">Experiência de direção que combina tecnologia, desempenho e conforto</p>
+                        {% if slide.badge_text %}
+                        <div class="hero-badge">{{ slide.badge_text }}</div>
+                        {% endif %}
+                        <h2 class="text-light text-uppercase font-weight-bold mb-4">{{ slide.title }}</h2>
+                        <p class="text-light mb-4">{{ slide.subtitle }}</p>
+                        <a href="{% url slide.button_url %}" class="btn btn-racing py-2 px-4">
+                            <span>{{ slide.button_text }}</span>
+                            <i class="{{ slide.button_icon }} ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Fallback para quando não há slides configurados -->
+            <div class="carousel-item active">
+                <div class="overlay"></div>
+                <img class="w-100" src="{% static 'img/default-carousel.jpg' %}" alt="AnuncieAi">
+                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                    <div class="p-3" style="max-width: 900px;">
+                        <div class="hero-badge">BEM-VINDO</div>
+                        <h2 class="text-light text-uppercase font-weight-bold mb-4">AnuncieAi Carros</h2>
+                        <p class="text-light mb-4">Encontre o carro perfeito para você</p>
                         <a href="{% url 'produtos:loja' %}" class="btn btn-racing py-2 px-4">
-                            <span>COMPRAR AGORA</span>
+                            <span>EXPLORAR</span>
                             <i class="fas fa-chevron-right ms-2"></i>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="carousel-item">
-                <div class="overlay"></div>
-                <img class="w-100" src="{% static 'img/imagens_vendas.png' %}" alt="Ofertas Especiais">
-                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                    <div class="p-3" style="max-width: 900px;">
-                        <div class="hero-badge">OFERTAS EXCLUSIVAS</div>
-                        <h2 class="text-light text-uppercase font-weight-bold mb-4">Carros em Promoção</h2>
-                        <p class="text-light mb-4">As melhores condições do mercado com garantia de qualidade</p>
-                        <a href="{% url 'produtos:loja' %}" class="btn btn-racing py-2 px-4">
-                            <span>VER OFERTAS</span>
-                            <i class="fas fa-tag ms-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
             <div class="control-btn">
@@ -1052,5 +1067,531 @@ a {
         margin-bottom: 5px;
     }
 }
+
+/* Estilos para controles de administração */
+.admin-carousel-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    padding: 5px;
+}
+
+.btn-admin {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: var(--primary);
+    border: 1px solid var(--secondary);
+    padding: 8px 15px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+}
+
+.btn-admin:hover {
+    background-color: var(--secondary);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.modal-admin .modal-header {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.modal-admin .btn-outline-primary {
+    color: var(--third);
+    border-color: var(--third);
+}
+
+.modal-admin .btn-outline-primary:hover {
+    background-color: var(--third);
+    color: white;
+}
+
+.modal-admin .btn-primary {
+    background-color: var(--third);
+    border-color: var(--third);
+}
+
+.carousel-slide-item {
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+}
+
+.carousel-slide-item:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-slide-preview {
+    height: 100px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.carousel-slide-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-slide-tools {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.carousel-slide-badge {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    background: var(--racing-red);
+    color: white;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
 </style>
+<!-- Modal para gerenciar carrossel (apenas administradores) -->
+{% if user.is_staff %}
+<div class="modal fade modal-admin" id="carouselAdminModal" tabindex="-1" aria-labelledby="carouselAdminModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="carouselAdminModalLabel">Gerenciar Slides do Carrossel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Abas para organizar o conteúdo -->
+                <ul class="nav nav-tabs mb-4" id="carouselAdminTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="slides-tab" data-bs-toggle="tab" data-bs-target="#slides-tab-pane" type="button" role="tab" aria-controls="slides-tab-pane" aria-selected="true">
+                            <i class="fas fa-images"></i> Slides
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="add-slide-tab" data-bs-toggle="tab" data-bs-target="#add-slide-tab-pane" type="button" role="tab" aria-controls="add-slide-tab-pane" aria-selected="false">
+                            <i class="fas fa-plus-circle"></i> Adicionar Slide
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="carouselAdminTabContent">
+                    <!-- Aba de listagem de slides -->
+                    <div class="tab-pane fade show active" id="slides-tab-pane" role="tabpanel" aria-labelledby="slides-tab" tabindex="0">
+                        <div class="row slides-container">
+                            {% for slide in carousel_slides %}
+                            <div class="col-md-6 col-lg-4 mb-4" id="slide-item-{{ slide.id }}">
+                                <div class="carousel-slide-item">
+                                    <div class="carousel-slide-preview">
+                                        <img src="{{ slide.image.url }}" alt="{{ slide.title }}">
+                                        {% if slide.badge_text %}
+                                        <span class="carousel-slide-badge">{{ slide.badge_text }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <h5 class="mb-2">{{ slide.title }}</h5>
+                                    <p class="text-muted small">{{ slide.subtitle|truncatechars:50 }}</p>
+                                    <div class="carousel-slide-tools">
+                                        <button class="btn btn-sm btn-outline-primary edit-slide" 
+                                                data-id="{{ slide.id }}"
+                                                data-title="{{ slide.title }}"
+                                                data-subtitle="{{ slide.subtitle }}"
+                                                data-badge="{{ slide.badge_text }}"
+                                                data-btn-text="{{ slide.button_text }}"
+                                                data-btn-url="{{ slide.button_url }}"
+                                                data-btn-icon="{{ slide.button_icon }}"
+                                                data-order="{{ slide.order }}"
+                                                data-active="{{ slide.active|yesno:'true,false' }}">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-slide" data-id="{{ slide.id }}">
+                                            <i class="fas fa-trash"></i> Excluir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Nenhum slide configurado. Clique em "Adicionar Slide" para começar.
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Aba de adicionar/editar slide -->
+                    <div class="tab-pane fade" id="add-slide-tab-pane" role="tabpanel" aria-labelledby="add-slide-tab" tabindex="0">
+                        <form id="slideForm" method="post" enctype="multipart/form-data" action="{% url 'home:save_slide' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="slide_id" id="slide_id" value="">
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <!-- Conteúdo principal do slide -->
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            Conteúdo Principal
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="title" class="form-label">Título</label>
+                                                <input type="text" class="form-control" id="title" name="title" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="subtitle" class="form-label">Subtítulo</label>
+                                                <input type="text" class="form-control" id="subtitle" name="subtitle" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="badge_text" class="form-label">Texto do Badge (opcional)</label>
+                                                <input type="text" class="form-control" id="badge_text" name="badge_text">
+                                                <div class="form-text">Texto destacado acima do título</div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="image" class="form-label">Imagem</label>
+                                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                                <div class="form-text">Tamanho recomendado: 1920x600px</div>
+                                                <div id="image-preview" class="mt-2 d-none">
+                                                    <img src="" alt="Preview" class="img-fluid" style="max-height: 150px;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <!-- Configurações do botão -->
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            Botão do Slide
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="button_text" class="form-label">Texto do Botão</label>
+                                                <input type="text" class="form-control" id="button_text" name="button_text" value="VER MAIS">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="button_url" class="form-label">URL do Botão</label>
+                                                <input type="text" class="form-control" id="button_url" name="button_url" value="produtos:loja">
+                                                <div class="form-text">Nome da URL (ex: produtos:loja)</div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="button_icon" class="form-label">Ícone do Botão</label>
+                                                <input type="text" class="form-control" id="button_icon" name="button_icon" value="fas fa-chevron-right">
+                                                <div class="form-text">Classe do FontAwesome (ex: fas fa-chevron-right)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Configurações gerais -->
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Configurações
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="order" class="form-label">Ordem</label>
+                                                <input type="number" class="form-control" id="order" name="order" value="0" min="0">
+                                                <div class="form-text">Slides com valores menores aparecem primeiro</div>
+                                            </div>
+                                            
+                                            <div class="form-check mb-3">
+                                                <input type="checkbox" class="form-check-input" id="active" name="active" checked>
+                                                <label class="form-check-label" for="active">Ativo</label>
+                                                <div class="form-text">Desmarque para ocultar este slide</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="cancelEdit">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação para excluir slide -->
+<div class="modal fade" id="deleteSlideModal" tabindex="-1" aria-labelledby="deleteSlideModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteSlideModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir este slide? Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteSlideForm" method="post" action="{% url 'home:delete_slide' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="slide_id" id="delete_slide_id">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Importar Bootstrap 5 e seus dependências se ainda não estiver incluído no base.html -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se Bootstrap 5 está disponível
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap 5 não está carregado. Carregando biblioteca...');
+        
+        // Função para carregar scripts dinamicamente
+        function loadScript(url, callback) {
+            var script = document.createElement('script');
+            script.src = url;
+            script.onload = callback;
+            document.head.appendChild(script);
+        }
+        
+        // Carregar as dependências na ordem correta
+        loadScript('https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js', function() {
+            loadScript('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js', function() {
+                console.log('Bootstrap 5 carregado com sucesso!');
+                initCarouselAdmin();
+            });
+        });
+    } else {
+        initCarouselAdmin();
+    }
+    
+    // Função para inicializar os componentes do admin do carrossel
+    function initCarouselAdmin() {
+        console.log('Inicializando admin do carrossel');
+        
+        // Teste para ver se o modal está funcionando
+        const btnAdmin = document.querySelector('.btn-admin');
+        if (btnAdmin) {
+            console.log('Botão de administração encontrado!');
+            btnAdmin.addEventListener('click', function() {
+                console.log('Botão clicado!');
+                try {
+                    const modal = new bootstrap.Modal(document.getElementById('carouselAdminModal'));
+                    console.log('Modal criado!');
+                    modal.show();
+                    console.log('Modal exibido!');
+                } catch (error) {
+                    console.error('Erro ao abrir o modal:', error);
+                    alert('Erro ao abrir o modal: ' + error.message);
+                }
+            });
+        }
+        
+        // Ativar as abas do Bootstrap manualmente
+        const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+        tabEls.forEach(tabEl => {
+            console.log('Tab encontrada:', tabEl.id);
+            tabEl.addEventListener('click', function(event) {
+                event.preventDefault();
+                console.log('Tab clicada:', this.id);
+                
+                // Desativar todas as abas
+                document.querySelectorAll('.nav-link').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+                
+                // Desativar todos os conteúdos de abas
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                // Ativar a aba atual
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                
+                // Ativar o conteúdo correspondente
+                const target = document.querySelector(this.getAttribute('data-bs-target'));
+                if (target) {
+                    console.log('Ativando conteúdo:', target.id);
+                    target.classList.add('show', 'active');
+                }
+            });
+        });
+        
+        // Ativar manualmente a aba "Adicionar Slide" quando o botão for clicado
+        const addSlideTabBtn = document.getElementById('add-slide-tab');
+        if (addSlideTabBtn) {
+            console.log('Botão "Adicionar Slide" encontrado');
+            addSlideTabBtn.addEventListener('click', function() {
+                console.log('Botão "Adicionar Slide" clicado');
+                
+                // Desativar todas as abas e seus conteúdos
+                document.querySelectorAll('.nav-link').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                // Ativar esta aba e seu conteúdo
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                
+                const addSlidePane = document.getElementById('add-slide-tab-pane');
+                if (addSlidePane) {
+                    addSlidePane.classList.add('show', 'active');
+                    console.log('Aba "Adicionar Slide" ativada');
+                }
+            });
+        } else {
+            console.warn('Botão "Adicionar Slide" não encontrado');
+        }
+        
+        // O restante do código de inicialização permanece igual
+        const editButtons = document.querySelectorAll('.edit-slide');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const slideId = this.getAttribute('data-id');
+                const title = this.getAttribute('data-title');
+                const subtitle = this.getAttribute('data-subtitle');
+                const badge = this.getAttribute('data-badge');
+                const btnText = this.getAttribute('data-btn-text');
+                const btnUrl = this.getAttribute('data-btn-url');
+                const btnIcon = this.getAttribute('data-btn-icon');
+                const order = this.getAttribute('data-order');
+                const active = this.getAttribute('data-active') === 'true';
+                
+                // Preencher o formulário com os dados do slide
+                document.getElementById('slide_id').value = slideId;
+                document.getElementById('title').value = title;
+                document.getElementById('subtitle').value = subtitle;
+                document.getElementById('badge_text').value = badge;
+                document.getElementById('button_text').value = btnText;
+                document.getElementById('button_url').value = btnUrl;
+                document.getElementById('button_icon').value = btnIcon;
+                document.getElementById('order').value = order;
+                document.getElementById('active').checked = active;
+                
+                // Ativar manualmente a aba de adição/edição
+                document.querySelectorAll('.nav-link').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                const addSlideTab = document.getElementById('add-slide-tab');
+                if (addSlideTab) {
+                    addSlideTab.classList.add('active');
+                    addSlideTab.setAttribute('aria-selected', 'true');
+                }
+                
+                const addSlidePane = document.getElementById('add-slide-tab-pane');
+                if (addSlidePane) {
+                    addSlidePane.classList.add('show', 'active');
+                }
+            });
+        });
+        
+        // Manipular o cancelamento da edição
+        const cancelEdit = document.getElementById('cancelEdit');
+        if (cancelEdit) {
+            cancelEdit.addEventListener('click', function() {
+                // Limpar o formulário
+                document.getElementById('slideForm').reset();
+                document.getElementById('slide_id').value = '';
+                const imagePreview = document.getElementById('image-preview');
+                if (imagePreview) {
+                    imagePreview.classList.add('d-none');
+                }
+                
+                // Voltar para a aba de listagem manualmente
+                document.querySelectorAll('.nav-link').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                const slidesTab = document.getElementById('slides-tab');
+                if (slidesTab) {
+                    slidesTab.classList.add('active');
+                    slidesTab.setAttribute('aria-selected', 'true');
+                }
+                
+                const slidesPane = document.getElementById('slides-tab-pane');
+                if (slidesPane) {
+                    slidesPane.classList.add('show', 'active');
+                }
+            });
+        }
+        
+        // Pré-visualizar a imagem selecionada
+        const imageInput = document.getElementById('image');
+        if (imageInput) {
+            imageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.getElementById('image-preview');
+                        if (preview) {
+                            const img = preview.querySelector('img');
+                            if (img) {
+                                img.src = e.target.result;
+                                preview.classList.remove('d-none');
+                            }
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Configurar o modal de exclusão
+        const deleteButtons = document.querySelectorAll('.delete-slide');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const slideId = this.getAttribute('data-id');
+                document.getElementById('delete_slide_id').value = slideId;
+                
+                try {
+                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteSlideModal'));
+                    deleteModal.show();
+                } catch (error) {
+                    console.error('Erro ao abrir modal de exclusão:', error);
+                    
+                    // Fallback para JavaScript puro
+                    const modal = document.getElementById('deleteSlideModal');
+                    if (modal) {
+                        modal.style.display = 'block';
+                        modal.classList.add('show');
+                        document.body.classList.add('modal-open');
+                    }
+                }
+            });
+        });
+    }
+});
+</script>
+{% endif %}
 {% endblock %}
