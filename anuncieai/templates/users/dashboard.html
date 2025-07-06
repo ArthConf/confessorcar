@@ -1,77 +1,168 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
+    <div class="dashboard-header mb-4">
+        <h2 class="text-third"><i class="fas fa-tachometer-alt"></i> Painel do Usuário</h2>
+    </div>
+
+    {% if messages %}
+    <div class="messages-container mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="{% if message.tags == 'success' %}fas fa-check-circle{% elif message.tags == 'error' %}fas fa-exclamation-circle{% elif message.tags == 'warning' %}fas fa-exclamation-triangle{% else %}fas fa-info-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-lg-4">
             <!-- Perfil do Usuário -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+            <div class="card user-profile-card mb-4">
+                <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="fas fa-user-circle"></i> Perfil do Usuário
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                        {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="profile-avatar mb-3">
+                        {% else %}
+                        <div class="profile-avatar-placeholder mb-3">
+                            <i class="fas fa-user-circle fa-5x"></i>
+                        </div>
+                        {% endif %}
+                        <h5 class="user-name">{{ user.get_full_name|default:user.username }}</h5>
+                        {% if user.profile.whatsapp %}
+                        <span class="badge bg-success"><i class="fab fa-whatsapp"></i> WhatsApp Cadastrado</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark"><i class="fab fa-whatsapp"></i> WhatsApp não cadastrado</span>
+                        {% endif %}
                     </div>
-                    <p><strong><i class="fas fa-user"></i> Nome:</strong> {{ user.username }}</p>
-                    <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ user.email }}</p>
-                    <p><strong><i class="fas fa-calendar-alt"></i> Membro desde:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
+                    
+                    <div class="profile-info">
+                        <div class="profile-info-item">
+                            <div class="icon"><i class="fas fa-user"></i></div>
+                            <div class="content">
+                                <span class="label">Username</span>
+                                <span class="value">{{ user.username }}</span>
+                            </div>
+                        </div>
+                        <div class="profile-info-item">
+                            <div class="icon"><i class="fas fa-envelope"></i></div>
+                            <div class="content">
+                                <span class="label">Email</span>
+                                <span class="value">{{ user.email }}</span>
+                            </div>
+                        </div>
+                        <div class="profile-info-item">
+                            <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="content">
+                                <span class="label">Membro desde</span>
+                                <span class="value">{{ user.date_joined|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                        <div class="profile-info-item">
+                            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="content">
+                                <span class="label">Localização</span>
+                                <span class="value">
+                                {% if user.profile.cidade and user.profile.estado %}
+                                    {{ user.profile.cidade }}/{{ user.profile.estado }}
+                                {% elif user.profile.estado %}
+                                    {{ user.profile.estado }}
+                                {% else %}
+                                    Não informada
+                                {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="profile-info-item">
+                            <div class="icon"><i class="fas fa-phone-alt"></i></div>
+                            <div class="content">
+                                <span class="label">WhatsApp</span>
+                                <span class="value">{{ user.profile.whatsapp|default:"Não cadastrado" }}</span>
+                            </div>
+                        </div>
+                    </div>
                     <hr>
                     <div class="d-grid gap-2">
-                        <a href="#" class="btn btn-outline-primary btn-sm">
+                        <button type="button" class="btn btn-third text-white" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                             <i class="fas fa-edit"></i> Editar Perfil
-                        </a>
-                        <a href="#" class="btn btn-outline-secondary btn-sm">
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                             <i class="fas fa-key"></i> Alterar Senha
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Menu do Usuário -->
-            <div class="card">
-                <div class="card-header bg-primary text-white">
+            <div class="card user-menu-card">
+                <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="fas fa-cog"></i> Menu Rápido
                     </h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="fas fa-shopping-cart"></i> Meus Pedidos
-                            <span class="badge bg-primary rounded-pill float-end">0</span>
+                        <a href="{% url 'produtos:gerenciar_produtos' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-car"></i> Meus Anúncios
+                            <span class="badge bg-third rounded-pill float-end">{{ user.produtos.count }}</span>
                         </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="fas fa-heart"></i> Lista de Desejos
-                            <span class="badge bg-primary rounded-pill float-end">0</span>
+                        <a href="{% url 'produtos:adicionar_produto' %}" class="list-group-item list-group-item-action highlight-item">
+                            <i class="fas fa-plus-circle"></i> Novo Anúncio
                         </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="fas fa-map-marker-alt"></i> Meus Endereços
-                        </a>
+                        
                         <a href="{% url 'users:logout' %}" class="list-group-item list-group-item-action text-danger">
-                            <i class="fas fa-sign-out-alt"></i> Sair
+                            <i class="fas fa-sign-out-alt"></i> Sair da Conta
                         </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-8">
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="col-lg-8">
+            <!-- Estatísticas Rápidas -->
+            <div class="card stats-card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar"></i> Estatísticas Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row stats-row">
+                        <div class="col-md-6 col-6">
+                            <div class="stat-item">
+                                <div class="stat-icon bg-third">
+                                    <i class="fas fa-car"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 class="stat-value">{{ user.produtos.count }}</h3>
+                                    <p class="stat-label">Anúncios</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-6">
+                            <div class="stat-item">
+                                <div class="stat-icon bg-success">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
-            {% endif %}
 
-            {% if user.is_staff %}
+            {% if user.is_staff or user.is_superuser %}
             <!-- Painel de Administração -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+            <div class="card admin-panel-card mb-4">
+                <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="fas fa-tools"></i> Painel de Administração
                     </h5>
@@ -79,52 +170,42 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">
-                                        <i class="fas fa-tags"></i> Categorias
-                                    </h6>
-                                    <p class="card-text">Gerenciar categorias de produtos</p>
-                                    <a href="{% url 'produtos:gerenciar_produtos' %}" class="btn btn-primary btn-sm">
+                            <div class="admin-card">
+                                <div class="admin-card-icon">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <div class="admin-card-content">
+                                    <h6 class="admin-card-title">Categorias</h6>
+                                    <p class="admin-card-text">Gerenciar categorias de veículos</p>
+                                    <a href="{% url 'admin:index' %}categoria/categoria/" class="btn btn-third btn-sm text-white">
                                         Gerenciar
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">
-                                        <i class="fas fa-box"></i> Produtos
-                                    </h6>
-                                    <p class="card-text">Gerenciar produtos da loja</p>
-                                    <a href="#" class="btn btn-primary btn-sm">
+                            <div class="admin-card">
+                                <div class="admin-card-icon">
+                                    <i class="fas fa-car"></i>
+                                </div>
+                                <div class="admin-card-content">
+                                    <h6 class="admin-card-title">Veículos</h6>
+                                    <p class="admin-card-text">Gerenciar anúncios da plataforma</p>
+                                    <a href="{% url 'produtos:gerenciar_produtos' %}" class="btn btn-third btn-sm text-white">
                                         Gerenciar
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">
-                                        <i class="fas fa-users"></i> Usuários
-                                    </h6>
-                                    <p class="card-text">Gerenciar usuários do sistema</p>
-                                    <a href="{% url 'admin:auth_user_changelist' %}" class="btn btn-primary btn-sm">
-                                        Gerenciar
-                                    </a>
+                            <div class="admin-card">
+                                <div class="admin-card-icon">
+                                    <i class="fas fa-users"></i>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">
-                                        <i class="fas fa-shopping-cart"></i> Pedidos
-                                    </h6>
-                                    <p class="card-text">Gerenciar pedidos dos clientes</p>
-                                    <a href="#" class="btn btn-primary btn-sm">
+                                <div class="admin-card-content">
+                                    <h6 class="admin-card-title">Usuários</h6>
+                                    <p class="admin-card-text">Gerenciar usuários do sistema</p>
+                                    <a href="{% url 'admin:auth_user_changelist' %}" class="btn btn-third btn-sm text-white">
                                         Gerenciar
                                     </a>
                                 </div>
@@ -135,54 +216,694 @@
             </div>
             {% endif %}
 
-            <!-- Últimas Atividades -->
-            <div class="card">
-                <div class="card-header bg-primary text-white">
+            <!-- Anúncios Recentes -->
+            <div class="card recent-ads-card">
+                <div class="card-header">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-history"></i> Últimas Atividades
+                        <i class="fas fa-list"></i> Seus Anúncios Recentes
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="text-center text-muted">
-                        <i class="fas fa-inbox fa-3x mb-3"></i>
-                        <p>Nenhuma atividade recente</p>
+                    {% if user.produtos.all %}
+                    <div class="table-responsive">
+                        <table class="table table-hover ads-table">
+                            <thead>
+                                <tr>
+                                    <th>Veículo</th>
+                                    <th>Preço</th>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produto in user.produtos.all|slice:":5" %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if produto.get_primeira_imagem %}
+                                            <img src="{{ produto.get_primeira_imagem.url }}" alt="{{ produto.produto_nome }}" class="ad-thumbnail me-2">
+                                            {% else %}
+                                            <div class="ad-thumbnail-placeholder me-2">
+                                                <i class="fas fa-car"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'produtos:produto_detalhe' produto.categoria.slug produto.slug %}" class="ad-title">
+                                                    {{ produto.marca }} {{ produto.produto_nome }}
+                                                </a>
+                                                <div class="small text-muted">{{ produto.ano_fabricacao }}/{{ produto.ano_modelo }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="ad-price" data-value="{{ produto.preco|default:'0.00' }}">R$ {{ produto.preco|floatformat:2|default:"0,00" }}</td>
+                                    <td>
+                                        {% if produto.esta_disponivel %}
+                                        <span class="badge bg-success">Disponível</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Vendido</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ produto.criado_em|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'produtos:editar_produto' produto.pk %}" class="btn btn-sm btn-outline-third" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'produtos:produto_detalhe' produto.categoria.slug produto.slug %}" class="btn btn-sm btn-outline-info" title="Visualizar">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'produtos:gerenciar_produtos' %}" class="btn btn-outline-third">
+                            <i class="fas fa-list"></i> Ver Todos os Anúncios
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center empty-state py-5">
+                        <i class="fas fa-car fa-3x mb-3 text-muted"></i>
+                        <h5>Você ainda não possui anúncios</h5>
+                        <p class="text-muted">Comece a anunciar seus veículos agora mesmo!</p>
+                        <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-third text-white">
+                            <i class="fas fa-plus-circle"></i> Criar Anúncio
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal de Edição de Perfil -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel"><i class="fas fa-user-edit"></i> Editar Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'users:edit_profile' %}" enctype="multipart/form-data" id="profileForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_whatsapp" class="form-label">WhatsApp</label>
+                            <input type="text" name="whatsapp" id="id_whatsapp" class="form-control phone-mask" 
+                                placeholder="(00) 00000-0000" value="{{ user.profile.whatsapp|default:'' }}">
+                            <small class="form-text text-muted">Formato: (99) 99999-9999</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_cpf" class="form-label">CPF</label>
+                            <input type="text" name="cpf" id="id_cpf" class="form-control cpf-mask" 
+                                placeholder="000.000.000-00" value="{{ user.profile.cpf|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_avatar" class="form-label">Foto de Perfil</label>
+                            <input type="file" name="avatar" id="id_avatar" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_cep" class="form-label">CEP</label>
+                            <input type="text" name="cep" id="id_cep" class="form-control cep-mask" 
+                                placeholder="00000-000" value="{{ user.profile.cep|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_estado" class="form-label">Estado</label>
+                            <select name="estado" id="id_estado" class="form-select">
+                                <option value="">Selecione o Estado</option>
+                                {% for uf, nome in estados %}
+                                <option value="{{ uf }}" {% if user.profile.estado == uf %}selected{% endif %}>{{ nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_cidade" class="form-label">Cidade</label>
+                            <input type="text" name="cidade" id="id_cidade" class="form-control" 
+                                placeholder="Digite sua cidade" value="{{ user.profile.cidade|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_bairro" class="form-label">Bairro</label>
+                            <input type="text" name="bairro" id="id_bairro" class="form-control" 
+                                placeholder="Digite seu bairro" value="{{ user.profile.bairro|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_endereco" class="form-label">Endereço</label>
+                            <input type="text" name="endereco" id="id_endereco" class="form-control" 
+                                placeholder="Rua, número, complemento" value="{{ user.profile.endereco|default:'' }}">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-third text-white" onclick="document.getElementById('profileForm').submit();">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Alteração de Senha -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel"><i class="fas fa-key"></i> Alterar Senha</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'users:change_password' %}" id="passwordForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_old_password" class="form-label">Senha Atual</label>
+                        <input type="password" name="old_password" id="id_old_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_new_password1" class="form-label">Nova Senha</label>
+                        <input type="password" name="new_password1" id="id_new_password1" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_new_password2" class="form-label">Confirme a Nova Senha</label>
+                        <input type="password" name="new_password2" id="id_new_password2" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-third text-white" onclick="document.getElementById('passwordForm').submit();">
+                    <i class="fas fa-save"></i> Alterar Senha
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
+:root {
+    --primary: #0a1e36;
+    --secondary: #30c5f5;
+    --third: #0066cc;
+    --accent: #ffcc00;
+    --text-dark: #333333;
+    --text-light: #6c757d;
+    --border-color: rgba(0, 0, 0, 0.05);
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+}
+
+/* Estilos gerais */
+.dashboard-header h2 {
+    color: var(--third);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.text-primary {
+    color: var(--third) !important;
+}
+
+.text-third {
+    color: var(--third) !important;
+}
+
+.breadcrumb-item a {
+    color: var(--third);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-dark);
+}
+
 .card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    margin-bottom: 1rem;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
 }
 
 .card-header {
-    border-bottom: 0;
-}
-
-.list-group-item {
-    border-left: 0;
-    border-right: 0;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
     padding: 1rem 1.25rem;
 }
 
+.card-header .card-title {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.card-header .card-title i {
+    color: var(--third);
+    margin-right: 0.5rem;
+}
+
+/* Perfil de usuário */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--secondary);
+}
+
+.profile-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: rgba(0, 102, 204, 0.1);
+    color: var(--third);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 3px solid var(--secondary);
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.profile-info {
+    margin-top: 1.5rem;
+}
+
+.profile-info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.profile-info-item .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(48, 197, 245, 0.1);
+    color: var(--third);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.profile-info-item .content {
+    flex: 1;
+}
+
+.profile-info-item .label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.profile-info-item .value {
+    display: block;
+    font-weight: 500;
+    color: var(--primary);
+}
+
+/* Menu do usuário */
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 1rem 1.25rem;
+    transition: all 0.2s;
+}
+
 .list-group-item:first-child {
-    border-top: 0;
+    border-top: none;
 }
 
 .list-group-item:last-child {
-    border-bottom: 0;
+    border-bottom: none;
 }
 
 .list-group-item i {
-    margin-right: 0.5rem;
+    width: 20px;
+    margin-right: 0.75rem;
+    text-align: center;
+}
+
+.list-group-item:hover {
+    background-color: rgba(48, 197, 245, 0.05);
+}
+
+.list-group-item.highlight-item {
+    background-color: rgba(0, 102, 204, 0.05);
+    color: var(--third);
+    font-weight: 500;
+}
+
+.list-group-item.highlight-item:hover {
+    background-color: rgba(0, 102, 204, 0.1);
+}
+
+/* Estatísticas */
+.stats-row {
+    margin: 0 -10px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.stat-item {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 300px;
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 15px;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+/* Admin Panel */
+.admin-card {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s;
+    height: 100%;
+}
+
+.admin-card:hover {
+    background-color: rgba(48, 197, 245, 0.05);
+    transform: translateY(-5px);
+}
+
+.admin-card-icon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--third);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    margin-right: 15px;
+}
+
+.admin-card-content {
+    flex: 1;
+}
+
+.admin-card-title {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.admin-card-text {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 10px;
+}
+
+/* Tabela de Anúncios */
+.ads-table {
+    margin-bottom: 0;
+}
+
+.ad-thumbnail {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.ad-thumbnail-placeholder {
+    width: 48px;
+    height: 48px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+}
+
+.ad-title {
+    display: block;
+    font-weight: 500;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.ad-title:hover {
+    color: var(--third);
+}
+
+.ad-price {
+    font-weight: 600;
+    color: var(--third);
+}
+
+.empty-state {
+    color: var(--text-dark);
+}
+
+.empty-state i {
+    opacity: 0.5;
+}
+
+/* Botões */
+.btn-primary {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.btn-third {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+}
+
+.btn-third:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.btn-outline-third {
+    color: var(--third);
+    border-color: var(--third);
+}
+
+.btn-outline-third:hover {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+}
+
+.btn-outline-primary {
+    color: var(--third);
+    border-color: var(--third);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
 }
 
 .btn i {
     margin-right: 0.5rem;
 }
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+/* Badges */
+.badge.bg-primary {
+    background-color: var(--third) !important;
+}
+
+.badge.bg-third {
+    background-color: var(--third) !important;
+    color: white;
+}
+
+.badge.bg-success {
+    background-color: var(--success) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--warning) !important;
+}
+
+/* Responsividade */
+@media (max-width: 767px) {
+    .stats-row {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-item {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+// Formatar preços no formato brasileiro (R$ 98.000,00)
+    const formatarPrecosBrasileiros = function() {
+        document.querySelectorAll('.ad-price').forEach(function(element) {
+            const valorOriginal = parseFloat(element.getAttribute('data-value') || 0);
+            
+            // Formatar para o padrão brasileiro
+            const valorFormatado = valorOriginal.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            // Atualizar o texto do elemento
+            element.textContent = 'R$ ' + valorFormatado;
+        });
+    };
+    
+    // Executar a formatação quando a página carregar
+    formatarPrecosBrasileiros();
+
+    // Máscaras para campos de formulário
+    if (typeof IMask !== 'undefined') {
+        // Máscara para CPF
+        const cpfInputs = document.querySelectorAll('.cpf-mask');
+        cpfInputs.forEach(function(input) {
+            IMask(input, {
+                mask: '000.000.000-00'
+            });
+        });
+        
+        // Máscara para telefone
+        const phoneInputs = document.querySelectorAll('.phone-mask');
+        phoneInputs.forEach(function(input) {
+            IMask(input, {
+                mask: '(00) 00000-0000'
+            });
+        });
+        
+        // Máscara para CEP
+        const cepInputs = document.querySelectorAll('.cep-mask');
+        cepInputs.forEach(function(input) {
+            IMask(input, {
+                mask: '00000-000'
+            });
+        });
+    }
+    
+    // Busca de CEP
+    const cepInput = document.getElementById('id_cep');
+    if (cepInput) {
+        cepInput.addEventListener('blur', function() {
+            const cep = this.value.replace(/\D/g, '');
+            
+            if (cep.length !== 8) return;
+            
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        document.getElementById('id_endereco').value = `${data.logradouro}`;
+                        document.getElementById('id_bairro').value = data.bairro;
+                        document.getElementById('id_cidade').value = data.localidade;
+                        
+                        // Selecionar o estado no select
+                        const estadoSelect = document.getElementById('id_estado');
+                        for (let i = 0; i < estadoSelect.options.length; i++) {
+                            if (estadoSelect.options[i].value === data.uf) {
+                                estadoSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                })
+                .catch(error => console.error('Erro ao buscar CEP:', error));
+        });
+    }
+});
+</script>
 {% endblock %}

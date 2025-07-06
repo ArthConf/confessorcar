@@ -180,6 +180,24 @@ class RegisterForm(UserCreationForm):
                 raise ValidationError(f'Formato de WhatsApp inválido: {str(e)}')
         return whatsapp
 
+# users/forms.py
+class ProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['whatsapp', 'cpf', 'endereco', 'bairro', 'cidade', 'estado', 'cep', 'avatar']
+    
+    def clean_whatsapp(self):
+        whatsapp = self.cleaned_data.get('whatsapp')
+        if whatsapp:
+            # Lógica de limpeza do WhatsApp
+            digits = re.sub(r'\D', '', whatsapp)
+            if len(digits) < 10 or len(digits) > 11:
+                raise ValidationError('Número de WhatsApp inválido')
+            if len(digits) == 10:
+                digits = digits[:2] + '9' + digits[2:]
+            return f'({digits[:2]}) {digits[2:7]}-{digits[7:]}'
+        return whatsapp
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']

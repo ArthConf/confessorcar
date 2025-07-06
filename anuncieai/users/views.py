@@ -5,7 +5,34 @@ from django.contrib import messages
 from django.db import transaction
 from .forms import LoginForm, RegisterForm
 import logging
+# users/views.py
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from .forms import ProfileEditForm
 
+@login_required
+def edit_profile_view(request):
+    if request.method == 'POST':
+        form = ProfileEditForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Seu perfil foi atualizado com sucesso!')
+            return redirect('users:dashboard')
+        else:
+            messages.error(request, 'Ocorreram erros ao atualizar seu perfil.')
+    return redirect('users:dashboard')
+
+@login_required
+def change_password_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Mantém o usuário logado após a mudança de senha
+            messages.success(request, 'Sua senha foi alterada com sucesso!')
+        else:
+            messages.error(request, 'Por favor, corrija os erros abaixo.')
+    return redirect('users:dashboard')
 # Configure o logger
 logger = logging.getLogger(__name__)
 

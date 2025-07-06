@@ -27,34 +27,224 @@ def get_cidades(request):
     return JsonResponse({'cidades': cidades_json})
 
 def visualizarLoja(request, categoria_slug=None):
+    """
+    View para visualização da loja com filtros e busca.
+    """
+    # Inicialização da consulta base
+    produtos_query = Produto.objects.filter(esta_disponivel=True).prefetch_related(
+        Prefetch('imagens_produto', queryset=ProdutoImagem.objects.order_by('ordem'))
+    )
+    
+    # Inicialização de variáveis para o contexto
     categorias = Categoria.objects.all()
-    produtos = None
     categoria_atual = None
-
+    categorias_selecionadas = []
+    
+    # Filtro por categoria específica via slug da URL
     if categoria_slug:
         categoria_atual = get_object_or_404(Categoria, slug=categoria_slug)
-        produtos = Produto.objects.filter(
-            categoria=categoria_atual, 
-            esta_disponivel=True
-        ).prefetch_related(
-            Prefetch('imagens_produto', queryset=ProdutoImagem.objects.order_by('ordem'))
+        produtos_query = produtos_query.filter(categoria=categoria_atual)
+    
+    # Processar categorias selecionadas via checkbox múltiplo
+    categorias_ids = request.GET.getlist('categorias')
+    if categorias_ids:
+        categorias_selecionadas = categorias_ids
+        produtos_query = produtos_query.filter(categoria_id__in=categorias_ids)
+    
+    # Busca por termo (marca, modelo ou nome do produto)
+    search = request.GET.get('search', '')
+    if search:
+        from django.db.models import Q
+        produtos_query = produtos_query.filter(
+            Q(produto_nome__icontains=search) | 
+            Q(marca__icontains=search) | 
+            Q(descricao__icontains=search)
         )
-    else:
-        produtos = Produto.objects.filter(
-            esta_disponivel=True
-        ).prefetch_related(
-            Prefetch('imagens_produto', queryset=ProdutoImagem.objects.order_by('ordem'))
-        )
-
-    produtos_quant = produtos.count()
-
-    context = {
-        'produtos': produtos,
-        'produtos_quant': produtos_quant,
-        'categorias': categorias,
-        'categoria_atual': categoria_atual,
+    
+    # Filtro por marca
+    marca = request.GET.get('marca')
+    if marca:
+        produtos_query = produtos_query.filter(marca=marca)
+    
+    # Filtro por cor
+    cor = request.GET.get('cor')
+    if cor:
+        produtos_query = produtos_query.filter(cor=cor)
+    
+    # Filtro por faixa de preço
+    preco_min = request.GET.get('preco_min')
+    if preco_min:
+        try:
+            produtos_query = produtos_query.filter(preco__gte=float(preco_min))
+        except (ValueError, TypeError):
+            pass
+    
+    preco_max = request.GET.get('preco_max')
+    if preco_max:
+        try:
+            produtos_query = produtos_query.filter(preco__lte=float(preco_max))
+        except (ValueError, TypeError):
+            pass
+    
+    # Filtro por ano
+    ano_min = request.GET.get('ano_min')
+    if ano_min:
+        try:
+            produtos_query = produtos_query.filter(ano_fabricacao__gte=int(ano_min))
+        except (ValueError, TypeError):
+            pass
+    
+    ano_max = request.GET.get('ano_max')
+    if ano_max:
+        try:
+            produtos_query = produtos_query.filter(ano_fabricacao__lte=int(ano_max))
+        except (ValueError, TypeError):
+            pass
+    
+    # Ordenação
+    sort = request.GET.get('sort', 'recentes')
+    if sort == 'preco-asc':
+        produtos_query = produtos_query.order_by('preco')
+    elif sort == 'preco-desc':
+        produtos_query = produtos_query.order_by('-preco')
+    elif sort == 'ano-desc':
+        produtos_query = produtos_query.order_by('-ano_fabricacao')
+    elif sort == 'ano-asc':
+        produtos_query = produtos_query.order_by('ano_fabricacao')
+    else:  # recentes (padrão)
+        produtos_query = produtos_query.order_by('-criado_em')
+    
+    # Dados para filtros
+    from django.db.models import Count
+    
+    # Contar produtos por categoria
+    categorias_com_contagem = Categoria.objects.annotate(produto_count=Count('produto'))
+    
+    # Obter marcas únicas e contagem
+    marcas_data = []
+    marcas_unicas = Produto.objects.filter(esta_disponivel=True).values_list('marca', flat=True).distinct()
+    
+    for m in marcas_unicas:
+        if m:  # Evitar marcas vazias
+            count = Produto.objects.filter(esta_disponivel=True, marca=m).count()
+            marcas_data.append({
+                'nome': m,
+                'count': count
+            })
+    
+    # Lista de anos para o filtro
+    import datetime
+    current_year = datetime.datetime.now().year
+    anos = list(range(current_year, current_year - 30, -1))
+    
+    # Lista de cores completa (definida manualmente)
+    COR_CHOICES = [
+        ('preto', 'Preto'),
+        ('branco', 'Branco'),
+        ('prata', 'Prata'),
+        ('cinza', 'Cinza'),
+        ('vermelho', 'Vermelho'),
+        ('azul', 'Azul'),
+        ('azul_marinho', 'Azul Marinho'),
+        ('azul_claro', 'Azul Claro'),
+        ('verde', 'Verde'),
+        ('verde_escuro', 'Verde Escuro'),
+        ('verde_militar', 'Verde Militar'),
+        ('amarelo', 'Amarelo'),
+        ('laranja', 'Laranja'),
+        ('marrom', 'Marrom'),
+        ('bege', 'Bege'),
+        ('dourado', 'Dourado'),
+        ('grafite', 'Grafite'),
+        ('vinho', 'Vinho'),
+        ('bordô', 'Bordô'),
+        ('bronze', 'Bronze'),
+        ('chumbo', 'Chumbo'),
+        ('champagne', 'Champagne'),
+        ('rosa', 'Rosa'),
+        ('roxo', 'Roxo'),
+        ('violeta', 'Violeta'),
+        ('cinza_escuro', 'Cinza Escuro'),
+        ('cinza_claro', 'Cinza Claro'),
+        ('marfim', 'Marfim'),
+        ('titanium', 'Titanium'),
+        ('prata_fosco', 'Prata Fosco'),
+        ('preto_fosco', 'Preto Fosco'),
+    ]
+    
+    # Cores disponíveis com os hexadecimais correspondentes
+    cores_mapeamento = {
+        'preto': '#000000',
+        'branco': '#FFFFFF',
+        'prata': '#C0C0C0',
+        'cinza': '#808080',
+        'cinza_escuro': '#404040',
+        'cinza_claro': '#D3D3D3',
+        'vermelho': '#FF0000',
+        'azul': '#0066CC',
+        'azul_marinho': '#000080',
+        'azul_claro': '#87CEEB',
+        'verde': '#008000',
+        'verde_escuro': '#006400',
+        'verde_militar': '#556B2F',
+        'amarelo': '#FFFF00',
+        'laranja': '#FFA500',
+        'marrom': '#8B4513',
+        'bege': '#F5F5DC',
+        'dourado': '#FFD700',
+        'grafite': '#696969',
+        'vinho': '#800000',
+        'bordô': '#800020',
+        'bronze': '#CD7F32',
+        'chumbo': '#708090',
+        'champagne': '#F7E7CE',
+        'rosa': '#FFC0CB',
+        'roxo': '#800080',
+        'violeta': '#EE82EE',
+        'marfim': '#FFFFF0',
+        'titanium': '#878681',
+        'prata_fosco': '#A9A9A9',
+        'preto_fosco': '#1A1A1A',
     }
-
+    
+    # Lista formatada de cores para o template
+    cores_lista = []
+    
+    # Adicionar apenas as cores que têm veículos
+    for cor_value, cor_label in COR_CHOICES:
+        count = produtos_query.filter(cor=cor_value).count()
+        if count > 0:  # Incluir apenas as cores que têm veículos
+            hex_color = cores_mapeamento.get(cor_value, '#000000')  # Valor padrão preto se não encontrar
+            cores_lista.append({
+                'valor': cor_value,
+                'label': cor_label,
+                'hex': hex_color,
+                'count': count
+            })
+    
+    # Paginação
+    from django.core.paginator import Paginator
+    paginator = Paginator(produtos_query, 12)  # 12 produtos por página
+    page_number = request.GET.get('page', 1)
+    produtos_paginados = paginator.get_page(page_number)
+    
+    # Total de produtos disponíveis
+    produtos_total = Produto.objects.filter(esta_disponivel=True).count()
+    
+    # Contexto a ser passado para o template
+    context = {
+        'produtos': produtos_paginados,
+        'produtos_quant': produtos_query.count(),
+        'produtos_total': produtos_total,
+        'categorias': categorias_com_contagem,
+        'categoria_atual': categoria_atual,
+        'marcas': marcas_data,  # Lista de dicionários com nome e contagem
+        'anos': anos,
+        'cores': cores_lista,   # Lista de dicionários com informações das cores
+        'search_query': search,
+        'categorias_selecionadas': categorias_selecionadas,  # Lista de IDs de categorias selecionadas
+    }
+    
     return render(request, 'loja/loja.html', context)
 
 def produto_detalhe(request, categoria_slug, produto_slug):

@@ -1,221 +1,1344 @@
 {% extends "base.html" %}
 
 {% load static %}
-
+{% load produto_filters %} 
 {% block content %}
-    <!-- Page Header Start -->
-    <div class="container-fluid bg-secondary mb-5">
-        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
-            <h1 class="font-weight-semi-bold text-uppercase mb-3">Loja</h1>
-            <div class="d-inline-flex">
-                <p class="m-0"><a href="{% url 'home' %}">Home</a></p>
-                <p class="m-0 px-2">-</p>
-                <p class="m-0"><a href="{% url 'produtos:loja' %}">Loja</a></p>
+
+<!-- Banner da Loja Redesenhado -->
+<div class="shop-banner">
+    <div class="banner-overlay"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="banner-content">
+                    <span class="pre-title">Confessa Car</span>
+                    <h1 class="shop-title"><span class="regular-text">Encontre o</span> <span class="highlight-text">Veículo dos Seus Sonhos</span></h1>
+                    <p class="shop-subtitle">Os melhores carros, motos e caminhões estão aqui. Encontre o modelo perfeito para você!</p>
+                    <form action="" method="get" class="banner-search-form">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="search" placeholder="Buscar por marca, modelo ou nome" value="{{ request.GET.search }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-search" type="submit">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="banner-features">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Veículos Certificados</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Avaliação Transparente</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-handshake"></i>
+                            <span>Negociação Facilitada</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <!-- Removida a imagem de carros em destaque -->
             </div>
         </div>
     </div>
-    <!-- Page Header End -->
+</div>
 
-    <!-- Shop Start -->
-    <div class="container-fluid pt-5">
-        <div class="row px-xl-5">
-            <!-- Shop Sidebar Start -->
-            <div class="col-lg-3 col-md-12">
-                <!-- Price Start -->
-                <div class="border-bottom mb-4 pb-4">
-                    <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
-                    <form>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" checked id="price-all">
-                            <label class="custom-control-label" for="price-all">All Price</label>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-1">
-                            <label class="custom-control-label" for="price-1">$0 - $100</label>
-                            <span class="badge border font-weight-normal">150</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-2">
-                            <label class="custom-control-label" for="price-2">$100 - $200</label>
-                            <span class="badge border font-weight-normal">295</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-3">
-                            <label class="custom-control-label" for="price-3">$200 - $300</label>
-                            <span class="badge border font-weight-normal">246</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-4">
-                            <label class="custom-control-label" for="price-4">$300 - $400</label>
-                            <span class="badge border font-weight-normal">145</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="price-5">
-                            <label class="custom-control-label" for="price-5">$400 - $500</label>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
-                    </form>
-                </div>
-                <!-- Price End -->
-                
-                <!-- Color Start -->
-                <div class="border-bottom mb-4 pb-4">
-                    <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
-                    <form>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" checked id="color-all">
-                            <label class="custom-control-label" for="price-all">All Color</label>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="color-1">
-                            <label class="custom-control-label" for="color-1">Black</label>
-                            <span class="badge border font-weight-normal">150</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="color-2">
-                            <label class="custom-control-label" for="color-2">White</label>
-                            <span class="badge border font-weight-normal">295</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="color-3">
-                            <label class="custom-control-label" for="color-3">Red</label>
-                            <span class="badge border font-weight-normal">246</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="color-4">
-                            <label class="custom-control-label" for="color-4">Blue</label>
-                            <span class="badge border font-weight-normal">145</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="color-5">
-                            <label class="custom-control-label" for="color-5">Green</label>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
-                    </form>
-                </div>
-                <!-- Color End -->
+<!-- Breadcrumb -->
+<div class="shop-breadcrumb">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Loja de Veículos</li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
-                <!-- Size Start -->
-                <div class="mb-5">
-                    <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
-                    <form>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" checked id="size-all">
-                            <label class="custom-control-label" for="size-all">All Size</label>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="size-1">
-                            <label class="custom-control-label" for="size-1">XS</label>
-                            <span class="badge border font-weight-normal">150</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="size-2">
-                            <label class="custom-control-label" for="size-2">S</label>
-                            <span class="badge border font-weight-normal">295</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="size-3">
-                            <label class="custom-control-label" for="size-3">M</label>
-                            <span class="badge border font-weight-normal">246</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="size-4">
-                            <label class="custom-control-label" for="size-4">L</label>
-                            <span class="badge border font-weight-normal">145</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="size-5">
-                            <label class="custom-control-label" for="size-5">XL</label>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
-                    </form>
-                </div>
-                <!-- Size End -->
-            </div>
-            <!-- Shop Sidebar End -->
-
-                    <!-- Shop Product Start -->
-                    <div class="col-lg-9 col-md-12">
-                        <div class="row pb-3">
-                            <div class="col-12 pb-1">
-                                <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <form action="">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search by name">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text bg-transparent text-primary">
-                                                    <i class="fa fa-search"></i>
-                                                </span>
+<!-- Loja Principal -->
+<div class="shop-section">
+    <div class="container">
+        <div class="row">
+            <!-- Filtros -->
+            <div class="col-lg-3">
+                <div class="filters-container">
+                    <div class="filters-header">
+                        <h4><i class="fas fa-filter"></i> Filtros</h4>
+                        <button type="button" class="btn-collapse d-lg-none" data-bs-toggle="collapse" data-bs-target="#filtersContent">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="filtersContent" class="collapse show">
+                        <form action="" method="get" id="filter-form">
+                            <!-- Campo oculto para preservar a busca -->
+                            {% if request.GET.search %}
+                            <input type="hidden" name="search" value="{{ request.GET.search }}">
+                            {% endif %}
+                            
+                            <!-- Filtro de Categorias Melhorado -->
+                            <div class="filter-group">
+                                <h5 class="filter-title">Categoria</h5>
+                                <div class="filter-body">
+                                    <div class="filter-check">
+                                        <input type="checkbox" name="categoria_all" id="cat-all" class="filter-input" 
+                                            {% if not request.GET.categorias %}checked{% endif %} onchange="toggleAllCategories(this)">
+                                        <label for="cat-all" class="filter-label">
+                                            <span class="check-indicator"></span>
+                                            <span class="category-name">Todas as Categorias</span>
+                                            <span class="filter-count">{{ produtos_total }}</span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="categories-container">
+                                        {% for categoria in categorias %}
+                                        <div class="filter-check">
+                                            <input type="checkbox" name="categorias" id="cat-{{ categoria.id }}" 
+                                                class="filter-input category-checkbox" 
+                                                value="{{ categoria.id }}" 
+                                                {% if categoria.id|stringformat:"i" in categorias_selecionadas %}checked{% endif %}
+                                                onchange="updateCategorySelection()">
+                                            <label for="cat-{{ categoria.id }}" class="filter-label">
+    <span class="check-indicator"></span>
+    <span class="category-name">{{ categoria.categoria_nome }}</span>
+    <span class="filter-count">{{ categoria.produto_count }}</span>
+</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro de Preço - Aumentado os inputs -->
+                            <div class="filter-group">
+                                <h5 class="filter-title">Faixa de Preço</h5>
+                                <div class="filter-body">
+                                    <div class="price-range-container">
+                                        <div class="price-inputs">
+                                            <div class="row">
+                                                <div class="col-12 mb-2">
+                                                    <label for="preco_min" class="form-label">Valor Mínimo:</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">R$</span>
+                                                        <input type="number" class="form-control form-control-lg" name="preco_min" id="preco_min" 
+                                                            placeholder="Valor mínimo" value="{{ request.GET.preco_min }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label for="preco_max" class="form-label">Valor Máximo:</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">R$</span>
+                                                        <input type="number" class="form-control form-control-lg" name="preco_max" id="preco_max" 
+                                                            placeholder="Valor máximo" value="{{ request.GET.preco_max }}">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </form>
-                                    <div class="dropdown ml-4">
-                                        <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
-                                                aria-expanded="false">
-                                                    Sort by
-                                                </button>
-                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
-                                            <a class="dropdown-item" href="#">Latest</a>
-                                            <a class="dropdown-item" href="#">Popularity</a>
-                                            <a class="dropdown-item" href="#">Best Rating</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro de Ano -->
+                            <div class="filter-group">
+                                <h5 class="filter-title">Ano</h5>
+                                <div class="filter-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label for="ano_min" class="form-label">De:</label>
+                                            <select class="form-select form-select-lg" name="ano_min" id="ano_min">
+                                                <option value="">Todos</option>
+                                                {% for ano in anos %}
+                                                <option value="{{ ano }}" {% if request.GET.ano_min == ano|stringformat:"i" %}selected{% endif %}>{{ ano }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="ano_max" class="form-label">Até:</label>
+                                            <select class="form-select form-select-lg" name="ano_max" id="ano_max">
+                                                <option value="">Todos</option>
+                                                {% for ano in anos %}
+                                                <option value="{{ ano }}" {% if request.GET.ano_max == ano|stringformat:"i" %}selected{% endif %}>{{ ano }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {% for prod in produtos %}
-                            <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                                <div class="card product-item border-0 mb-4">
-                                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}">
-                                            <img class="img-fluid w-100" src="{{ prod.imagens.url }}" alt="{{ prod.produto_nome }}">
-                                        </a>
-                                    </div>
-                                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                        <h6 class="text-truncate mb-3 px-3">{{ prod.produto_nome }}</h6>
-                                        <div class="d-flex justify-content-center">
-                                            <h6>R$ {{ prod.preco|floatformat:2 }}</h6>
+                            
+                            <!-- Filtro de Marca -->
+                            <div class="filter-group">
+                                <h5 class="filter-title">Marca</h5>
+                                <div class="filter-body">
+                                    <div class="filter-search mb-2">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            <input type="text" class="form-control" id="marca-search" placeholder="Buscar marca">
                                         </div>
                                     </div>
-                                    <div class="card-footer d-flex justify-content-between bg-light border">
-                                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}" class="btn btn-sm text-dark p-0">
-                                            <i class="fas fa-eye text-primary mr-1"></i>View Detail
-                                        </a>
+                                    <div class="filter-check-scroll">
+                                        <div class="filter-check">
+                                            <input type="radio" name="marca" id="marca-all" class="filter-input" value="" {% if not request.GET.marca %}checked{% endif %}>
+                                            <label for="marca-all" class="filter-label">
+                                                <span class="check-indicator"></span>
+                                                <span class="brand-name">Todas as Marcas</span>
+                                            </label>
+                                        </div>
+                                        {% for marca in marcas %}
+                                        <div class="filter-check marca-item">
+                                            <input type="radio" name="marca" id="marca-{{ forloop.counter }}" class="filter-input" value="{{ marca.nome }}" {% if request.GET.marca == marca.nome %}checked{% endif %}>
+                                            <label for="marca-{{ forloop.counter }}" class="filter-label">
+                                                <span class="check-indicator"></span>
+                                                <span class="brand-name">{{ marca.nome }}</span>
+                                                <span class="filter-count">{{ marca.count }}</span>
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro de Cor -->
+                            <div class="filter-group">
+                                <h5 class="filter-title">Cor</h5>
+                                <div class="filter-body">
+                                    <div class="colors-container">
+                                        <div class="color-item {% if not request.GET.cor %}active{% endif %}" data-color="all">
+                                            <input type="radio" name="cor" value="" id="cor-all" {% if not request.GET.cor %}checked{% endif %} style="display:none;">
+                                            <span class="color-circle all-colors">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                            <span class="color-name">Todas</span>
+                                        </div>
                                         
+                                        {% for cor in cores %}
+                                        <div class="color-item {% if request.GET.cor == cor.valor %}active{% endif %}" data-color="{{ cor.valor }}">
+                                            <input type="radio" name="cor" value="{{ cor.valor }}" id="cor-{{ cor.valor }}" {% if request.GET.cor == cor.valor %}checked{% endif %} style="display:none;">
+                                            <span class="color-circle" style="background-color: {{ cor.hex }}; {% if cor.valor == 'branco' %}border: 1px solid #ddd;{% endif %}"></span>
+                                            <span class="color-name">{{ cor.label }}</span>
+                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="col-12 pb-1">
-                        <nav aria-label="Page navigation">
-                          <ul class="pagination justify-content-center mb-3">
-                            <li class="page-item disabled">
-                              <a class="page-link" href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
-                              </a>
-                            </li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                              <a class="page-link" href="#" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Next</span>
-                              </a>
-                            </li>
-                          </ul>
-                        </nav>
+                            
+                            <!-- Botões de Aplicar/Limpar Filtros -->
+                            <div class="filter-actions">
+                                <a href="{% url 'produtos:loja' %}" class="btn btn-outline-third" id="clear-filters">
+                                    <i class="fas fa-times"></i> Limpar Filtros
+                                </a>
+                                <button type="submit" class="btn btn-third" id="apply-filters">
+                                    <i class="fas fa-check"></i> Aplicar Filtros
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- Shop Product End -->
+            
+            <!-- Produtos -->
+            <div class="col-lg-9">
+                <!-- Cabeçalho de Produtos -->
+                <div class="products-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="products-title">{{ produtos.count }} veículos encontrados</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="products-sort">
+                                <label for="sort-select">Ordenar por:</label>
+                                <select id="sort-select" class="form-select" onchange="updateSortOrder(this.value)">
+                                    <option value="recentes" {% if request.GET.sort == 'recentes' or not request.GET.sort %}selected{% endif %}>Mais recentes</option>
+                                    <option value="preco-asc" {% if request.GET.sort == 'preco-asc' %}selected{% endif %}>Menor preço</option>
+                                    <option value="preco-desc" {% if request.GET.sort == 'preco-desc' %}selected{% endif %}>Maior preço</option>
+                                    <option value="ano-desc" {% if request.GET.sort == 'ano-desc' %}selected{% endif %}>Ano mais novo</option>
+                                    <option value="ano-asc" {% if request.GET.sort == 'ano-asc' %}selected{% endif %}>Ano mais antigo</option>
+                                </select>
+                                <div class="view-options">
+                                    <button class="btn-view active" data-view="grid">
+                                        <i class="fas fa-th"></i>
+                                    </button>
+                                    <button class="btn-view" data-view="list">
+                                        <i class="fas fa-list"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lista de Produtos (Grid View por padrão) -->
+                <div class="products-container view-grid">
+                    <div class="row">
+                        {% for prod in produtos %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="vehicle-card">
+                                <div class="vehicle-image">
+                                    <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}">
+                                        {% if prod.get_primeira_imagem %}
+                                        <img src="{{ prod.get_primeira_imagem.url }}" alt="{{ prod.produto_nome }}" class="img-fluid">
+                                        {% else %}
+                                        <img src="{% static 'img/no-image.png' %}" alt="Sem imagem" class="img-fluid">
+                                        {% endif %}
+                                    </a>
+                                    {% if prod.is_new %}
+                                    <div class="vehicle-badge new">
+                                        <span>Novo</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="vehicle-info">
+                                    <div class="vehicle-category">{{ prod.categoria.nome }}</div>
+                                    <h3 class="vehicle-title">
+                                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}">
+                                            {{ prod.marca }} {{ prod.produto_nome }}
+                                        </a>
+                                    </h3>
+                                    <div class="vehicle-meta">
+                                        <span class="meta-item">
+                                            <i class="fas fa-calendar-alt"></i> {{ prod.ano_fabricacao }}/{{ prod.ano_modelo }}
+                                        </span>
+                                        <span class="meta-item">
+                                            <i class="fas fa-tachometer-alt"></i> {{ prod.km|default:"0" }} km
+                                        </span>
+                                        <span class="meta-item">
+                                            <i class="fas fa-map-marker-alt"></i> {{ prod.cidade }}/{{ prod.estado }}
+                                        </span>
+                                    </div>
+                                    <div class="vehicle-price">
+                                        <span class="price" data-value="{{ prod.preco }}">R$ {{ prod.preco|floatformat:2 }}</span>
+                                    </div>
+                                    <div class="vehicle-buttons">
+                                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}" class="btn btn-outline-third btn-sm">
+                                            <i class="fas fa-eye"></i> Ver Detalhes
+                                        </a>
+                                        <a href="https://wa.me/{{ prod.usuario.profile.whatsapp|default:'5500000000000'|cut:' '|cut:'('|cut:')'|cut:'-' }}" target="_blank" class="btn btn-third btn-sm">
+                                            <i class="fab fa-whatsapp"></i> Contatar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="empty-results">
+                                <i class="fas fa-car"></i>
+                                <h3>Nenhum veículo encontrado</h3>
+                                <p>Tente modificar os filtros para encontrar o que procura.</p>
+                                <a href="{% url 'produtos:loja' %}" class="btn btn-third" id="reset-search">Limpar Busca</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Paginação -->
+                {% if produtos.paginator.num_pages > 1 %}
+                <div class="pagination-container">
+                    <nav aria-label="Navegação de páginas">
+                        <ul class="pagination">
+                            {% if produtos.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Primeira">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ produtos.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Anterior">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in produtos.paginator.page_range %}
+                                {% if produtos.number == i %}
+                                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                                {% elif i > produtos.number|add:'-3' and i < produtos.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ i }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if produtos.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ produtos.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Próxima">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ produtos.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Última">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
-    <!-- Shop End -->
+</div>
 
+<!-- Campo oculto para ordenação -->
+<form id="sort-form" method="get" style="display: none;">
+    {% for key, value in request.GET.items %}
+    {% if key != 'sort' and key != 'page' %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endif %}
+    {% endfor %}
+    <input type="hidden" name="sort" id="sort-input" value="{{ request.GET.sort|default:'recentes' }}">
+</form>
+
+<style>
+:root {
+    --primary: #0a1e36;    /* Azul escuro */
+    --secondary: #30c5f5;  /* Azul claro/ciano */
+    --third: #0066cc;      /* Azul médio */
+    --accent: #ffcc00;     /* Amarelo */
+    --accent-hover: #ffd633; /* Amarelo mais claro */
+    --text-dark: #333333;
+    --text-light: #6c757d;
+    --border-color: #eaecef;
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --gradient-primary: linear-gradient(135deg, #0a4891 0%, #1a6eb9 100%); /* Gradient mais claro */
+    --shadow-soft: 0 5px 15px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Banner da Loja Redesenhado */
+.shop-banner {
+    background: var(--gradient-primary);
+    padding: 80px 0;
+    color: white;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 50px 50px;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('{% static "img/pattern-dots.png" %}');
+    opacity: 0.08;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+    padding-right: 30px;
+}
+
+.pre-title {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.shop-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.regular-text {
+    color: white; /* Texto "Encontre o" mais claro */
+    font-weight: 300; /* Menos negrito */
+}
+
+.highlight-text {
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+}
+
+.highlight-text:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background-color: rgba(255, 204, 0, 0.3);
+    z-index: -1;
+    border-radius: 10px;
+}
+
+.shop-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+    font-weight: 400;
+    max-width: 90%;
+}
+
+.banner-search-form {
+    max-width: 100%;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 30px;
+}
+
+.banner-search-form .form-control {
+    height: 60px;
+    border-radius: 30px;
+    border: none;
+    padding-left: 25px;
+    font-size: 1.1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.banner-search-form .btn-search {
+    border-radius: 0 30px 30px 0;
+    background-color: var(--accent);
+    color: var(--primary);
+    font-weight: 700;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.banner-search-form .btn-search:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.banner-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+.feature-item i {
+    color: var(--accent);
+    margin-right: 8px;
+    font-size: 1rem;
+}
+
+.feature-item span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Breadcrumb */
+.shop-breadcrumb {
+    background-color: var(--bg-light);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 30px;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--third);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-dark);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: var(--text-light);
+}
+
+/* Seção principal da loja */
+.shop-section {
+    padding-bottom: 60px;
+}
+
+/* Filtros Melhorados */
+.filters-container {
+    background-color: var(--bg-white);
+    border-radius: 15px;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+}
+
+.filters-header {
+    background: linear-gradient(135deg, #2980b9 0%, #3498db 100%); /* Header mais claro */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filters-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.filters-header .btn-collapse {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.filter-group {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--third);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.filter-body {
+    padding-bottom: 5px;
+}
+
+/* Melhorias nos filtros de categoria */
+.filter-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-dark);
+    font-weight: normal;
+    margin: 0;
+    transition: all 0.2s;
+    padding: 6px 0;
+}
+
+.category-name, .brand-name {
+    font-weight: 500;
+    color: var(--text-dark);
+    flex: 1;
+    padding-left: 5px;
+    font-size: 14px;
+}
+
+.filter-check {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.filter-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.check-indicator {
+    position: relative;
+    height: 20px;
+    width: 20px;
+    background-color: var(--bg-light);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.filter-input:checked ~ .filter-label .check-indicator {
+    background-color: var(--third);
+    border-color: var(--third);
+}
+
+.filter-input:checked ~ .filter-label .check-indicator:after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    display: block;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.7rem;
+}
+
+.filter-label:hover {
+    color: var(--third);
+}
+
+.filter-count {
+    background: var(--bg-light);
+    color: var(--text-light);
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 5px;
+    flex-shrink: 0;
+}
+
+.categories-container {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-top: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.categories-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.categories-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.categories-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+/* Melhorias no filtro de preço */
+.price-range-container {
+    padding: 10px 0;
+}
+
+.price-inputs .input-group {
+    margin-bottom: 10px;
+}
+
+.price-inputs .input-group-text {
+    background-color: var(--third);
+    color: white;
+    border-color: var(--third);
+    font-weight: bold;
+}
+
+.price-inputs .form-control {
+    border-left: none;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-label {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+/* Scroll para muitas opções */
+.filter-check-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-top: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.filter-check-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.filter-check-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.filter-check-scroll::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.filter-search {
+    margin-bottom: 15px;
+}
+
+.filter-search .input-group-text {
+    background-color: var(--bg-light);
+    border-right: none;
+}
+
+.filter-search .form-control {
+    border-left: none;
+}
+
+/* Seleção de cores */
+.colors-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.color-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    width: 60px;
+}
+
+.color-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    transition: all 0.2s;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.all-colors {
+    background: linear-gradient(135deg, #ff0000 0%, #ff8000 20%, #ffff00 40%, #00ff00 60%, #0000ff 80%, #8000ff 100%);
+}
+
+.color-name {
+    font-size: 0.8rem;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.color-item.active .color-circle {
+    box-shadow: 0 0 0 3px var(--third);
+}
+
+.color-item.active .color-circle i {
+    color: white;
+    font-size: 0.9rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Botões de ação para filtros */
+.filter-actions {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.filter-actions .btn {
+    flex: 1;
+    padding: 10px 15px;
+    font-weight: 600;
+}
+
+/* Cabeçalho de Produtos */
+.products-header {
+    background-color: var(--bg-white);
+    border-radius: 15px;
+    box-shadow: var(--shadow-soft);
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-color);
+}
+
+.products-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.products-sort {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.products-sort label {
+    margin-right: 10px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.products-sort .form-select {
+    width: auto;
+    margin-right: 15px;
+    border-color: var(--border-color);
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.view-options {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-view {
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-view.active, .btn-view:hover {
+    background-color: var(--third);
+    color: white;
+    border-color: var(--third);
+}
+
+/* Cards de Veículos */
+.vehicle-card {
+    background-color: var(--bg-white);
+    border-radius: 15px;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.vehicle-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-medium);
+}
+
+.vehicle-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.vehicle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+}
+
+.vehicle-card:hover .vehicle-image img {
+    transform: scale(1.05);
+}
+
+.vehicle-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 2;
+    letter-spacing: 0.5px;
+}
+
+.vehicle-badge.new {
+    background-color: var(--accent);
+    color: var(--primary);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.vehicle-info {
+    padding: 25px;
+}
+
+.vehicle-category {
+    font-size: 0.85rem;
+    color: var(--third);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.vehicle-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+}
+
+.vehicle-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.vehicle-title a:hover {
+    color: var(--third);
+}
+
+.vehicle-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+}
+
+.meta-item i {
+    margin-right: 5px;
+    color: var(--third);
+}
+
+.vehicle-price {
+    margin-bottom: 20px;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--third);
+}
+
+.vehicle-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.vehicle-buttons .btn {
+    flex: 1;
+    padding: 10px;
+    font-weight: 600;
+}
+
+/* List View */
+.view-list .vehicle-card {
+    display: flex;
+    flex-direction: row;
+    height: 220px;
+}
+
+.view-list .vehicle-image {
+    flex: 0 0 320px;
+    height: 100%;
+}
+
+.view-list .vehicle-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.view-list .vehicle-meta {
+    margin-top: auto;
+    margin-bottom: 15px;
+}
+
+/* Resultado vazio */
+.empty-results {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: var(--bg-white);
+    border-radius: 15px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+}
+
+.empty-results i {
+    font-size: 4rem;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-results h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+
+.empty-results p {
+    color: var(--text-light);
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+}
+
+/* Paginação */
+.pagination-container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.page-item.active .page-link {
+    background-color: var(--third);
+    border-color: var(--third);
+}
+
+.page-link {
+    color: var(--third);
+    border-color: var(--border-color);
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border-radius: 8px;
+    margin: 0 3px;
+}
+
+.page-link:hover {
+    color: var(--primary);
+    background-color: var(--bg-light);
+    border-color: var(--border-color);
+}
+
+.page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.25);
+}
+
+/* Botões */
+.btn-third {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+    border-radius: 8px;
+}
+
+.btn-third:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.btn-outline-third {
+    color: var(--third);
+    border-color: var(--third);
+    background-color: transparent;
+    border-radius: 8px;
+}
+
+.btn-outline-third:hover {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+}
+
+/* Responsividade */
+@media (max-width: 991px) {
+    .shop-banner {
+        padding: 50px 0;
+    }
+    
+    .shop-title {
+        font-size: 2.5rem;
+    }
+    
+    .products-sort {
+        margin-top: 15px;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    .view-list .vehicle-card {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .view-list .vehicle-image {
+        flex: none;
+        height: 200px;
+    }
+    
+    .products-header .row {
+        text-align: center;
+    }
+    
+    .products-sort {
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .filters-container {
+        margin-bottom: 20px;
+    }
+    
+    .banner-features {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 575px) {
+    .shop-title {
+        font-size: 2rem;
+    }
+    
+    .shop-subtitle {
+        font-size: 1rem;
+    }
+    
+    .banner-search-form {
+        max-width: 100%;
+    }
+    
+    .banner-search-form .form-control {
+        height: 50px;
+    }
+    
+    .vehicle-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .vehicle-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Alternar entre visualização em grade e lista
+    const viewButtons = document.querySelectorAll('.btn-view');
+    const productsContainer = document.querySelector('.products-container');
+    
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const viewType = this.getAttribute('data-view');
+            
+            // Remover classes ativas
+            viewButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Alternar classe de visualização
+            productsContainer.className = 'products-container';
+            productsContainer.classList.add('view-' + viewType);
+            
+            // Salvar preferência no localStorage
+            localStorage.setItem('shop-view', viewType);
+        });
+    });
+    
+    // Restaurar visualização do localStorage
+    const savedView = localStorage.getItem('shop-view');
+    if (savedView) {
+        const viewButton = document.querySelector(`.btn-view[data-view="${savedView}"]`);
+        if (viewButton) {
+            viewButton.click();
+        }
+    }
+    
+    // Configurar filtro de cores
+    const colorItems = document.querySelectorAll('.color-item');
+    
+    colorItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const radioInput = this.querySelector('input[type="radio"]');
+            radioInput.checked = true;
+            
+            // Remover classe ativa de todos
+            colorItems.forEach(ci => ci.classList.remove('active'));
+            // Adicionar classe ativa ao item clicado
+            this.classList.add('active');
+        });
+    });
+    
+    // Filtro de busca para marcas
+    const marcaSearch = document.getElementById('marca-search');
+    if (marcaSearch) {
+        marcaSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const marcaItems = document.querySelectorAll('.marca-item');
+            
+            marcaItems.forEach(item => {
+                const marcaNome = item.querySelector('.brand-name').textContent.toLowerCase();
+                if (marcaNome.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Formatação de preços
+    const priceElements = document.querySelectorAll('.price');
+    priceElements.forEach(element => {
+        const value = parseFloat(element.getAttribute('data-value') || 0);
+        if (!isNaN(value)) {
+            element.textContent = 'R$ ' + value.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    });
+    
+    // Função para atualizar ordenação
+    window.updateSortOrder = function(sortValue) {
+        document.getElementById('sort-input').value = sortValue;
+        document.getElementById('sort-form').submit();
+    };
+    
+    // Função para alternar seleção de todas as categorias
+    window.toggleAllCategories = function(checkbox) {
+        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+        categoryCheckboxes.forEach(cb => {
+            cb.checked = !checkbox.checked;
+        });
+    };
+    
+    // Função para atualizar seleção de categorias
+    window.updateCategorySelection = function() {
+        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+        const allCategories = document.getElementById('cat-all');
+        const anyChecked = Array.from(categoryCheckboxes).some(cb => cb.checked);
+        
+        allCategories.checked = !anyChecked;
+    };
+});
+</script>
 {% endblock %}
