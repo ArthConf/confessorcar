@@ -26,7 +26,15 @@
                                 <i class="fas fa-car"></i> Informações Básicas
                             </div>
                             <div class="row g-3">
-                                <div class="col-md-8">
+                                <div class="col-md-6">
+                                    <label for="{{ form.marca.id_for_label }}" class="form-label">Marca</label>
+                                    {{ form.marca }}
+                                    {% if form.marca.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.marca.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6">
                                     <label for="{{ form.produto_nome.id_for_label }}" class="form-label">Modelo do Veículo</label>
                                     {{ form.produto_nome }}
                                     {% if form.produto_nome.errors %}
@@ -34,21 +42,57 @@
                                     {% endif %}
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label for="{{ form.categoria.id_for_label }}" class="form-label">Categoria</label>
-                                    {{ form.categoria }}
+                                    <select name="categoria" class="form-select" id="{{ form.categoria.id_for_label }}">
+                                        <option value="">Selecione uma categoria</option>
+                                        {% for categoria in categorias %}
+                                        <option value="{{ categoria.id }}" {% if form.categoria.value|stringformat:"i" == categoria.id|stringformat:"i" %}selected{% endif %}>{{ categoria.categoria_nome }}</option>
+                                        {% endfor %}
+                                    </select>
                                     {% if form.categoria.errors %}
                                     <div class="invalid-feedback d-block">{{ form.categoria.errors }}</div>
                                     {% endif %}
                                 </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="{{ form.preco.id_for_label }}" class="form-label">Preço</label>
+                                    {{ form.preco }}
+                                    {% if form.preco.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.preco.errors }}</div>
+                                    {% endif %}
+                                </div>
                             </div>
 
-                            <!-- Seção: Detalhes do Veículo -->
+                            <!-- Seção: Localização -->
+                            <div class="section-titulo mt-4">
+                                <i class="fas fa-map-marker-alt"></i> Localização
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.estado.id_for_label }}" class="form-label">Estado</label>
+                                    {{ form.estado }}
+                                    {% if form.estado.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.estado.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_cidade" class="form-label">Cidade</label>
+                                    {{ form.cidade_texto }}
+                                    {% if form.cidade_texto.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.cidade_texto.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Seção: Detalhes do Veículo - Reorganizado em grupos lógicos -->
                             <div class="section-titulo mt-4">
                                 <i class="fas fa-info-circle"></i> Detalhes do Veículo
                             </div>
+                            
                             <div class="row g-3">
-                                <div class="col-md-3">
+                                <!-- Grupo: Ano e Quilometragem -->
+                                <div class="col-md-4">
                                     <label for="{{ form.ano_fabricacao.id_for_label }}" class="form-label">Ano Fabricação</label>
                                     <select class="form-select" id="{{ form.ano_fabricacao.id_for_label }}" name="ano_fabricacao">
                                         <option value="">Selecione o ano</option>
@@ -56,7 +100,7 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="{{ form.ano_modelo.id_for_label }}" class="form-label">Ano Modelo</label>
                                     <select class="form-select" id="{{ form.ano_modelo.id_for_label }}" name="ano_modelo">
                                         <option value="">Selecione o ano</option>
@@ -64,62 +108,123 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label for="{{ form.quilometragem.id_for_label }}" class="form-label">Quilometragem</label>
                                     {{ form.quilometragem }}
+                                    {% if form.quilometragem.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.quilometragem.errors }}</div>
+                                    {% endif %}
                                 </div>
-
-                                <div class="col-md-3">
-                                    <label for="{{ form.cor.id_for_label }}" class="form-label">Cor</label>
-                                    {{ form.cor }}
+                            </div>
+                            
+                            <div class="row g-3 mt-1">
+                                <!-- Grupo: Motor e Câmbio -->
+                                <div class="col-md-4">
+                                    <label for="{{ form.potencia.id_for_label }}" class="form-label">Potência do Motor</label>
+                                    {{ form.potencia }}
+                                    {% if form.potencia.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.potencia.errors }}</div>
+                                    {% endif %}
                                 </div>
-
+                                
+                                <div class="col-md-4">
+                                    <label for="{{ form.cilindrada.id_for_label }}" class="form-label">Cilindrada</label>
+                                    {{ form.cilindrada }}
+                                    {% if form.cilindrada.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.cilindrada.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
                                 <div class="col-md-4">
                                     <label for="{{ form.cambio.id_for_label }}" class="form-label">Câmbio</label>
                                     {{ form.cambio }}
+                                    {% if form.cambio.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.cambio.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mt-1">
+                                <!-- Grupo: Características Físicas -->
+                                <div class="col-md-3">
+                                    <label for="{{ form.cor.id_for_label }}" class="form-label">Cor</label>
+                                    {{ form.cor }}
+                                    {% if form.cor.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.cor.errors }}</div>
+                                    {% endif %}
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <label for="{{ form.portas.id_for_label }}" class="form-label">N° de Portas</label>
+                                    {{ form.portas }}
+                                    {% if form.portas.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.portas.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-3">
                                     <label for="{{ form.combustivel.id_for_label }}" class="form-label">Combustível</label>
                                     {{ form.combustivel }}
+                                    {% if form.combustivel.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.combustivel.errors }}</div>
+                                    {% endif %}
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label for="{{ form.placa_final.id_for_label }}" class="form-label">Final da Placa</label>
                                     {{ form.placa_final }}
+                                    {% if form.placa_final.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.placa_final.errors }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
 
-                            <!-- Seção: Preço e Status -->
+                            <!-- Seção: Status do Veículo -->
                             <div class="section-titulo mt-4">
-                                <i class="fas fa-tag"></i> Preço e Status
+                                <i class="fas fa-tag"></i> Status do Veículo
                             </div>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="{{ form.preco.id_for_label }}" class="form-label">Preço</label>
-                                    {{ form.preco }}
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="status-checks">
-                                        <div class="form-check custom-check">
-                                            {{ form.aceita_troca }}
-                                            <label class="form-check-label" for="{{ form.aceita_troca.id_for_label }}">
-                                                <i class="fas fa-exchange-alt"></i> Aceita Troca
-                                            </label>
-                                        </div>
-                                        <div class="form-check custom-check">
-                                            {{ form.ipva_pago }}
-                                            <label class="form-check-label" for="{{ form.ipva_pago.id_for_label }}">
-                                                <i class="fas fa-receipt"></i> IPVA Pago
-                                            </label>
-                                        </div>
-                                        <div class="form-check custom-check">
-                                            {{ form.esta_disponivel }}
-                                            <label class="form-check-label" for="{{ form.esta_disponivel.id_for_label }}">
-                                                <i class="fas fa-check-circle"></i> Disponível para venda
-                                            </label>
+                            <div class="row g-3 align-items-center">
+                                <div class="col-lg-8 offset-lg-2">
+                                    <div class="status-card">
+                                        <div class="status-option-group">
+                                            <div class="status-item">
+                                                {{ form.aceita_troca }}
+                                                <label class="status-label" for="{{ form.aceita_troca.id_for_label }}">
+                                                    <i class="status-icon fas fa-exchange-alt"></i>
+                                                    <span>Aceita Troca</span>
+                                                </label>
+                                            </div>
+                                            <div class="status-item">
+                                                {{ form.ipva_pago }}
+                                                <label class="status-label" for="{{ form.ipva_pago.id_for_label }}">
+                                                    <i class="status-icon fas fa-receipt"></i>
+                                                    <span>IPVA Pago</span>
+                                                </label>
+                                            </div>
+                                            <div class="status-item">
+                                                {{ form.esta_disponivel }}
+                                                <label class="status-label" for="{{ form.esta_disponivel.id_for_label }}">
+                                                    <i class="status-icon fas fa-check-circle"></i>
+                                                    <span>Disponível</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção: Descrição do Veículo -->
+                            <div class="section-titulo mt-4">
+                                <i class="fas fa-align-left"></i> Descrição do Veículo
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="{{ form.descricao.id_for_label }}" class="form-label">Informações Relevantes</label>
+                                    <p class="text-muted small">Forneça detalhes adicionais sobre o veículo, como estado de conservação, histórico de manutenção ou qualquer característica especial.</p>
+                                    {{ form.descricao }}
+                                    {% if form.descricao.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.descricao.errors }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
 
@@ -130,145 +235,107 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <div class="opcionais-container">
-                                    <!-- Opcionais organizados por categoria em grade visível diretamente -->
-                                    <div class="opcionais-category">
-                                        <h6 class="opcionais-category-title"><i class="fas fa-couch"></i> Conforto</h6>
-                                        <div class="opcionais-grid">
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Ar condicionado" id="op_ar_condicionado">
-                                                <label class="form-check-label" for="op_ar_condicionado">Ar condicionado</label>
+                                        <!-- Abas para categorias de opcionais -->
+                                        <ul class="nav nav-tabs mb-3" id="opcionaisTabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="conforto-tab" data-bs-toggle="tab" data-bs-target="#conforto-tab-pane" type="button" role="tab" aria-controls="conforto-tab-pane" aria-selected="true">
+                                                    <i class="fas fa-couch"></i> Conforto
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="seguranca-tab" data-bs-toggle="tab" data-bs-target="#seguranca-tab-pane" type="button" role="tab" aria-controls="seguranca-tab-pane" aria-selected="false">
+                                                    <i class="fas fa-shield-alt"></i> Segurança
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="tecnologia-tab" data-bs-toggle="tab" data-bs-target="#tecnologia-tab-pane" type="button" role="tab" aria-controls="tecnologia-tab-pane" aria-selected="false">
+                                                    <i class="fas fa-microchip"></i> Tecnologia
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="outros-tab" data-bs-toggle="tab" data-bs-target="#outros-tab-pane" type="button" role="tab" aria-controls="outros-tab-pane" aria-selected="false">
+                                                    <i class="fas fa-plus-circle"></i> Outros
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        
+                                        <!-- Conteúdo das abas -->
+                                        <div class="tab-content" id="opcionaisContent">
+                                            <!-- Aba Conforto -->
+                                            <div class="tab-pane fade show active" id="conforto-tab-pane" role="tabpanel" aria-labelledby="conforto-tab" tabindex="0">
+                                                <div class="tab-header">
+                                                    <h6><i class="fas fa-couch"></i> Itens de Conforto</h6>
+                                                </div>
+                                                <div class="opcionais-grid">
+                                                    {% for opcional_value, opcional_label in OPCIONAIS_CONFORTO %}
+                                                    <div class="form-check">
+                                                        <input class="form-check-input opcional-check" type="checkbox" value="{{ opcional_value }}" id="op_{{ forloop.counter }}_conforto">
+                                                        <label class="form-check-label" for="op_{{ forloop.counter }}_conforto">{{ opcional_label }}</label>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
                                             </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Direção hidráulica" id="op_direcao_hidraulica">
-                                                <label class="form-check-label" for="op_direcao_hidraulica">Direção hidráulica</label>
+                                            
+                                            <!-- Aba Segurança -->
+                                            <div class="tab-pane fade" id="seguranca-tab-pane" role="tabpanel" aria-labelledby="seguranca-tab" tabindex="0">
+                                                <div class="tab-header">
+                                                    <h6><i class="fas fa-shield-alt"></i> Itens de Segurança</h6>
+                                                </div>
+                                                <div class="opcionais-grid">
+                                                    {% for opcional_value, opcional_label in OPCIONAIS_SEGURANCA %}
+                                                    <div class="form-check">
+                                                        <input class="form-check-input opcional-check" type="checkbox" value="{{ opcional_value }}" id="op_{{ forloop.counter }}_seguranca">
+                                                        <label class="form-check-label" for="op_{{ forloop.counter }}_seguranca">{{ opcional_label }}</label>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
                                             </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Direção elétrica" id="op_direcao_eletrica">
-                                                <label class="form-check-label" for="op_direcao_eletrica">Direção elétrica</label>
+                                            
+                                            <!-- Aba Tecnologia -->
+                                            <div class="tab-pane fade" id="tecnologia-tab-pane" role="tabpanel" aria-labelledby="tecnologia-tab" tabindex="0">
+                                                <div class="tab-header">
+                                                    <h6><i class="fas fa-microchip"></i> Itens de Tecnologia</h6>
+                                                </div>
+                                                <div class="opcionais-grid">
+                                                    {% for opcional_value, opcional_label in OPCIONAIS_TECNOLOGIA %}
+                                                    <div class="form-check">
+                                                        <input class="form-check-input opcional-check" type="checkbox" value="{{ opcional_value }}" id="op_{{ forloop.counter }}_tecnologia">
+                                                        <label class="form-check-label" for="op_{{ forloop.counter }}_tecnologia">{{ opcional_label }}</label>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
                                             </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Vidros elétricos" id="op_vidros_eletricos">
-                                                <label class="form-check-label" for="op_vidros_eletricos">Vidros elétricos</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Travas elétricas" id="op_travas_eletricas">
-                                                <label class="form-check-label" for="op_travas_eletricas">Travas elétricas</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Bancos em couro" id="op_bancos_couro">
-                                                <label class="form-check-label" for="op_bancos_couro">Bancos em couro</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="opcionais-category">
-                                        <h6 class="opcionais-category-title"><i class="fas fa-shield-alt"></i> Segurança</h6>
-                                        <div class="opcionais-grid">
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Airbag" id="op_airbag">
-                                                <label class="form-check-label" for="op_airbag">Airbag</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Alarme" id="op_alarme">
-                                                <label class="form-check-label" for="op_alarme">Alarme</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="ABS" id="op_abs">
-                                                <label class="form-check-label" for="op_abs">Freios ABS</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Controle de tração" id="op_controle_tracao">
-                                                <label class="form-check-label" for="op_controle_tracao">Controle de tração</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Controle de estabilidade" id="op_controle_estabilidade">
-                                                <label class="form-check-label" for="op_controle_estabilidade">Controle de estabilidade</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Sensor de estacionamento" id="op_sensor_estacionamento">
-                                                <label class="form-check-label" for="op_sensor_estacionamento">Sensor de estacionamento</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="opcionais-category">
-                                        <h6 class="opcionais-category-title"><i class="fas fa-microchip"></i> Tecnologia</h6>
-                                        <div class="opcionais-grid">
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Multimídia" id="op_multimidia">
-                                                <label class="form-check-label" for="op_multimidia">Multimídia</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Bluetooth" id="op_bluetooth">
-                                                <label class="form-check-label" for="op_bluetooth">Bluetooth</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="GPS" id="op_gps">
-                                                <label class="form-check-label" for="op_gps">GPS</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Câmera de ré" id="op_camera_re">
-                                                <label class="form-check-label" for="op_camera_re">Câmera de ré</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Entrada USB" id="op_entrada_usb">
-                                                <label class="form-check-label" for="op_entrada_usb">Entrada USB</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Comando de voz" id="op_comando_voz">
-                                                <label class="form-check-label" for="op_comando_voz">Comando de voz</label>
+                                            
+                                            <!-- Aba Outros -->
+                                            <div class="tab-pane fade" id="outros-tab-pane" role="tabpanel" aria-labelledby="outros-tab" tabindex="0">
+                                                <div class="tab-header">
+                                                    <h6><i class="fas fa-plus-circle"></i> Outros Itens</h6>
+                                                </div>
+                                                <div class="opcionais-grid">
+                                                    {% for opcional_value, opcional_label in OPCIONAIS_OUTROS %}
+                                                    <div class="form-check">
+                                                        <input class="form-check-input opcional-check" type="checkbox" value="{{ opcional_value }}" id="op_{{ forloop.counter }}_outros">
+                                                        <label class="form-check-label" for="op_{{ forloop.counter }}_outros">{{ opcional_label }}</label>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="opcionais-category">
-                                        <h6 class="opcionais-category-title"><i class="fas fa-plus-circle"></i> Outros</h6>
-                                        <div class="opcionais-grid">
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Teto solar" id="op_teto_solar">
-                                                <label class="form-check-label" for="op_teto_solar">Teto solar</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Rodas de liga leve" id="op_rodas_liga">
-                                                <label class="form-check-label" for="op_rodas_liga">Rodas de liga leve</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Faróis de neblina" id="op_farois_neblina">
-                                                <label class="form-check-label" for="op_farois_neblina">Faróis de neblina</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input opcional-check" type="checkbox" value="Faróis de LED" id="op_farois_led">
-                                                <label class="form-check-label" for="op_farois_led">Faróis de LED</label>
+                                        
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" id="limparOpcionais">
+                                                    <i class="fas fa-times"></i> Limpar seleção
+                                                </button>
                                             </div>
                                         </div>
+                                        
+                                        <!-- Campo original oculto -->
+                                        <div style="display:none;">{{ form.opcionais }}</div>
+                                        
+                                        <!-- Lista de opcionais selecionados -->
+                                        <div class="selected-opcionais mt-3" id="selectedOpcionaisList"></div>
                                     </div>
-                                    
-                                    
-                                    <div class="row mt-3">
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" id="limparOpcionais">
-                                                <i class="fas fa-times"></i> Limpar seleção
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Campo original oculto -->
-                                    <div style="display:none;">{{ form.opcionais }}</div>
-                                    
-                                    <!-- Lista de opcionais selecionados -->
-                                    <div class="selected-opcionais mt-3" id="selectedOpcionaisList"></div>
-                                </div>
-                            </div>
-                            </div>
-                            <!-- Seção: Descrição do Veículo -->
-                            <div class="section-titulo mt-4">
-                                <i class="fas fa-align-left"></i> Descrição do Veículo
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-12">
-                                    <label for="{{ form.descricao.id_for_label }}" class="form-label">Informações Relevantes</label>
-                                    <p class="text-muted small">Forneça detalhes adicionais sobre o veículo, como estado de conservação, histórico de manutenção ou qualquer característica especial.</p>
-                                    {{ form.descricao }}
                                 </div>
                             </div>
 
@@ -279,7 +346,6 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="image-upload-container">
-                                        <!-- Alterado para aceitar apenas jpg, jpeg e png -->
                                         <input type="file" id="custom-image-input" class="d-none" multiple accept=".jpg,.jpeg,.png">
                                         <label for="custom-image-input" class="btn btn-anuncieai mb-3" id="image-select-button">
                                             <i class="fas fa-upload"></i> Selecionar Imagens
@@ -304,20 +370,44 @@
                             </div>
                             
                             <!-- Visualização de imagens já existentes (quando houver) -->
-                            {% if form.instance.id and form.instance.imagens.all %}
+                            {% if form.instance.id and form.instance.imagens_produto.all %}
                             <div class="row mt-4">
                                 <div class="col-12">
                                     <h5 class="mb-3">Imagens Atuais:</h5>
-                                    <div class="row g-2">
-                                        {% for imagem in form.instance.imagens.all %}
-                                        <div class="col-md-3 col-sm-4 col-6 mb-3">
-                                            <div class="existing-image-card">
-                                                <img src="{{ imagem.imagem.url }}" class="img-thumbnail" alt="Imagem do veículo {{ forloop.counter }}">
-                                                <div class="image-overlay">
-                                                    <button type="button" class="btn btn-sm btn-light view-image-btn" data-bs-toggle="modal" data-bs-target="#imageCarouselModal" data-slide-index="{{ forloop.counter0 }}">
-                                                        <i class="fas fa-search-plus"></i>
-                                                    </button>
+                                    <!-- Input oculto para armazenar a ordem das imagens -->
+                                    <input type="hidden" name="imagens_ordem" id="imagens_ordem" value="">
+                                    <div class="row g-2" id="imagens-existentes-container">
+                                        {% for imagem in form.instance.imagens_produto.all %}
+                                        <div class="col-md-3 col-sm-4 col-6 mb-3" data-imagem-id="{{ imagem.id }}" data-ordem="{{ imagem.ordem }}">
+                                            <div class="existing-image-card {% if imagem.ordem == 0 %}is-capa{% endif %}">
+                                                <!-- Adicionar checkbox para manter a imagem -->
+                                                <div class="image-checkbox">
+                                                    <input type="checkbox" name="manter_imagem_{{ imagem.id }}" id="manter_imagem_{{ imagem.id }}" class="keep-image-check" checked>
+                                                    <label for="manter_imagem_{{ imagem.id }}" class="keep-image-label">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </label>
                                                 </div>
+                                                
+                                                <img src="{{ imagem.imagem.url }}" class="img-thumbnail" alt="Imagem do veículo {{ forloop.counter }}">
+                                                
+                                                <div class="image-overlay">
+                                                    <div class="image-actions">
+                                                        <!-- Botões existentes -->
+                                                        <button type="button" class="btn btn-sm btn-light view-image-btn" data-bs-toggle="modal" data-bs-target="#imageCarouselModal" data-slide-index="{{ forloop.counter0 }}" title="Visualizar">
+                                                            <i class="fas fa-search-plus"></i>
+                                                        </button>
+                                                        {% if imagem.ordem != 0 %}
+                                                        <button type="button" class="btn btn-sm btn-primary set-cover-btn" data-imagem-id="{{ imagem.id }}" title="Definir como capa">
+                                                            <i class="fas fa-star"></i>
+                                                        </button>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% if imagem.ordem == 0 %}
+                                                <div class="capa-badge">
+                                                    <span>Capa</span>
+                                                </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         {% endfor %}
@@ -334,11 +424,14 @@
                                                 <div class="modal-body">
                                                     <div id="existingImageCarousel" class="carousel slide" data-bs-ride="false">
                                                         <div class="carousel-inner">
-                                                            {% for imagem in form.instance.imagens.all %}
+                                                            {% for imagem in form.instance.imagens_produto.all %}
                                                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                                                 <img src="{{ imagem.imagem.url }}" class="d-block w-100 carousel-img" alt="Imagem do veículo {{ forloop.counter }}">
                                                                 <div class="carousel-caption">
-                                                                    <span class="badge bg-primary">Imagem {{ forloop.counter }} de {{ form.instance.imagens.all|length }}</span>
+                                                                    <span class="badge bg-primary">Imagem {{ forloop.counter }} de {{ form.instance.imagens_produto.all|length }}</span>
+                                                                    {% if imagem.ordem == 0 %}
+                                                                    <span class="badge bg-success ms-2">Capa</span>
+                                                                    {% endif %}
                                                                 </div>
                                                             </div>
                                                             {% endfor %}
@@ -352,7 +445,7 @@
                                                             <span class="visually-hidden">Próximo</span>
                                                         </button>
                                                         <div class="carousel-indicators">
-                                                            {% for imagem in form.instance.imagens.all %}
+                                                            {% for imagem in form.instance.imagens_produto.all %}
                                                             <button type="button" data-bs-target="#existingImageCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ forloop.counter }}"></button>
                                                             {% endfor %}
                                                         </div>
@@ -371,7 +464,7 @@
 
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Salvar
+                                <i class="fas fa-save"></i> Salvar Veículo
                             </button>
                             <a href="{% url 'produtos:gerenciar_produtos' %}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Voltar
@@ -410,6 +503,47 @@
     --third-color: #0066cc;      /* Azul médio do gradiente */
     --light-color: #f0f8ff;      /* Azul muito claro para fundos */
     --gray-color: #707070;       /* Cinza do logotipo */
+}
+
+.image-checkbox {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+.keep-image-check {
+    display: none;
+}
+
+.keep-image-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.keep-image-check:not(:checked) + .keep-image-label {
+    background-color: rgba(220, 53, 69, 0.8);
+}
+
+.keep-image-check:not(:checked) + .keep-image-label i {
+    color: white;
+    content: '\f00d'; /* Ícone de X */
+}
+
+.keep-image-check:checked + .keep-image-label i {
+    color: #28a745;
+}
+
+.keep-image-check:not(:checked) ~ img {
+    opacity: 0.5;
+    filter: grayscale(80%);
 }
 
 .card {
@@ -477,38 +611,152 @@
     margin-bottom: 1rem;
 }
 
-.opcionais-panel {
-    position: relative;
-    width: 100%;
-    max-width: none;
-    background-color: transparent;
+/* Navegação de abas para opcionais */
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+    color: var(--gray-color);
     border: none;
-    box-shadow: none;
-    padding: 0;
-    margin-top: 0;
-    display: block;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    margin-right: 5px;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid transparent;
 }
 
-.opcionais-category {
-    margin-bottom: 1.5rem;
+.nav-tabs .nav-link:hover {
+    color: var(--third-color);
+    background-color: rgba(48, 197, 245, 0.05);
+    border-color: #dee2e6 #dee2e6 transparent;
 }
 
-.opcionais-category-title {
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    background-color: white;
+    border-color: #dee2e6 #dee2e6 white;
+    font-weight: 600;
+    position: relative;
+}
+
+.nav-tabs .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+}
+
+.nav-tabs .nav-link i {
+    margin-right: 5px;
+    color: var(--secondary-color);
+}
+
+.tab-header {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+}
+
+.tab-header h6 {
     font-weight: 600;
     color: var(--primary-color);
-    border-bottom: 1px solid var(--secondary-color);
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-    font-size: 1rem;
+    margin: 0;
+}
+
+.tab-header h6 i {
+    color: var(--secondary-color);
+    margin-right: 5px;
+}
+
+.tab-content {
+    padding: 15px 5px 5px;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
 }
 
 .opcionais-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px 5px;
+}
+
+/* Status options styling - Melhorado */
+.status-card {
+    background-color: rgba(48, 197, 245, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.status-option-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.status-item {
+    text-align: center;
+    position: relative;
+    min-width: 120px;
+}
+
+.status-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.status-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
+    border: 1px solid #dee2e6;
+}
+
+.status-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: var(--third-color);
+    transition: all 0.2s ease;
+}
+
+.status-item input[type="checkbox"]:checked + .status-label {
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f5ff 100%);
+    border-color: var(--secondary-color);
+    box-shadow: 0 3px 10px rgba(48, 197, 245, 0.15);
+}
+
+.status-item input[type="checkbox"]:checked + .status-label .status-icon {
+    color: var(--secondary-color);
+    transform: scale(1.2);
 }
 
 @media (max-width: 768px) {
+    .status-option-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .status-item {
+        width: 100%;
+    }
+    
     .opcionais-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
@@ -539,17 +787,15 @@
     box-shadow: 0 0 0 0.2rem rgba(48, 197, 245, 0.25);
 }
 
-.custom-check {
-    margin-bottom: 1rem;
-}
-
-.custom-check .form-check-input:checked {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-}
-
 .form-check-label {
     text-decoration: none !important;
+    cursor: pointer;
+    padding-left: 5px;
+}
+
+.form-check-input:checked {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
 }
 
 .btn-primary {
@@ -684,8 +930,23 @@
     color: var(--primary-color);
     border: none;
     border-radius: 50%;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.set-cover-btn {
+    background-color: rgba(0, 123, 255, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
     font-size: 12px;
     display: flex;
     align-items: center;
@@ -700,6 +961,11 @@
 
 .view-image-btn:hover {
     background-color: rgba(255, 255, 255, 1);
+}
+
+.set-cover-btn:hover {
+    background-color: rgba(0, 123, 255, 1);
+    transform: scale(1.1);
 }
 
 /* Botão desabilitado */
@@ -767,6 +1033,11 @@
     transition: all 0.3s ease;
 }
 
+.image-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .existing-image-card:hover .image-overlay {
     opacity: 1;
 }
@@ -775,8 +1046,27 @@
     transform: scale(1.05);
 }
 
-.status-checks {
-    padding-top: 2rem;
+/* Estilo para o badge de capa */
+.capa-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, #00c853, #64dd17);
+    color: white;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Destaque para a imagem de capa */
+.existing-image-card.is-capa {
+    box-shadow: 0 0 0 3px #2ecc71, 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.existing-image-card.is-capa img {
+    border: 2px solid #2ecc71;
 }
 
 .invalid-feedback {
@@ -785,46 +1075,7 @@
     margin-top: 0.25rem;
 }
 
-/* Estilos para o dropdown de opcionais */
-.opcionais-dropdown-menu {
-    width: 800px;
-    max-width: 100%;
-    padding: 1rem;
-}
-
-.opcionais-group {
-    margin-bottom: 1rem;
-}
-
-.opcionais-dropdown {
-    position: relative;
-    padding-right: 30px;
-}
-
-.selected-count {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.dropdown-header {
-    font-weight: 600;
-    color: var(--primary-color);
-    padding-left: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    margin-bottom: 8px;
-}
-
-.form-check {
-    margin-bottom: 6px;
-}
-
-.form-check-input:checked {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-}
-
+/* Estilos para o opcional-tag */
 .opcional-tag {
     display: inline-flex;
     align-items: center;
@@ -855,14 +1106,7 @@
     background-color: rgba(0,0,0,0.1);
 }
 
-/* Responsividade para o dropdown de opcionais */
-@media (max-width: 768px) {
-    .opcionais-dropdown-menu {
-        width: 100%;
-    }
-}
-
-/* Responsividade geral */
+/* Responsividade */
 @media (max-width: 768px) {
     .card-body {
         padding: 1rem;
@@ -875,30 +1119,15 @@
     .carousel-img {
         max-height: 300px;
     }
-}
-
-.opcionais-select-container {
-    position: relative;
-}
-
-.opcionais-panel {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-width: 800px;
-    background-color: white;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    padding: 1rem;
-    margin-top: 0.25rem;
-    z-index: 1050;
-}
-
-.opcionais-panel.show {
-    display: block;
+    
+    .status-option-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .status-item {
+        width: 100%;
+    }
 }
 
 /* Cores para o contador */
@@ -907,23 +1136,304 @@
     color: white;
 }
 
-/* Responsive handling for panel */
-@media (max-width: 992px) {
-    .opcionais-panel {
-        position: fixed;
-        top: 10%;
-        left: 5%;
-        right: 5%;
-        width: 90%;
-        max-width: none;
-        max-height: 80%;
-        overflow-y: auto;
-    }
+/* Tornar os botões de ação mais visíveis nas imagens */
+.image-actions {
+    display: flex;
+    gap: 8px;
+    z-index: 10;
 }
+
+/* Melhorar a visibilidade do overlay */
+.image-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.existing-image-card:hover .image-overlay {
+    opacity: 1;
+}
+
+/* Estilo para imagem de capa (tanto para novas quanto para existentes) */
+.image-thumbnail-container.is-capa .image-thumbnail,
+.existing-image-card.is-capa img {
+    border: 2px solid #2ecc71 !important;
+    box-shadow: 0 0 0 3px #2ecc71, 0 4px 15px rgba(46, 204, 113, 0.3) !important;
+}
+
+/* Destaque para a imagem de capa */
+.existing-image-card.is-capa,
+.image-thumbnail-container.is-capa {
+    box-shadow: 0 0 0 3px #2ecc71, 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // ===== SELEÇÃO DE IMAGEM DE CAPA =====
+    // Usar código Bootstrap puro para inicializar as abas
+    const triggerTabList = document.querySelectorAll('#opcionaisTabs button');
+    triggerTabList.forEach(function(triggerEl) {
+        // Criar um novo objeto Tab para cada botão
+        const tabTrigger = new bootstrap.Tab(triggerEl);
+        
+        // Adicionar evento de clique para cada aba
+        triggerEl.addEventListener('click', function(event) {
+            event.preventDefault();
+            tabTrigger.show();
+        });
+    });
+    
+    // Adicionar manipulador de eventos diretamente nos botões das abas
+    document.getElementById('conforto-tab').addEventListener('click', function() {
+        document.getElementById('conforto-tab-pane').classList.add('show', 'active');
+        document.getElementById('seguranca-tab-pane').classList.remove('show', 'active');
+        document.getElementById('tecnologia-tab-pane').classList.remove('show', 'active');
+        document.getElementById('outros-tab-pane').classList.remove('show', 'active');
+    });
+    
+    document.getElementById('seguranca-tab').addEventListener('click', function() {
+        document.getElementById('conforto-tab-pane').classList.remove('show', 'active');
+        document.getElementById('seguranca-tab-pane').classList.add('show', 'active');
+        document.getElementById('tecnologia-tab-pane').classList.remove('show', 'active');
+        document.getElementById('outros-tab-pane').classList.remove('show', 'active');
+    });
+    
+    document.getElementById('tecnologia-tab').addEventListener('click', function() {
+        document.getElementById('conforto-tab-pane').classList.remove('show', 'active');
+        document.getElementById('seguranca-tab-pane').classList.remove('show', 'active');
+        document.getElementById('tecnologia-tab-pane').classList.add('show', 'active');
+        document.getElementById('outros-tab-pane').classList.remove('show', 'active');
+    });
+    
+    document.getElementById('outros-tab').addEventListener('click', function() {
+        document.getElementById('conforto-tab-pane').classList.remove('show', 'active');
+        document.getElementById('seguranca-tab-pane').classList.remove('show', 'active');
+        document.getElementById('tecnologia-tab-pane').classList.remove('show', 'active');
+        document.getElementById('outros-tab-pane').classList.add('show', 'active');
+    });
+
+   // Função para definir uma imagem como capa (para imagens existentes)
+    function setupCoverImageButtons() {
+        const setCoverBtns = document.querySelectorAll('.set-cover-btn');
+        const imagensOrdemInput = document.getElementById('imagens_ordem');
+        
+        // Inicializar o input oculto e corrigir as ordens das imagens para garantir que apenas uma seja capa
+        if (imagensOrdemInput) {
+            let ordenacao = {};
+            let capaEncontrada = false;
+            let imagemCapaId = null;
+            
+            // Primeiro, vamos verificar se já existe uma capa (ordem=0)
+            document.querySelectorAll('[data-imagem-id]').forEach(imgContainer => {
+                const id = imgContainer.getAttribute('data-imagem-id');
+                const ordem = parseInt(imgContainer.getAttribute('data-ordem') || '999');
+                
+                // Se encontramos a capa
+                if (ordem === 0) {
+                    if (capaEncontrada) {
+                        // Esta é uma segunda imagem com ordem=0, vamos resetá-la
+                        ordenacao[id] = 999; // Valor temporário alto
+                        
+                        // Remover classes e badges visuais de capa
+                        const card = imgContainer.querySelector('.existing-image-card');
+                        if (card) {
+                            card.classList.remove('is-capa');
+                            const badge = card.querySelector('.capa-badge');
+                            if (badge) badge.remove();
+                            
+                            // Mostrar o botão de definir como capa
+                            const coverBtn = card.querySelector('.set-cover-btn');
+                            if (coverBtn) coverBtn.style.display = 'flex';
+                        }
+                    } else {
+                        capaEncontrada = true;
+                        imagemCapaId = id;
+                        ordenacao[id] = 0;
+                        
+                        // Garantir que esta imagem tenha todas as classes e visual de capa
+                        const card = imgContainer.querySelector('.existing-image-card');
+                        if (card) {
+                            card.classList.add('is-capa');
+                            
+                            // Se não tem badge de capa, adicionar
+                            if (!card.querySelector('.capa-badge')) {
+                                const capaBadge = document.createElement('div');
+                                capaBadge.className = 'capa-badge';
+                                capaBadge.innerHTML = '<span>Capa</span>';
+                                card.appendChild(capaBadge);
+                            }
+                            
+                            // Esconder o botão de definir como capa
+                            const coverBtn = card.querySelector('.set-cover-btn');
+                            if (coverBtn) coverBtn.style.display = 'none';
+                        }
+                    }
+                } else {
+                    ordenacao[id] = ordem;
+                }
+            });
+            
+            // Se não encontramos nenhuma capa, definir a primeira imagem como capa
+            if (!capaEncontrada && document.querySelectorAll('[data-imagem-id]').length > 0) {
+                const primeiraImagem = document.querySelectorAll('[data-imagem-id]')[0];
+                const id = primeiraImagem.getAttribute('data-imagem-id');
+                imagemCapaId = id;
+                ordenacao[id] = 0;
+                
+                // Atualizar a interface para refletir a primeira imagem como capa
+                const card = primeiraImagem.querySelector('.existing-image-card');
+                if (card) {
+                    card.classList.add('is-capa');
+                    
+                    // Adicionar badge de capa se não existir
+                    if (!card.querySelector('.capa-badge')) {
+                        const capaBadge = document.createElement('div');
+                        capaBadge.className = 'capa-badge';
+                        capaBadge.innerHTML = '<span>Capa</span>';
+                        card.appendChild(capaBadge);
+                    }
+                    
+                    // Esconder o botão de definir como capa
+                    const coverBtn = card.querySelector('.set-cover-btn');
+                    if (coverBtn) coverBtn.style.display = 'none';
+                }
+            }
+            
+            // Reordenar os valores de ordenação para serem sequenciais
+            let proximaOrdem = 1;
+            document.querySelectorAll('[data-imagem-id]').forEach(imgContainer => {
+                const id = imgContainer.getAttribute('data-imagem-id');
+                if (id !== imagemCapaId) {
+                    ordenacao[id] = proximaOrdem++;
+                    // Atualizar o atributo data-ordem para refletir a nova ordem
+                    imgContainer.setAttribute('data-ordem', ordenacao[id]);
+                }
+            });
+            
+            // Atualizar o input oculto com o JSON da ordenação
+            imagensOrdemInput.value = JSON.stringify(ordenacao);
+            console.log("Ordenação de imagens inicializada:", ordenacao);
+        }
+        
+        // Resto do seu código para botões de capa...
+        setCoverBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const imagemId = this.getAttribute('data-imagem-id');
+                
+                // Remover o status de capa de todas as imagens
+                document.querySelectorAll('.existing-image-card').forEach(card => {
+                    card.classList.remove('is-capa');
+                    // Resetar a borda da imagem
+                    const img = card.querySelector('img');
+                    if (img) {
+                        img.style.border = '';
+                    }
+                });
+                
+                // Remover todos os badges de capa
+                document.querySelectorAll('.capa-badge').forEach(badge => {
+                    badge.remove();
+                });
+                
+                // Adicionar a classe is-capa para a nova imagem de capa
+                const novaCapaCard = this.closest('.existing-image-card');
+                novaCapaCard.classList.add('is-capa');
+                
+                // Aplicar estilo de borda verde
+                const img = novaCapaCard.querySelector('img');
+                if (img) {
+                    img.style.border = '2px solid #2ecc71';
+                    img.style.boxShadow = '0 0 0 3px #2ecc71, 0 4px 15px rgba(46, 204, 113, 0.3)';
+                }
+                
+                // Adicionar o badge "Capa" à nova imagem de capa
+                const capaBadge = document.createElement('div');
+                capaBadge.className = 'capa-badge';
+                capaBadge.innerHTML = '<span>Capa</span>';
+                novaCapaCard.appendChild(capaBadge);
+                
+                // Mostrar o botão "Definir como capa" em todas as imagens
+                document.querySelectorAll('.set-cover-btn').forEach(b => {
+                    b.style.display = 'flex';
+                });
+                
+                // Esconder o botão "Definir como capa" da imagem que agora é a capa
+                this.style.display = 'none';
+                
+                // Atualizar o input oculto com a nova ordem de imagens
+                atualizarOrdemImagens(imagemId);
+                
+                // Exibir mensagem de sucesso
+                const alertContainer = document.createElement('div');
+                alertContainer.className = 'alert alert-success alert-dismissible fade show mt-3';
+                alertContainer.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    Imagem definida como capa com sucesso!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                `;
+                
+                const imagensContainer = document.getElementById('imagens-existentes-container');
+                imagensContainer.parentNode.insertBefore(alertContainer, imagensContainer);
+                
+                // Remover alerta após 3 segundos
+                setTimeout(() => {
+                    alertContainer.remove();
+                }, 3000);
+            });
+        });
+    }
+    
+    // Função para atualizar o input oculto com a ordem das imagens
+    function atualizarOrdemImagens(novaCapaId) {
+        const imagensOrdemInput = document.getElementById('imagens_ordem');
+        const imagensContainer = document.getElementById('imagens-existentes-container');
+        
+        if (!imagensOrdemInput || !imagensContainer) return;
+        
+        // Obter todas as imagens e suas ordens atuais
+        const imagens = Array.from(imagensContainer.querySelectorAll('[data-imagem-id]'));
+        let ordenacao = {};
+        
+        // Se já existe um valor no input, tentar parsear
+        if (imagensOrdemInput.value) {
+            try {
+                ordenacao = JSON.parse(imagensOrdemInput.value);
+            } catch (e) {
+                console.error("Erro ao parsear JSON do input:", e);
+                // Se falhou, criar um objeto novo
+                ordenacao = {};
+            }
+        }
+        
+        // Garantir que todas as imagens têm um valor no objeto de ordenação
+        imagens.forEach(img => {
+            const id = img.getAttribute('data-imagem-id');
+            if (!ordenacao.hasOwnProperty(id)) {
+                const ordem = parseInt(img.getAttribute('data-ordem') || '0');
+                ordenacao[id] = ordem;
+            }
+        });
+        
+        // Definir a nova imagem como ordem 0 (capa)
+        ordenacao[novaCapaId] = 0;
+        
+        // Ajustar ordem das outras imagens para evitar duplicatas
+        let proximaOrdem = 1;
+        for (let id in ordenacao) {
+            if (id !== novaCapaId && ordenacao.hasOwnProperty(id)) {
+                ordenacao[id] = proximaOrdem++;
+            }
+        }
+        
+        // Atualizar o input oculto com a JSON da ordenação
+        imagensOrdemInput.value = JSON.stringify(ordenacao);
+        console.log("Nova ordenação de imagens:", ordenacao);
+    }
+
+    // Inicializar a funcionalidade de seleção de imagem de capa
+    setupCoverImageButtons();
+
     // ===== FUNÇÕES PARA CAMPOS DE ANOS =====
     function initYearSelectors() {
         const currentYear = new Date().getFullYear();
@@ -969,7 +1479,6 @@ document.addEventListener('DOMContentLoaded', function() {
         originalInput.parentNode.replaceChild(select, originalInput);
     }
 
-    fillYearSelectors();
     // ===== FUNÇÕES PARA FORMATAÇÃO DE VALORES MONETÁRIOS E NUMÉRICOS =====
     
     // Função para formatar um campo para exibição de valores monetários
@@ -1148,6 +1657,26 @@ document.addEventListener('DOMContentLoaded', function() {
             if ('{{ form.ano_modelo.value }}') {
                 anoModSelect.value = '{{ form.ano_modelo.value }}';
             }
+            
+            // Adicionar listener para atualizar ano modelo baseado no ano de fabricação
+            anoFabSelect.addEventListener('change', function() {
+                const anoFabricacao = parseInt(this.value);
+                
+                // Limpar ano modelo e recriar opções
+                while (anoModSelect.options.length > 1) {
+                    anoModSelect.remove(1);
+                }
+                
+                // Adicionar anos modelo (ano fabricação até ano fabricação + 1)
+                for (let ano = anoFabricacao; ano <= anoFabricacao + 1; ano++) {
+                    if (ano <= currentYear + 1) {
+                        const option = document.createElement('option');
+                        option.value = ano;
+                        option.text = ano;
+                        anoModSelect.add(option);
+                    }
+                }
+            });
         }
     }
 
@@ -1173,7 +1702,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== INICIALIZAÇÃO DOS NOVOS CAMPOS =====
     // Inicializar seletores de ano
-    initYearSelectors();
+    fillYearSelectors();
     
     // Configurar formatação de preço
     setupCurrencyField('preco');
@@ -1227,7 +1756,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.paddingRight = '17px'; // Compensação da barra de rolagem
     }
     
-    // Função para criar miniaturas que use o showModal
+    // Função para criar miniaturas com suporte à marcação de capa
     function createThumbnail(file, fileIndex, container, fileListArray) {
         const reader = new FileReader();
         
@@ -1241,9 +1770,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const thumbnailContainer = document.createElement('div');
             thumbnailContainer.className = 'image-thumbnail-container';
             
+            // Se for o primeiro item (índice 0), adicionar classe is-capa
+            if (fileIndex === 0) {
+                thumbnailContainer.classList.add('is-capa');
+            }
+            
             // Criar imagem miniatura
             const img = document.createElement('img');
             img.className = 'image-thumbnail';
+            // Se for a imagem de capa, adicione estilo de borda verde
+            if (fileIndex === 0) {
+                img.style.border = '2px solid #2ecc71';
+            }
             img.src = e.target.result;
             img.alt = 'Prévia da imagem';
             
@@ -1251,34 +1789,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const actions = document.createElement('div');
             actions.className = 'thumbnail-actions';
             
-            // Botão para remover imagem
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-image-btn';
-            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-            removeBtn.type = 'button';
-            removeBtn.onclick = function() {
-                // Remover do array de arquivos
-                fileListArray.splice(fileIndex, 1);
-                // Remover miniatura
-                col.remove();
-                // Reindexar miniaturas
-                const items = container.querySelectorAll('[data-file-index]');
-                items.forEach((item, idx) => {
-                    item.dataset.fileIndex = idx;
-                });
-                
-                // Atualizar contador de imagens
-                const imageCounter = document.querySelector('.image-counter');
-                if (imageCounter) {
-                    imageCounter.textContent = `${fileListArray.length}/12 imagens`;
-                }
-            };
-            
             // Botão para visualizar imagem
             const viewBtn = document.createElement('button');
             viewBtn.className = 'view-image-btn';
             viewBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
             viewBtn.type = 'button';
+            viewBtn.title = 'Visualizar';
             viewBtn.onclick = function() {
                 // Configurar e mostrar o modal
                 const modalImage = document.getElementById('previewModalImage');
@@ -1288,13 +1804,163 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
             
+            // Botão para definir como capa (não mostrar para a primeira imagem)
+            const setCoverBtn = document.createElement('button');
+            setCoverBtn.className = 'set-cover-btn';
+            setCoverBtn.innerHTML = '<i class="fas fa-star"></i>';
+            setCoverBtn.type = 'button';
+            setCoverBtn.title = 'Definir como capa';
+            if (fileIndex === 0) {
+                setCoverBtn.style.display = 'none'; // Esconder para a primeira imagem
+            }
+            setCoverBtn.onclick = function() {
+                // Remover a classe is-capa e o badge de capa de todas as miniaturas
+                const allThumbnailContainers = container.querySelectorAll('.image-thumbnail-container');
+                allThumbnailContainers.forEach(thumbContainer => {
+                    thumbContainer.classList.remove('is-capa');
+                    const existingBadge = thumbContainer.querySelector('.capa-badge');
+                    if (existingBadge) existingBadge.remove();
+                    
+                    // Resetar a borda da imagem
+                    const thumbImg = thumbContainer.querySelector('.image-thumbnail');
+                    if (thumbImg) {
+                        thumbImg.style.border = '2px solid var(--secondary-color)';
+                    }
+                    
+                    // Mostrar todos os botões de definir como capa
+                    const coverBtn = thumbContainer.querySelector('.set-cover-btn');
+                    if (coverBtn) {
+                        coverBtn.style.display = 'flex';
+                    }
+                });
+                
+                // Adicionar a classe is-capa à miniatura atual
+                thumbnailContainer.classList.add('is-capa');
+                
+                // Aplicar estilo de borda verde à imagem
+                img.style.border = '2px solid #2ecc71';
+                
+                // Adicionar o badge de capa
+                const capaBadge = document.createElement('div');
+                capaBadge.className = 'capa-badge';
+                capaBadge.innerHTML = '<span>Capa</span>';
+                thumbnailContainer.appendChild(capaBadge);
+                
+                // Esconder o botão de capa desta imagem
+                setCoverBtn.style.display = 'none';
+                
+                // Criar um campo oculto para indicar ao backend qual arquivo é a capa
+                const coverField = document.createElement('input');
+                coverField.type = 'hidden';
+                coverField.name = 'imagem_capa';
+                coverField.value = fileIndex;
+                
+                // Remover qualquer campo anterior existente
+                const oldCoverField = document.querySelector('input[name="imagem_capa"]');
+                if (oldCoverField) {
+                    oldCoverField.remove();
+                }
+                
+                // Adicionar o campo ao formulário
+                document.querySelector('form').appendChild(coverField);
+                
+                // Mostrar mensagem de sucesso
+                const alertContainer = document.createElement('div');
+                alertContainer.className = 'alert alert-success alert-dismissible fade show mt-3';
+                alertContainer.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    Imagem definida como capa com sucesso!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                `;
+                
+                const imageUploadContainer = document.querySelector('.image-upload-container');
+                imageUploadContainer.insertAdjacentElement('beforebegin', alertContainer);
+                
+                // Remover a mensagem após 3 segundos
+                setTimeout(() => {
+                    alertContainer.remove();
+                }, 3000);
+            };
+            
+            // Botão para remover imagem
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-image-btn';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.type = 'button';
+            removeBtn.title = 'Remover';
+            removeBtn.onclick = function() {
+                // Verificar se esta é a imagem de capa
+                const isCover = thumbnailContainer.classList.contains('is-capa');
+                
+                // Remover do array de arquivos
+                fileListArray.splice(fileIndex, 1);
+                
+                // Remover miniatura
+                col.remove();
+                
+                // Se não há mais imagens, atualizar contador e sair
+                if (fileListArray.length === 0) {
+                    const imageCounter = document.querySelector('.image-counter');
+                    if (imageCounter) {
+                        imageCounter.textContent = `0/12 imagens`;
+                    }
+                    return;
+                }
+                
+                // Se removeu a capa, definir a primeira imagem como capa
+                if (isCover && fileListArray.length > 0) {
+                    // Atualizar o campo oculto
+                    const coverField = document.querySelector('input[name="imagem_capa"]');
+                    if (coverField) {
+                        coverField.value = "0"; // A primeira imagem será a capa
+                    }
+                    
+                    // Limpar e reconstruir o container
+                    container.innerHTML = '';
+                    
+                    // Recriar as miniaturas
+                    fileListArray.forEach((f, idx) => {
+                        createThumbnail(f, idx, container, fileListArray);
+                    });
+                } else {
+                    // Apenas reindexar as miniaturas existentes
+                    const items = container.querySelectorAll('[data-file-index]');
+                    items.forEach((item, idx) => {
+                        item.dataset.fileIndex = idx;
+                    });
+                }
+                
+                // Atualizar contador de imagens
+                const imageCounter = document.querySelector('.image-counter');
+                if (imageCounter) {
+                    imageCounter.textContent = `${fileListArray.length}/12 imagens`;
+                }
+                
+                // Atualizar o input original
+                const dataTransfer = new DataTransfer();
+                fileListArray.forEach(file => {
+                    dataTransfer.items.add(file);
+                });
+                originalImageInput.files = dataTransfer.files;
+            };
+            
             // Adicionar botões à div de ações
             actions.appendChild(viewBtn);
+            actions.appendChild(setCoverBtn);
             actions.appendChild(removeBtn);
             
             // Montar a estrutura
             thumbnailContainer.appendChild(img);
             thumbnailContainer.appendChild(actions);
+            
+            // Adicionar badge de capa se for a primeira imagem
+            if (fileIndex === 0) {
+                const capaBadge = document.createElement('div');
+                capaBadge.className = 'capa-badge';
+                capaBadge.innerHTML = '<span>Capa</span>';
+                thumbnailContainer.appendChild(capaBadge);
+            }
+            
             col.appendChild(thumbnailContainer);
             
             // Adicionar ao container
@@ -1393,97 +2059,84 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-     // ===== PARTE 3: GERENCIAMENTO DOS OPCIONAIS COM IMPLEMENTAÇÃO MANUAL DO DROPDOWN =====
+    // ===== PARTE 3: GERENCIAMENTO DOS OPCIONAIS =====
     
-    // Elementos do DOM para opcionais (IDs corretos para a nova implementação)
+    // Elementos do DOM para opcionais
     const opcionalChecks = document.querySelectorAll('.opcional-check');
     const campoOpcionais = document.querySelector('textarea[name$="opcionais"]'); // Campo original do Django
     const selectedOpcionaisList = document.getElementById('selectedOpcionaisList');
     const limparOpcionaisBtn = document.getElementById('limparOpcionais');
-    const confirmarOpcionaisBtn = document.getElementById('confirmarOpcionais');
-    const addOpcionalBtn = document.getElementById('addOpcionalBtn');
-    const opcionaisToggle = document.getElementById('opcionaisToggle'); // CORREÇÃO: ID correto do botão toggle
-    const opcionaisPanelDropdown = document.getElementById('opcionaisPanelDropdown'); // CORREÇÃO: ID correto do painel dropdown
-    const selectedCountBadge = document.getElementById('opcionaisCounter'); // CORREÇÃO: ID correto do contador
-    
-    // Controle manual do dropdown dos opcionais
-    if (opcionaisToggle && opcionaisPanelDropdown) {
-        // Abrir dropdown manualmente
-        opcionaisToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation(); // Impedir propagação do evento para não fechar imediatamente
-            
-            // Toggle do dropdown
-            opcionaisPanelDropdown.classList.toggle('show');
-            
-            // Ajustar posição para móveis e telas pequenas
-            if (window.innerWidth < 768) {
-                if (opcionaisPanelDropdown.classList.contains('show')) {
-                    opcionaisPanelDropdown.style.position = 'fixed';
-                    opcionaisPanelDropdown.style.top = '10%';
-                    opcionaisPanelDropdown.style.left = '5%';
-                    opcionaisPanelDropdown.style.width = '90%';
-                    opcionaisPanelDropdown.style.maxHeight = '80vh';
-                    opcionaisPanelDropdown.style.overflowY = 'auto';
-                    opcionaisPanelDropdown.style.zIndex = '1050';
-                }
-            }
-        });
-        
-        // Fechar ao clicar fora
-        document.addEventListener('click', function(event) {
-            if (!opcionaisToggle.contains(event.target) && 
-                !opcionaisPanelDropdown.contains(event.target)) {
-                opcionaisPanelDropdown.classList.remove('show');
-            }
-        });
-        
-        // Fechar ao pressionar ESC
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && opcionaisPanelDropdown.classList.contains('show')) {
-                opcionaisPanelDropdown.classList.remove('show');
-            }
-        });
-    }
+    const opcionaisCounter = document.getElementById('opcionaisCounter');
     
     // Array para armazenar os opcionais selecionados
     let opcionaisSelecionados = [];
     
-    // Inicialização: carregar opcionais existentes, se houver
-    if (campoOpcionais && opcionalChecks && selectedOpcionaisList) {
-        initializeOpcionais();
+    // Função para atualizar o campo oculto com os opcionais selecionados
+    function updateCampoOriginal() {
+        if (campoOpcionais) {
+            campoOpcionais.value = JSON.stringify(opcionaisSelecionados);
+            
+            // Forçar um evento de alteração para garantir que o Django perceba a mudança
+            const event = new Event('change', { bubbles: true });
+            campoOpcionais.dispatchEvent(event);
+            
+            console.log("Campo original atualizado com (JSON):", campoOpcionais.value);
+        }
+    }
+    
+    // Função para renderizar a UI dos opcionais selecionados
+    function renderOpcionaisUI() {
+        // Atualizar contador
+        if (opcionaisCounter) {
+            opcionaisCounter.textContent = opcionaisSelecionados.length + " selecionados";
+        }
         
-        // Event listeners para os checkboxes
-        opcionalChecks.forEach(check => {
-            check.addEventListener('change', function() {
-                updateOpcionaisSelecionados();
-            });
-        });
-        
-        // Event listener para o botão de limpar
-        if (limparOpcionaisBtn) {
-            limparOpcionaisBtn.addEventListener('click', function() {
-                opcionalChecks.forEach(check => {
-                    check.checked = false;
+        // Atualizar lista visual de opcionais
+        if (selectedOpcionaisList) {
+            selectedOpcionaisList.innerHTML = '';
+            
+            if (opcionaisSelecionados.length === 0) {
+                selectedOpcionaisList.innerHTML = '<em class="text-muted">Nenhum opcional selecionado</em>';
+            } else {
+                opcionaisSelecionados.forEach((opcional, index) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'opcional-tag';
+                    tag.innerHTML = `
+                        <i class="fas fa-check-circle" style="color:var(--secondary-color)"></i>
+                        ${opcional}
+                        <span class="remove-opcional" data-value="${opcional}">
+                            <i class="fas fa-times"></i>
+                        </span>
+                    `;
+                    selectedOpcionaisList.appendChild(tag);
+                    
+                    // Adicionar evento para remover o opcional
+                    const removeBtn = tag.querySelector('.remove-opcional');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', function() {
+                            const valor = this.getAttribute('data-value');
+                            
+                            // Desmarcar checkbox correspondente
+                            opcionalChecks.forEach(check => {
+                                if (check.value === valor) {
+                                    check.checked = false;
+                                }
+                            });
+                            
+                            // Remover da lista
+                            const indexToRemove = opcionaisSelecionados.indexOf(valor);
+                            if (indexToRemove > -1) {
+                                opcionaisSelecionados.splice(indexToRemove, 1);
+                            }
+                            
+                            // Atualizar UI
+                            renderOpcionaisUI();
+                            updateCampoOriginal();
+                        });
+                    }
                 });
-                opcionaisSelecionados = [];
-                updateOpcionaisSelecionados();
-            });
+            }
         }
-        
-        // Event listener para o botão de confirmar
-        if (confirmarOpcionaisBtn) {
-            confirmarOpcionaisBtn.addEventListener('click', function() {
-                // Atualizar o campo original
-                updateCampoOriginal();
-                
-                // Fechar dropdown manualmente
-                if (opcionaisPanelDropdown) {
-                    opcionaisPanelDropdown.classList.remove('show');
-                }
-            });
-        }
-        
     }
     
     // Função para inicializar os opcionais do campo original, se houver
@@ -1501,7 +2154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (e) {
                 console.log("Erro ao interpretar JSON, tentando outros métodos:", e);
                 
-                // Caso especial para strings JSON mal-formadas como ['["item1"', '"item2"]']
+                // Caso especial para strings JSON mal-formadas
                 if (campoOpcionais.value.includes('["') && campoOpcionais.value.includes('"]')) {
                     try {
                         // Tenta extrair e reconstruir o array
@@ -1546,125 +2199,155 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Atualizar interface
             renderOpcionaisUI();
-            
-            // Debug - mostra o que foi carregado
-            console.log("Opcionais carregados finais:", opcionaisSelecionados);
         }
     }
     
-    // Função para atualizar a lista de opcionais selecionados
-    function updateOpcionaisSelecionados() {
-        if (!opcionalChecks) return;
-        
-        // Limpar a lista atual
-        opcionaisSelecionados = [];
-        
-        // Adicionar todos os checkboxes marcados
-        opcionalChecks.forEach(check => {
-            if (check.checked) {
-                opcionaisSelecionados.push(check.value);
-            }
-        });
-        
-        // Debug - mostra os opcionais atuais
-        console.log("Opcionais atualizados:", opcionaisSelecionados);
-        
-        // Atualizar UI
-        renderOpcionaisUI();
-        updateCampoOriginal();
-    }
-    
-    // Função para renderizar a UI dos opcionais
-    function renderOpcionaisUI() {
-        if (!selectedOpcionaisList) {
-            console.error("Elemento selectedOpcionaisList não encontrado");
-            return;
-        }
-        
-        if (!selectedCountBadge) {
-            console.error("Elemento selectedCountBadge não encontrado");
-            return;
-        }
-        
-        // Atualizar contador
-        selectedCountBadge.textContent = opcionaisSelecionados.length + ' selecionados';
-        
-        // Limpar a lista atual
-        selectedOpcionaisList.innerHTML = '';
-        
-        // Debug
-        console.log("Renderizando", opcionaisSelecionados.length, "opcionais");
-        
-        // Criar elementos para cada opcional
-        opcionaisSelecionados.forEach(opcional => {
-            const tag = document.createElement('span');
-            tag.className = 'opcional-tag';
-            tag.innerHTML = `
-                <i class="fas fa-check-circle" style="color:var(--secondary-color)"></i>
-                ${opcional}
-                <span class="remove-opcional" data-value="${opcional}">
-                    <i class="fas fa-times"></i>
-                </span>
-            `;
-            selectedOpcionaisList.appendChild(tag);
-            
-            // Adicionar evento para remover
-            const removeBtn = tag.querySelector('.remove-opcional');
-            if (removeBtn) {
-                removeBtn.addEventListener('click', function() {
-                    const valor = this.dataset.value;
-                    
-                    // Desmarcar checkbox correspondente
-                    opcionalChecks.forEach(check => {
-                        if (check.value === valor) {
-                            check.checked = false;
-                        }
-                    });
-                    
-                    // Remover da lista
-                    const index = opcionaisSelecionados.indexOf(valor);
-                    if (index > -1) {
+    // Adicionar eventos para checkboxes de opcionais
+    if (opcionalChecks && opcionalChecks.length > 0) {
+        opcionalChecks.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const opcional = this.value;
+                
+                if (this.checked) {
+                    // Adicionar ao array se não existir
+                    if (!opcionaisSelecionados.includes(opcional)) {
+                        opcionaisSelecionados.push(opcional);
+                    }
+                } else {
+                    // Remover do array
+                    const index = opcionaisSelecionados.indexOf(opcional);
+                    if (index !== -1) {
                         opcionaisSelecionados.splice(index, 1);
                     }
-                    
-                    // Atualizar UI
-                    renderOpcionaisUI();
-                    updateCampoOriginal();
-                });
-            }
+                }
+                
+                // Atualizar UI e campo oculto
+                renderOpcionaisUI();
+                updateCampoOriginal();
+            });
+        });
+        
+        // Inicializar opcionais do formulário
+        initializeOpcionais();
+    }
+    
+    // Botão para limpar todos os opcionais
+    if (limparOpcionaisBtn) {
+        limparOpcionaisBtn.addEventListener('click', function() {
+            // Limpar array
+            opcionaisSelecionados = [];
+            
+            // Desmarcar todos os checkboxes
+            opcionalChecks.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Atualizar UI e campo oculto
+            renderOpcionaisUI();
+            updateCampoOriginal();
         });
     }
-    
-    // Substitua a função updateCampoOriginal atual por esta:
-    function updateCampoOriginal() {
-        if (campoOpcionais) {
-            // Converter para formato JSON para garantir compatibilidade com JSONField
-            campoOpcionais.value = JSON.stringify(opcionaisSelecionados);
+
+    // ----- CIDADES POR ESTADO -----
+    // Carregar cidades quando o estado for selecionado
+    const estadoSelect = document.getElementById('id_estado');
+    const cidadeSelect = document.getElementById('id_cidade');
+
+    if (estadoSelect && cidadeSelect) {
+        estadoSelect.addEventListener('change', function() {
+            const estado = this.value;
+            if (!estado) {
+                cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+                cidadeSelect.disabled = true;
+                return;
+            }
             
-            // Forçar um evento de alteração para garantir que o Django perceba a mudança
-            const event = new Event('change', { bubbles: true });
-            campoOpcionais.dispatchEvent(event);
+            // Ativar o select de cidades e mostrar loading
+            cidadeSelect.disabled = false;
+            cidadeSelect.innerHTML = '<option value="">Carregando cidades...</option>';
             
-            // Debug
-            console.log("Campo original atualizado com (JSON):", campoOpcionais.value);
+            // Usar API do IBGE para carregar cidades por estado
+            fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios?orderBy=nome`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar cidades');
+                    }
+                    return response.json();
+                })
+                .then(cidades => {
+                    // Limpar opções anteriores
+                    cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+                    
+                    // Adicionar novas opções ordenadas
+                    cidades.forEach(cidade => {
+                        const option = document.createElement('option');
+                        // Importante: usar o nome da cidade como valor
+                        option.value = cidade.nome;
+                        option.textContent = cidade.nome;
+                        cidadeSelect.appendChild(option);
+                    });
+                    
+                    cidadeSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar cidades:', error);
+                    cidadeSelect.innerHTML = '<option value="">Erro ao carregar cidades</option>';
+                    cidadeSelect.disabled = false;
+                });
+        });
+        
+        // Disparar o evento change se um estado já estiver selecionado
+        if (estadoSelect.value) {
+            estadoSelect.dispatchEvent(new Event('change'));
         }
     }
-
-    // Verificação inicial - forçar uma renderização após o carregamento da página
-    setTimeout(function() {
-        if (opcionalChecks && opcionalChecks.length > 0) {
-            updateOpcionaisSelecionados();
-            console.log("Renderização forçada de opcionais realizada");
-        }
-    }, 500);
     
+    // Modificar o handler de submissão do formulário para garantir a correta ordem das imagens
     document.querySelector('form').addEventListener('submit', function(e) {
-
         // Antes de enviar o formulário, atualizar o campo de opcionais
         if (campoOpcionais && opcionaisSelecionados) {
             // Garantir que o campo tem o formato JSON para o backend
             campoOpcionais.value = JSON.stringify(opcionaisSelecionados);
             console.log('Enviando formulário com opcionais:', campoOpcionais.value);
+        }
+        
+        // Se não temos um campo para indicar qual imagem é a capa, criar um
+        if (!document.querySelector('input[name="imagem_capa"]') && fileListArray && fileListArray.length > 0) {
+            const coverField = document.createElement('input');
+            coverField.type = 'hidden';
+            coverField.name = 'imagem_capa';
+            coverField.value = "0"; // Por padrão, a primeira imagem
+            this.appendChild(coverField);
+        }
+        
+        // Se estamos em modo de edição, garantir que o campo imagens_ordem está presente
+        const imagensOrdemInput = document.getElementById('imagens_ordem');
+        if (imagensOrdemInput && !imagensOrdemInput.value) {
+            const defaultOrder = {};
+            document.querySelectorAll('[data-imagem-id]').forEach(img => {
+                const id = img.getAttribute('data-imagem-id');
+                const ordem = parseInt(img.getAttribute('data-ordem') || '0');
+                defaultOrder[id] = ordem;
+            });
+            
+            // Se já temos uma imagem marcada como capa, usá-la
+            const capaElement = document.querySelector('.existing-image-card.is-capa');
+            if (capaElement) {
+                const capaId = capaElement.closest('[data-imagem-id]').getAttribute('data-imagem-id');
+                if (capaId && defaultOrder.hasOwnProperty(capaId)) {
+                    defaultOrder[capaId] = 0;
+                    
+                    // Ajustar outras ordens para evitar duplicatas
+                    let nextOrder = 1;
+                    for (let id in defaultOrder) {
+                        if (id !== capaId && defaultOrder.hasOwnProperty(id)) {
+                            defaultOrder[id] = nextOrder++;
+                        }
+                    }
+                }
+            }
+            
+            imagensOrdemInput.value = JSON.stringify(defaultOrder);
         }
     });
 });

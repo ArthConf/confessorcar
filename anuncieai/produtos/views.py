@@ -1,11 +1,30 @@
+import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+
 from categoria.models import Categoria
 from produtos.models import Produto, ProdutoImagem
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ProdutoForm, ProdutoImagemForm
 from django.db.models import Prefetch
+from .models import Cidade
+
+def get_cidades(request):
+    """
+    View para retornar cidades baseadas no estado selecionado
+    """
+    estado = request.GET.get('estado', '')
+    if not estado:
+        return JsonResponse({'cidades': []})
+    
+    # Buscar cidades do estado ordenadas por nome
+    cidades = Cidade.objects.filter(estado=estado).order_by('nome')
+    
+    # Formatar para JSON
+    cidades_json = [{'id': cidade.id, 'nome': cidade.nome} for cidade in cidades]
+    
+    return JsonResponse({'cidades': cidades_json})
 
 def visualizarLoja(request, categoria_slug=None):
     categorias = Categoria.objects.all()
@@ -54,9 +73,16 @@ def produto_detalhe(request, categoria_slug, produto_slug):
 
 @login_required
 def gerenciar_produtos(request):
-    produtos = Produto.objects.all().prefetch_related(
-        Prefetch('imagens_produto', queryset=ProdutoImagem.objects.order_by('ordem'))
-    ).order_by('-criado_em')
+    # Se o usuário é staff ou superuser, mostrar todos os produtos
+    if request.user.is_staff or request.user.is_superuser:
+        produtos = Produto.objects.all().prefetch_related(
+            Prefetch('imagens_produto', queryset=ProdutoImagem.objects.order_by('ordem'))
+        ).order_by('-criado_em')
+    else:
+        # Caso contrário, mostrar apenas os produtos do usuário logado
+        produtos = Produto.objects.filter(user=request.user).prefetch_related(
+            Prefetch('imagens_produto', queryset=ProdutoImagem.objects.order_by('ordem'))
+        ).order_by('-criado_em')
     
     return render(request, 'produtos/gerenciar_produtos.html', {
         'produtos': produtos
@@ -72,23 +98,68 @@ def adicionar_produto(request):
             print("Form is valid! Cleaned data:", form.cleaned_data)
             
             try:
-                produto = form.save()
+                # Salvar produto, mas ainda não persistir no banco
+                produto = form.save(commit=False)
+                
+                # Associar o usuário logado ao produto
+                produto.user = request.user
+                
+                # Agora sim, salvar o produto com o usuário associado
+                produto.save()
+                
                 print(f"Produto salvo com ID: {produto.id}, Nome: {produto.produto_nome}")
                 
                 # Processar múltiplas imagens
                 imagens = request.FILES.getlist('imagens')
                 print(f"Imagens para processar: {len(imagens)}")
                 
+                # Verificar se existe um campo imagem_capa para definir qual será a capa
+                imagem_capa_index = None
+                if 'imagem_capa' in request.POST:
+                    try:
+                        imagem_capa_index = int(request.POST['imagem_capa'])
+                        print(f"Imagem definida como capa: índice {imagem_capa_index}")
+                    except (ValueError, TypeError) as e:
+                        print(f"Erro ao processar índice da imagem capa: {e}")
+                        imagem_capa_index = None
+                
+                # Processar e salvar as imagens
                 for i, imagem in enumerate(imagens[:12]):  # Limita a 12 imagens
                     try:
+                        # Definir ordem: 0 para a capa, valores crescentes para as demais
+                        ordem = 0 if i == imagem_capa_index else i + 1
+                        
                         img = ProdutoImagem.objects.create(
                             produto=produto,
                             imagem=imagem,
-                            ordem=i
+                            ordem=ordem
                         )
-                        print(f"Imagem {i+1} salva com ID: {img.id}")
+                        print(f"Imagem {i+1} salva com ID: {img.id}, Ordem: {ordem}")
                     except Exception as e:
                         print(f"Erro ao salvar imagem {i+1}: {e}")
+                
+                # Log para verificar a ordem das imagens após o salvamento
+                imagens_salvas = ProdutoImagem.objects.filter(produto=produto).order_by('ordem')
+                ordem_log = {img.id: img.ordem for img in imagens_salvas}
+                print(f"Ordem das imagens após salvamento: {ordem_log}")
+                
+                # Verificar qual imagem é a capa (ordem=0)
+                capa = imagens_salvas.filter(ordem=0).first()
+                if capa:
+                    print(f"Imagem de capa: ID={capa.id}, Ordem={capa.ordem}")
+                else:
+                    print("Nenhuma imagem com ordem=0 encontrada. Definindo a primeira como capa.")
+                    # Se nenhuma imagem foi definida como capa, definir a primeira como capa
+                    primeira_imagem = imagens_salvas.first()
+                    if primeira_imagem:
+                        primeira_imagem.ordem = 0
+                        primeira_imagem.save()
+                        
+                        # Ajustar ordens das demais imagens
+                        outras_imagens = imagens_salvas.exclude(id=primeira_imagem.id)
+                        for i, img in enumerate(outras_imagens):
+                            img.ordem = i + 1
+                            img.save()
                 
                 messages.success(request, f'Produto "{produto.produto_nome}" adicionado com sucesso!')
                 return redirect('produtos:gerenciar_produtos')
@@ -102,10 +173,16 @@ def adicionar_produto(request):
     else:
         form = ProdutoForm()
     
+    categorias = Categoria.objects.all().order_by('categoria_nome')
+
     return render(request, 'produtos/form_produto.html', {
         'form': form,
         'title': 'Adicionar Produto',
-        'opcionais_choices': Produto.OPCIONAIS_CHOICES,
+        'OPCIONAIS_CONFORTO': Produto.OPCIONAIS_CONFORTO,
+        'OPCIONAIS_SEGURANCA': Produto.OPCIONAIS_SEGURANCA,
+        'OPCIONAIS_TECNOLOGIA': Produto.OPCIONAIS_TECNOLOGIA,
+        'OPCIONAIS_OUTROS': Produto.OPCIONAIS_OUTROS,
+        'categorias': categorias,  # Adicionar ao contexto
     })
 
 @login_required
@@ -114,34 +191,146 @@ def editar_produto(request, pk):
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES, instance=produto)
         if form.is_valid():
-            # O método save do formulário agora cuida do slug automaticamente
-            produto = form.save()
+            # Salvar produto, mas não comitar ainda para processar as imagens
+            produto = form.save(commit=False)
             
-            # Processar múltiplas imagens
-            if request.FILES.getlist('imagens'):
-                # Remover imagens antigas
-                produto.imagens_produto.all().delete()
+            # Processar quais imagens serão mantidas/removidas
+            imagens_a_manter = []
+            imagens_a_remover = []
+            
+            # Verificar todas as imagens existentes
+            for imagem in produto.imagens_produto.all():
+                # Verificar se o checkbox para manter esta imagem está marcado
+                if f'manter_imagem_{imagem.id}' in request.POST:
+                    imagens_a_manter.append(imagem)
+                else:
+                    imagens_a_remover.append(imagem)
+            
+            # Log para debug
+            print(f"Imagens a manter: {len(imagens_a_manter)}")
+            print(f"Imagens a remover: {len(imagens_a_remover)}")
+            
+            # Remover as imagens desmarcadas
+            for imagem in imagens_a_remover:
+                print(f"Removendo imagem ID: {imagem.id}")
+                imagem.delete()
+            
+            # Agora podemos salvar o produto
+            produto.save()
+            
+            # Processar a ordem das imagens que foram mantidas
+            if 'imagens_ordem' in request.POST and request.POST['imagens_ordem']:
+                try:
+                    ordens = json.loads(request.POST['imagens_ordem'])
+                    print(f"Processando ordem das imagens: {ordens}")
+                    
+                    # Verificar se há alguma imagem com ordem=0 (capa)
+                    tem_capa = False
+                    for imagem_id_str, ordem in ordens.items():
+                        if int(ordem) == 0:
+                            tem_capa = True
+                            break
+                    
+                    # Se não houver imagem com ordem=0 e tivermos imagens mantidas, definir a primeira como capa
+                    imagens_atuais = list(produto.imagens_produto.all())
+                    if not tem_capa and imagens_atuais:
+                        primeira_imagem = imagens_atuais[0]
+                        primeira_id = str(primeira_imagem.id)
+                        if primeira_id in ordens:
+                            ordens[primeira_id] = 0
+                        else:
+                            # Se a primeira imagem não está no dicionário de ordens, adicioná-la
+                            ordens[primeira_id] = 0
+                    
+                    # Processar e salvar as ordens das imagens restantes
+                    for imagem_id_str, ordem in ordens.items():
+                        try:
+                            imagem_id = int(imagem_id_str)
+                            imagem = ProdutoImagem.objects.filter(id=imagem_id, produto=produto).first()
+                            if imagem:
+                                imagem.ordem = int(ordem)
+                                imagem.save()
+                                print(f"Ordem da imagem {imagem_id} atualizada para {ordem}")
+                        except (ValueError, TypeError) as e:
+                            print(f"Erro ao processar imagem ID {imagem_id_str}: {e}")
+                except json.JSONDecodeError as e:
+                    print(f"Erro ao decodificar JSON de ordem de imagens: {e}")
+            
+            # Processar múltiplas imagens novas
+            imagens = request.FILES.getlist('imagens')
+            if imagens:
+                print(f"Processando {len(imagens)} novas imagens")
                 
-                # Adicionar novas imagens
-                imagens = request.FILES.getlist('imagens')
+                # Determinar a próxima ordem disponível
+                from django.db.models import Max
+                max_ordem = produto.imagens_produto.aggregate(Max('ordem'))['ordem__max'] or -1
+                if max_ordem < 0:  # Se não houver imagens existentes
+                    max_ordem = -1  # Começará do 0
+                
+                # Verificar se alguma nova imagem deve ser a capa
+                imagem_capa_index = None
+                if 'imagem_capa' in request.POST:
+                    try:
+                        imagem_capa_index = int(request.POST['imagem_capa'])
+                        print(f"Nova imagem de capa: índice {imagem_capa_index}")
+                    except (ValueError, TypeError) as e:
+                        print(f"Erro ao processar índice da nova imagem capa: {e}")
+                        imagem_capa_index = None
+                
+                # Adicionar as novas imagens
                 for i, imagem in enumerate(imagens[:12]):
-                    ProdutoImagem.objects.create(
-                        produto=produto,
-                        imagem=imagem,
-                        ordem=i
-                    )
+                    try:
+                        # Determinar a ordem da imagem
+                        # Se há um índice específico para capa e este é ele, usar ordem=0
+                        # Se não há imagens existentes e esta é a primeira, usar ordem=0
+                        # Caso contrário, incrementar a partir da última ordem existente
+                        if i == imagem_capa_index:
+                            ordem = 0
+                        elif max_ordem == -1 and i == 0 and not produto.imagens_produto.exists():
+                            ordem = 0
+                        else:
+                            ordem = max_ordem + i + 1
+                        
+                        # Criar o objeto de imagem
+                        img = ProdutoImagem.objects.create(
+                            produto=produto,
+                            imagem=imagem,
+                            ordem=ordem
+                        )
+                        print(f"Nova imagem adicionada: ID={img.id}, Ordem={ordem}")
+                        
+                        # Se esta imagem é a capa, atualizar as demais imagens para não serem capa
+                        if ordem == 0:
+                            # Buscar outras imagens com ordem=0 e atualizá-las
+                            imagens_antigas_capa = produto.imagens_produto.filter(ordem=0).exclude(id=img.id)
+                            for idx, img_antiga in enumerate(imagens_antigas_capa):
+                                nova_ordem = max_ordem + len(imagens) + idx + 1
+                                img_antiga.ordem = nova_ordem
+                                img_antiga.save()
+                                print(f"Antiga imagem capa atualizada: ID={img_antiga.id}, Nova Ordem={nova_ordem}")
+                    except Exception as e:
+                        print(f"Erro ao salvar nova imagem {i+1}: {e}")
             
             messages.success(request, f'Produto "{produto.produto_nome}" atualizado com sucesso!')
             return redirect('produtos:gerenciar_produtos')
+        else:
+            print("Formulário inválido:", form.errors)
+            for field, errors in form.errors.items():
+                print(f"Campo {field}: {errors}")
     else:
         form = ProdutoForm(instance=produto)
-    
+        
+    categorias = Categoria.objects.all().order_by('categoria_nome')
     return render(request, 'produtos/form_produto.html', {
         'form': form,
         'produto': produto,
         'title': 'Editar Produto',
-        'opcionais_choices': Produto.OPCIONAIS_CHOICES,
+        'OPCIONAIS_CONFORTO': Produto.OPCIONAIS_CONFORTO,
+        'OPCIONAIS_SEGURANCA': Produto.OPCIONAIS_SEGURANCA,
+        'OPCIONAIS_TECNOLOGIA': Produto.OPCIONAIS_TECNOLOGIA,
+        'OPCIONAIS_OUTROS': Produto.OPCIONAIS_OUTROS,
         'imagens_atuais': produto.imagens_produto.all().order_by('ordem'),
+        'categorias': categorias,
     })
 
 @login_required
@@ -162,12 +351,52 @@ def excluir_produto(request, pk):
 
 @login_required
 def remover_imagem(request, produto_pk, imagem_pk):
-    """Nova view para remover uma imagem específica"""
+    """View para remover uma imagem específica"""
     if request.method == 'POST':
-        imagem = get_object_or_404(ProdutoImagem, pk=imagem_pk, produto_id=produto_pk)
-        imagem.delete()
-        messages.success(request, 'Imagem removida com sucesso!')
-        return redirect('produtos:editar_produto', pk=produto_pk)
+        try:
+            produto = get_object_or_404(Produto, pk=produto_pk)
+            imagem = get_object_or_404(ProdutoImagem, pk=imagem_pk, produto=produto)
+            
+            # Verificar se a imagem é a capa (ordem=0)
+            era_capa = imagem.ordem == 0
+            
+            # Excluir a imagem
+            imagem.delete()
+            
+            # Se a imagem excluída era a capa, definir uma nova capa
+            if era_capa:
+                # Pegar a primeira imagem disponível e definir como capa (ordem=0)
+                nova_capa = ProdutoImagem.objects.filter(produto=produto).first()
+                if nova_capa:
+                    nova_capa.ordem = 0
+                    nova_capa.save()
+            
+            # Reordenar as imagens restantes
+            imagens_restantes = ProdutoImagem.objects.filter(produto=produto).exclude(ordem=0).order_by('ordem')
+            for i, img in enumerate(imagens_restantes, 1):
+                img.ordem = i
+                img.save()
+            
+            # Se for uma solicitação AJAX, retornar JSON
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'status': 'success', 
+                    'message': 'Imagem removida com sucesso!',
+                    'imagens_restantes': list(produto.imagens_produto.values('id', 'ordem'))
+                })
+                
+            messages.success(request, 'Imagem removida com sucesso!')
+            return redirect('produtos:editar_produto', pk=produto_pk)
+            
+        except Exception as e:
+            print(f"Erro ao remover imagem: {e}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+                
+            messages.error(request, f'Erro ao remover imagem: {str(e)}')
+            return redirect('produtos:editar_produto', pk=produto_pk)
+            
+    # Se não for POST, redirecionar para gerenciamento de produtos
     return redirect('produtos:gerenciar_produtos')
 
 @login_required

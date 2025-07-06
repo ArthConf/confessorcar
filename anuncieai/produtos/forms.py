@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 import json
 import uuid
-from .models import Produto, ProdutoImagem
+from .models import Produto, ProdutoImagem, MARCA_CHOICES, COR_CHOICES, ESTADO_CHOICES, Cidade
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -29,7 +29,15 @@ class ProdutoImagemForm(forms.ModelForm):
 class ProdutoForm(forms.ModelForm):
     # Removemos o campo slug do formulário para que ele não seja exibido
     # e seja gerado automaticamente
-    
+    cidade_texto = forms.CharField(
+        label="Cidade",
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'id': 'id_cidade'  # Mantém o mesmo ID para compatibilidade com JavaScript
+        })
+    )
+
     imagens = MultipleFileField(
         required=False,
         widget=MultipleFileInput(attrs={
@@ -50,12 +58,18 @@ class ProdutoForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = [
-            'produto_nome', 'descricao', 'preco', 'categoria', 
-            'cor', 'ano_fabricacao', 'ano_modelo', 'quilometragem', 
-            'cambio', 'carroceria', 'combustivel', 'placa_final', 
+            'marca', 'produto_nome', 'categoria', 'descricao', 'preco',
+            'estado', 'cidade_texto',  # substituir 'cidade' por 'cidade_texto'
+            'cor', 'ano_fabricacao', 'ano_modelo', 'quilometragem',
+            'portas', 'potencia', 'cilindrada',
+            'cambio', 'combustivel', 'placa_final',
             'aceita_troca', 'ipva_pago', 'opcionais', 'esta_disponivel'
-        ]  # Removemos 'slug' daqui
+        ]
         widgets = {
+            'marca': forms.Select(
+                attrs={'class': 'form-select'},
+                
+            ),
             'produto_nome': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Nome do Veículo'
@@ -70,12 +84,16 @@ class ProdutoForm(forms.ModelForm):
                 'placeholder': 'Preço'
             }),
             'categoria': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'form-select'
             }),
-            'cor': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Cor do veículo'
-            }),
+            'estado': forms.Select(
+                attrs={'class': 'form-select'},
+                choices=ESTADO_CHOICES
+            ),
+            'cor': forms.Select(
+                attrs={'class': 'form-select'},
+                choices=COR_CHOICES
+            ),
             'ano_fabricacao': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ano de Fabricação'
@@ -88,14 +106,25 @@ class ProdutoForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Quilometragem'
             }),
-            'cambio': forms.Select(attrs={
-                'class': 'form-control'
+            'portas': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número de Portas',
+                'min': 2,
+                'max': 5
             }),
-            'carroceria': forms.Select(attrs={
-                'class': 'form-control'
+            'potencia': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ex: 72cv'
+            }),
+            'cilindrada': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ex: 1.0'
+            }),
+            'cambio': forms.Select(attrs={
+                'class': 'form-select'
             }),
             'combustivel': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'form-select'
             }),
             'placa_final': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -113,6 +142,55 @@ class ProdutoForm(forms.ModelForm):
             })
         }
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Se estamos editando um produto com cidade
+        if self.instance and self.instance.pk and self.instance.cidade:
+            self.initial['cidade_texto'] = self.instance.cidade.nome
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        cidade_texto = cleaned_data.get('cidade_texto')
+        estado = cleaned_data.get('estado')
+        
+        # Se temos um nome de cidade e estado, buscar ou criar a cidade
+        if cidade_texto and estado:
+            try:
+                cidade, created = Cidade.objects.get_or_create(
+                    nome=cidade_texto,
+                    estado=estado
+                )
+                # Adicionar a cidade ao cleaned_data
+                cleaned_data['cidade'] = cidade
+                print(f"Cidade processada: {cidade_texto}/{estado} (ID: {cidade.id}, Nova: {created})")
+            except Exception as e:
+                print(f"Erro ao criar/obter cidade: {e}")
+                self.add_error('cidade_texto', "Erro ao processar cidade")
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        produto = super().save(commit=False)
+        
+        # Adicione este código para garantir que a cidade seja salva
+        if 'cidade' in self.cleaned_data:
+            produto.cidade = self.cleaned_data['cidade']
+        
+        # Resto do seu código...
+        base_slug = slugify(produto.produto_nome)
+        
+        if not produto.slug:
+            codigo_unico = str(uuid.uuid4())[:6]
+            produto.slug = f"{base_slug}-{codigo_unico}"
+        
+        if not isinstance(produto.opcionais, list):
+            produto.opcionais = self.cleaned_data.get('opcionais', [])
+        
+        if commit:
+            produto.save()
+            
+        return produto
+
     def clean_opcionais(self):
         """
         Converte os opcionais recebidos para o formato esperado pelo JSONField
@@ -168,4 +246,4 @@ class ProdutoForm(forms.ModelForm):
         if commit:
             produto.save()
             
-        return produto
+        return produto  

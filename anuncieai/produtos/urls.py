@@ -13,6 +13,7 @@ urlpatterns = [
     path('<slug:categoria_slug>/', views.visualizarLoja, name='produto_por_categoria'),
     path('<slug:categoria_slug>/<slug:produto_slug>/', views.produto_detalhe, name='produto_detalhe'),
     path('produto/<int:pk>/marcar-vendido/', views.marcar_produto_vendido, name='marcar_vendido'),
+    path('get_cidades/', views.get_cidades, name='get_cidades'),
     # Novas URLs para gerenciamento de imagens
     path('imagem/remover/<int:produto_pk>/<int:imagem_pk>/', 
          views.remover_imagem, 
