@@ -48,7 +48,24 @@
                                     {% endfor %}
                                 {% endif %}
                                 
-                                <form method="post" class="needs-validation" novalidate>
+                                <!-- Erros de formulário visíveis -->
+                                {% if form.errors %}
+                                <div class="alert alert-danger">
+                                    <h5><i class="fas fa-exclamation-triangle me-2"></i>Por favor, corrija os seguintes erros:</h5>
+                                    <ul class="mb-0">
+                                        {% for field in form %}
+                                            {% for error in field.errors %}
+                                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                                
+                                <form method="post" class="needs-validation" novalidate id="registerForm">
                                     {% csrf_token %}
                                     
                                     <div class="row">
@@ -58,7 +75,7 @@
                                         </div>
                                         
                                         <div class="col-md-6 mb-3">
-                                            <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                                            <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }} <span class="text-danger">*</span></label>
                                             {{ form.first_name }}
                                             <div class="invalid-feedback">
                                                 {{ form.first_name.errors }}
@@ -66,7 +83,7 @@
                                         </div>
                                         
                                         <div class="col-md-6 mb-3">
-                                            <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                                            <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }} <span class="text-danger">*</span></label>
                                             {{ form.last_name }}
                                             <div class="invalid-feedback">
                                                 {{ form.last_name.errors }}
@@ -74,7 +91,7 @@
                                         </div>
                                         
                                         <div class="col-md-6 mb-3">
-                                            <label for="{{ form.cpf.id_for_label }}" class="form-label">{{ form.cpf.label }}</label>
+                                            <label for="{{ form.cpf.id_for_label }}" class="form-label">{{ form.cpf.label }} <span class="text-danger">*</span></label>
                                             {{ form.cpf }}
                                             <div class="invalid-feedback">
                                                 {{ form.cpf.errors }}
@@ -148,7 +165,7 @@
                                         </div>
                                         
                                         <div class="col-md-6 mb-3">
-                                            <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
+                                            <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }} <span class="text-danger">*</span></label>
                                             {{ form.username }}
                                             <div class="invalid-feedback">
                                                 {{ form.username.errors }}
@@ -157,7 +174,7 @@
                                         </div>
                                         
                                         <div class="col-md-6 mb-3">
-                                            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                                            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }} <span class="text-danger">*</span></label>
                                             {{ form.email }}
                                             <div class="invalid-feedback">
                                                 {{ form.email.errors }}
@@ -165,20 +182,57 @@
                                         </div>
                                         
                                         <div class="col-md-6 mb-3">
-                                            <label for="{{ form.password1.id_for_label }}" class="form-label">{{ form.password1.label }}</label>
-                                            {{ form.password1 }}
+                                            <label for="{{ form.password1.id_for_label }}" class="form-label">{{ form.password1.label }} <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                {{ form.password1 }}
+                                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
                                             <div class="invalid-feedback">
                                                 {{ form.password1.errors }}
                                             </div>
-                                            <small class="form-text text-muted">{{ form.password1.help_text|safe }}</small>
+                                            
+                                            <div class="password-strength-meter mt-2">
+                                                <div class="password-requirements">
+                                                    <p class="mb-1 text-muted">Requisitos de senha:</p>
+                                                    <ul class="ps-4 mb-1 small">
+                                                        <li id="req-length" class="password-req">
+                                                            <i class="far fa-circle"></i> Pelo menos 8 caracteres
+                                                        </li>
+                                                        <li id="req-uppercase" class="password-req">
+                                                            <i class="far fa-circle"></i> Pelo menos uma letra maiúscula
+                                                        </li>
+                                                        <li id="req-lowercase" class="password-req">
+                                                            <i class="far fa-circle"></i> Pelo menos uma letra minúscula
+                                                        </li>
+                                                        <li id="req-number" class="password-req">
+                                                            <i class="far fa-circle"></i> Pelo menos um número
+                                                        </li>
+                                                        <li id="req-special" class="password-req">
+                                                            <i class="far fa-circle"></i> Pelo menos um caractere especial
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="strength-bar-container">
+                                                    <div class="strength-bar" id="strength-bar"></div>
+                                                </div>
+                                                <p class="strength-text mb-0 small" id="strength-text">Força da senha: Muito fraca</p>
+                                            </div>
                                         </div>
                                         
                                         <div class="col-md-6 mb-3">
-                                            <label for="{{ form.password2.id_for_label }}" class="form-label">{{ form.password2.label }}</label>
-                                            {{ form.password2 }}
+                                            <label for="{{ form.password2.id_for_label }}" class="form-label">{{ form.password2.label }} <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                {{ form.password2 }}
+                                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
                                             <div class="invalid-feedback">
                                                 {{ form.password2.errors }}
                                             </div>
+                                            <div class="password-match mt-1 small" id="password-match"></div>
                                         </div>
                                         
                                         <div class="col-12 mb-3 mt-3">
@@ -290,6 +344,13 @@
     --text-light: #f8f9fa; /* Texto claro */
     --text-dark: #343a40;  /* Texto escuro */
     --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--third) 70%, var(--secondary) 100%);
+    
+    /* Cores para força da senha */
+    --strength-very-weak: #dc3545;
+    --strength-weak: #ffc107;
+    --strength-medium: #fd7e14;
+    --strength-strong: #20c997;
+    --strength-very-strong: #198754;
 }
 
 /* Container geral */
@@ -297,8 +358,8 @@
     background-color: #f8f9fa;
     min-height: calc(100vh - 150px);
     display: flex;
-    align-items: center;
-    padding: 20px 0;
+    align-items: flex-start; /* Alterado para iniciar do topo */
+    padding: 80px 0 20px 0; /* Ajustado padding para começar mais acima */
 }
 
 /* Card principal */
@@ -307,7 +368,7 @@
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    margin-top: -60px; /* Move o card para cima para evitar scroll */
+    margin-top: 0; /* Removido o margin-top negativo */
 }
 
 /* Parte esquerda - Banner */
@@ -557,6 +618,110 @@
     background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 
+/* Estilos para visibilidade de senha */
+.toggle-password {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-color: #ddd;
+    background-color: #f8f9fa;
+}
+
+.toggle-password:hover {
+    background-color: #e9ecef;
+    border-color: #ddd;
+}
+
+/* Medidor de força de senha */
+.password-strength-meter {
+    margin-top: 10px;
+}
+
+.strength-bar-container {
+    height: 5px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.strength-bar {
+    height: 100%;
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s, background-color 0.3s;
+}
+
+.strength-text {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+/* Cores para os requisitos de senha */
+.password-requirements {
+    margin-top: 5px;
+}
+
+.password-requirements ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    column-count: 2;
+    column-gap: 15px;
+}
+
+.password-req {
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+}
+
+.password-req i {
+    margin-right: 5px;
+    transition: all 0.3s ease;
+}
+
+.password-req.valid {
+    color: var(--strength-very-strong);
+}
+
+.password-req.valid i {
+    color: var(--strength-very-strong);
+}
+
+/* Mensagem de correspondência de senhas */
+.password-match {
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+/* Customização do checkbox */
+.form-check-input {
+    cursor: pointer;
+    border-color: var(--third);
+}
+
+.form-check-input:checked {
+    background-color: var(--third);
+    border-color: var(--third);
+}
+
+.form-check-input:focus {
+    border-color: var(--third);
+    box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.25);
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+.form-check a {
+    color: var(--third);
+    text-decoration: none;
+}
+
+.form-check a:hover {
+    text-decoration: underline;
+}
+
 /* Responsividade */
 @media (max-width: 767px) {
     .register-banner {
@@ -570,14 +735,15 @@
     
     .register-container {
         min-height: auto;
-    }
-    
-    .register-card {
-        margin-top: 0;
+        padding-top: 20px;
     }
     
     .welcome-title {
         font-size: 2rem;
+    }
+    
+    .password-requirements ul {
+        column-count: 1;
     }
 }
 </style>
@@ -587,6 +753,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Garantir que a página inicie no topo
     window.scrollTo(0, 0);
     
+    // Focar no primeiro campo ao carregar a página
+    document.getElementById('id_first_name').focus();
+    
+    // Limpar a seleção de estado para não iniciar com Acre (que é o primeiro)
+    const estadoSelect = document.getElementById('estado');
+    if (estadoSelect) {
+        // Define uma opção vazia para forçar o usuário a selecionar
+        if (estadoSelect.options[0].value === 'AC') {
+            estadoSelect.selectedIndex = -1; // Desmarca qualquer opção selecionada
+            // Adicionar opção vazia no início se não existir
+            if (estadoSelect.options[0].value !== '') {
+                const emptyOption = document.createElement('option');
+                emptyOption.value = '';
+                emptyOption.text = 'Selecione um estado';
+                estadoSelect.prepend(emptyOption);
+            }
+            estadoSelect.value = ''; // Seleciona a opção vazia
+        }
+    }
+    
     // Inicializar o validador de formulário do Bootstrap
     var forms = document.querySelectorAll('.needs-validation');
     Array.from(forms).forEach(function(form) {
@@ -594,10 +780,34 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!form.checkValidity()) {
                 event.preventDefault();
                 event.stopPropagation();
+                
+                // Encontrar o primeiro elemento inválido e dar foco a ele
+                const invalidElements = form.querySelectorAll(':invalid');
+                if (invalidElements.length > 0) {
+                    invalidElements[0].focus();
+                    
+                    // Scrollar para o elemento com animação
+                    const elementRect = invalidElements[0].getBoundingClientRect();
+                    const offset = elementRect.top + window.scrollY - 100;
+                    window.scrollTo({
+                        top: offset,
+                        behavior: 'smooth'
+                    });
+                }
             }
             
             form.classList.add('was-validated');
         }, false);
+        
+        // Adicionar validação visual em tempo real
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (input.value) {
+                    input.classList.add('is-valid');
+                }
+            });
+        });
     });
     
     // Máscaras para campos
@@ -616,6 +826,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             e.target.value = value;
+            
+            // Validação visual do CPF
+            if (value.length === 14) {
+                cpfInput.classList.add('is-valid');
+            } else {
+                cpfInput.classList.remove('is-valid');
+            }
         });
     }
     
@@ -630,6 +847,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             e.target.value = value;
+            
+            // Validação visual do CEP
+            if (value.length === 8) {
+                cepInput.classList.add('is-valid');
+            } else {
+                cepInput.classList.remove('is-valid');
+            }
         });
     }
     
@@ -646,15 +870,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             e.target.value = value;
+            
+            // Validação visual do WhatsApp
+            if (value.length >= 10) {
+                phoneInput.classList.add('is-valid');
+            } else if (value.length > 0) {
+                phoneInput.classList.remove('is-valid');
+            }
         });
     }
     
     // Implementação para carregamento de cidades
-    const estadoSelect = document.getElementById('estado');
-    const cidadeInput = document.getElementById('cidade');
-    const cidadeDatalist = document.getElementById('cidade-list');
-    
-    if (estadoSelect && cidadeInput && cidadeDatalist) {
+    if (estadoSelect && document.getElementById('cidade') && document.getElementById('cidade-list')) {
+        const cidadeInput = document.getElementById('cidade');
+        const cidadeDatalist = document.getElementById('cidade-list');
+        
         // Estilizar o campo de cidade para parecer um select
         cidadeInput.addEventListener('focus', function() {
             if (this.value === '') {
@@ -696,6 +926,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     cidadeInput.placeholder = 'Digite ou selecione sua cidade';
                     cidadeInput.disabled = false;
                     
+                    // Validação visual do estado
+                    estadoSelect.classList.add('is-valid');
+                    
                     // Se já tem um valor no campo cidade, tentar encontrá-lo nas opções
                     const cidadeAtual = cidadeInput.value;
                     if (cidadeAtual) {
@@ -705,6 +938,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (!cidadeExiste) {
                             cidadeInput.value = ''; // Limpar se a cidade não existir no estado
+                        } else {
+                            cidadeInput.classList.add('is-valid');
                         }
                     }
                 })
@@ -715,9 +950,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
         
+        // Validação do campo cidade
+        cidadeInput.addEventListener('change', function() {
+            if (this.value.trim() !== '') {
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+        
         // Carregar cidades quando o estado mudar
         estadoSelect.addEventListener('change', function() {
             cidadeInput.value = ''; // Limpar cidade atual
+            cidadeInput.classList.remove('is-valid');
             carregarCidadesPorEstado(this.value);
         });
         
@@ -725,6 +970,167 @@ document.addEventListener('DOMContentLoaded', function() {
         if (estadoSelect.value) {
             carregarCidadesPorEstado(estadoSelect.value);
         }
+    }
+    
+    // Visibilidade da senha
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+    togglePasswordButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const passwordField = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            // Toggle tipo de campo
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+    
+    // Verificação de força da senha
+    const passwordField = document.getElementById('id_password1');
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthText = document.getElementById('strength-text');
+    
+    // Requisitos da senha
+    const reqLength = document.getElementById('req-length');
+    const reqUppercase = document.getElementById('req-uppercase');
+    const reqLowercase = document.getElementById('req-lowercase');
+    const reqNumber = document.getElementById('req-number');
+    const reqSpecial = document.getElementById('req-special');
+    
+    if (passwordField && strengthBar && strengthText) {
+        passwordField.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            let color = '';
+            let text = '';
+            
+            // Verificar requisitos
+            const hasLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[^A-Za-z0-9]/.test(password);
+            
+            // Atualizar indicadores visuais dos requisitos
+            updateRequirement(reqLength, hasLength);
+            updateRequirement(reqUppercase, hasUppercase);
+            updateRequirement(reqLowercase, hasLowercase);
+            updateRequirement(reqNumber, hasNumber);
+            updateRequirement(reqSpecial, hasSpecial);
+            
+            // Calcular força da senha
+            if (password.length > 0) {
+                // Comprimento mínimo (máx: 2 pontos)
+                strength += Math.min(2, Math.floor(password.length / 4));
+                
+                // Variedade de caracteres
+                if (hasUppercase) strength += 1;
+                if (hasLowercase) strength += 1;
+                if (hasNumber) strength += 1;
+                if (hasSpecial) strength += 1;
+                
+                // Complexidade (todos os tipos = +1)
+                if (hasUppercase && hasLowercase && hasNumber && hasSpecial) strength += 1;
+                
+                // Determinar cor e texto baseado na pontuação (máx: 7)
+                if (strength <= 2) {
+                    color = 'var(--strength-very-weak)';
+                    text = 'Muito fraca';
+                    width = '20%';
+                } else if (strength <= 3) {
+                    color = 'var(--strength-weak)';
+                    text = 'Fraca';
+                    width = '40%';
+                } else if (strength <= 4) {
+                    color = 'var(--strength-medium)';
+                    text = 'Média';
+                    width = '60%';
+                } else if (strength <= 5) {
+                    color = 'var(--strength-strong)';
+                    text = 'Forte';
+                    width = '80%';
+                } else {
+                    color = 'var(--strength-very-strong)';
+                    text = 'Muito forte';
+                    width = '100%';
+                }
+                
+                // Se não cumpre os requisitos mínimos
+                if (!(hasLength && hasUppercase && hasLowercase && hasNumber)) {
+                    color = 'var(--strength-very-weak)';
+                    if (text !== 'Muito fraca') {
+                        text = 'Insuficiente';
+                    }
+                }
+            } else {
+                color = '#e9ecef';
+                text = 'Nenhuma';
+                width = '0%';
+            }
+            
+            // Atualizar barra e texto
+            strengthBar.style.width = width;
+            strengthBar.style.backgroundColor = color;
+            strengthText.textContent = 'Força da senha: ' + text;
+            strengthText.style.color = color !== '#e9ecef' ? color : '#6c757d';
+            
+            // Validar visualmente o campo
+            if (password.length > 0 && hasLength && hasUppercase && hasLowercase && hasNumber) {
+                this.classList.add('is-valid');
+                this.classList.remove('is-invalid');
+            } else if (password.length > 0) {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else {
+                this.classList.remove('is-valid', 'is-invalid');
+            }
+        });
+    }
+    
+    // Função para atualizar requisitos visuais
+    function updateRequirement(element, isValid) {
+        if (isValid) {
+            element.classList.add('valid');
+            element.querySelector('i').className = 'fas fa-check-circle';
+        } else {
+            element.classList.remove('valid');
+            element.querySelector('i').className = 'far fa-circle';
+        }
+    }
+    
+    // Verificar se as senhas coincidem
+    const passwordConfirmField = document.getElementById('id_password2');
+    const passwordMatchText = document.getElementById('password-match');
+    
+    if (passwordField && passwordConfirmField && passwordMatchText) {
+        const checkPasswordMatch = function() {
+            if (passwordConfirmField.value) {
+                if (passwordField.value === passwordConfirmField.value) {
+                    passwordMatchText.textContent = 'Senhas conferem ✓';
+                    passwordMatchText.style.color = 'var(--strength-very-strong)';
+                    passwordConfirmField.classList.add('is-valid');
+                    passwordConfirmField.classList.remove('is-invalid');
+                } else {
+                    passwordMatchText.textContent = 'Senhas não conferem ✗';
+                    passwordMatchText.style.color = 'var(--strength-very-weak)';
+                    passwordConfirmField.classList.add('is-invalid');
+                    passwordConfirmField.classList.remove('is-valid');
+                }
+            } else {
+                passwordMatchText.textContent = '';
+                passwordConfirmField.classList.remove('is-valid', 'is-invalid');
+            }
+        };
+        
+        passwordField.addEventListener('input', checkPasswordMatch);
+        passwordConfirmField.addEventListener('input', checkPasswordMatch);
     }
 });
 </script>
