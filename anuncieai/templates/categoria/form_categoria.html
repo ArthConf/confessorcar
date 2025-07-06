@@ -3,64 +3,591 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h2>{{ title }}</h2>
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">{{ title }}</h2>
 
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                {% if form.errors %}
-                <div class="alert alert-danger">
-                    Por favor, corrija os erros abaixo.
-                </div>
-                {% endif %}
-
-                <div class="form-group">
-                    <label for="{{ form.categoria_nome.id_for_label }}">Nome da Categoria</label>
-                    {{ form.categoria_nome }}
-                    {% if form.categoria_nome.errors %}
-                    <div class="invalid-feedback d-block">
-                        {{ form.categoria_nome.errors }}
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                    {% endfor %}
                     {% endif %}
-                </div>
 
-                <div class="form-group">
-                    <label for="{{ form.slug.id_for_label }}">Slug</label>
-                    {{ form.slug }}
-                    {% if form.slug.errors %}
-                    <div class="invalid-feedback d-block">
-                        {{ form.slug.errors }}
-                    </div>
-                    {% endif %}
-                </div>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="form-sections">
+                            <!-- Seção: Informações da Categoria -->
+                            <div class="section-titulo">
+                                <i class="fas fa-tag"></i> Informações da Categoria
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="{{ form.categoria_nome.id_for_label }}" class="form-label">Nome da Categoria</label>
+                                    {{ form.categoria_nome }}
+                                    {% if form.categoria_nome.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.categoria_nome.errors }}</div>
+                                    {% endif %}
+                                    <small class="text-muted small">Nome que será exibido aos usuários na navegação do site.</small>
+                                </div>
 
-                <div class="form-group">
-                    <label for="{{ form.categoria_descricao.id_for_label }}">Descrição</label>
-                    {{ form.categoria_descricao }}
-                    {% if form.categoria_descricao.errors %}
-                    <div class="invalid-feedback d-block">
-                        {{ form.categoria_descricao.errors }}
-                    </div>
-                    {% endif %}
-                </div>
+                                <!-- Campo slug oculto - será preenchido automaticamente via JavaScript -->
+                                <div style="display:none;">{{ form.slug }}</div>
+                            </div>
 
-                <div class="form-group">
-                    <label for="{{ form.categoria_imagem.id_for_label }}">Imagem</label>
-                    {{ form.categoria_imagem }}
-                    {% if form.categoria_imagem.errors %}
-                    <div class="invalid-feedback d-block">
-                        {{ form.categoria_imagem.errors }}
-                    </div>
-                    {% endif %}
-                </div>
+                            <!-- Seção: Descrição -->
+                            <div class="section-titulo mt-4">
+                                <i class="fas fa-align-left"></i> Descrição da Categoria
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="{{ form.categoria_descricao.id_for_label }}" class="form-label">Descrição</label>
+                                    <p class="text-muted small">Uma breve descrição sobre esta categoria de veículos que será exibida aos usuários.</p>
+                                    {{ form.categoria_descricao }}
+                                    {% if form.categoria_descricao.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.categoria_descricao.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
 
-                <div class="form-group">
-                    <a href="{% url 'categoria:gerenciar_categorias' %}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                            <!-- Seção: Imagem -->
+                            <div class="section-titulo mt-4">
+                                <i class="fas fa-image"></i> Imagem da Categoria
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="image-upload-container">
+                                        <!-- Exibição da imagem atual (se existir) -->
+                                        {% if form.instance.categoria_imagem %}
+                                        <div class="mb-4">
+                                            <h6 class="mb-3">Imagem Atual:</h6>
+                                            <div class="row">
+                                                <div class="col-md-4 offset-md-4">
+                                                    <div class="existing-image-card">
+                                                        <img src="{{ form.instance.categoria_imagem.url }}" class="img-thumbnail" alt="{{ form.instance.categoria_nome }}">
+                                                        <div class="image-overlay">
+                                                            <button type="button" class="btn btn-sm btn-light view-image-btn" id="view-current-image">
+                                                                <i class="fas fa-search-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-check mt-2">
+                                                        <input class="form-check-input" type="checkbox" id="removerImagem" name="remover_imagem">
+                                                        <label class="form-check-label" for="removerImagem">
+                                                            <i class="fas fa-trash-alt text-danger"></i> Remover imagem atual
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Seleção de nova imagem -->
+                                        <input type="file" id="custom-image-input" class="d-none" accept=".jpg,.jpeg,.png" name="categoria_imagem">
+                                        <label for="custom-image-input" class="btn btn-anuncieai mb-3" id="image-select-button">
+                                            <i class="fas fa-upload"></i> {% if form.instance.categoria_imagem %}Alterar Imagem{% else %}Selecionar Imagem{% endif %}
+                                        </label>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <small class="form-text text-muted">Selecione uma imagem representativa para esta categoria (apenas JPG, JPEG ou PNG)</small>
+                                        </div>
+                                        
+                                        <!-- Preview da imagem selecionada -->
+                                        <div id="image-preview-container" class="row g-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                            <a href="{% url 'categoria:gerenciar_categorias' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Modal para visualização de imagem -->
+<div class="modal fade" id="previewImageModal" tabindex="-1" aria-labelledby="previewImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewImageModalLabel">Visualização da Imagem</h5>
+                <button type="button" class="btn-close" id="closePreviewModalX" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <img id="previewModalImage" src="" class="img-fluid w-100" alt="Prévia da imagem">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closePreviewModalBtn">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    /* Cores atualizadas baseadas no logotipo AnuncieAi */
+    --primary-color: #0a1e36;    /* Azul escuro do "Anuncie" */
+    --secondary-color: #30c5f5;  /* Azul claro/ciano do "Ai" */
+    --third-color: #0066cc;      /* Azul médio do gradiente */
+    --light-color: #f0f8ff;      /* Azul muito claro para fundos */
+    --gray-color: #707070;       /* Cinza do logotipo */
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    background-color: white;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Correção para títulos das seções */
+.section-titulo {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid var(--secondary-color);
+    margin-bottom: 1.5rem;
+    text-decoration: none !important; /* Corrigido: valor explícito 'none' com !important */
+}
+
+.section-titulo i {
+    color: var(--secondary-color);
+    margin-right: 0.5rem;
+}
+
+/* Garantir que todos os textos não tenham decoração indesejada */
+.form-label, .section-titulo, h1, h2, h3, h4, h5, h6, p, span, div, label {
+    text-decoration: none !important;
+}
+
+.form-control, .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(48, 197, 245, 0.25);
+}
+
+/* Estilo para textarea */
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.btn-primary {
+    background-color: var(--third-color);
+    border-color: var(--third-color);
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-secondary {
+    color: var(--gray-color);
+    border-color: var(--gray-color);
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--gray-color);
+    border-color: var(--gray-color);
+    color: white;
+}
+
+/* Botão de upload com gradiente do logotipo */
+.btn-anuncieai {
+    color: white;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--third-color) 50%, var(--secondary-color) 100%);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Efeito de hover para o botão */
+.btn-anuncieai:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--third-color) 50%, var(--primary-color) 100%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.btn-anuncieai:hover:before {
+    opacity: 1;
+}
+
+.btn-anuncieai:hover {
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-anuncieai:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.image-upload-container {
+    background-color: rgba(48, 197, 245, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px dashed var(--secondary-color);
+    text-align: center;
+}
+
+/* Estilo para imagens existentes */
+.existing-image-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+    margin: 0 auto;
+}
+
+.existing-image-card img {
+    width: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.existing-image-card:hover .image-overlay {
+    opacity: 1;
+}
+
+.existing-image-card:hover img {
+    transform: scale(1.05);
+}
+
+.view-image-btn {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-image-btn:hover {
+    background-color: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+}
+
+/* Estilos para miniaturas de imagens */
+.image-thumbnail-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.image-thumbnail {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid var(--secondary-color);
+    transition: all 0.2s ease;
+}
+
+.thumbnail-actions {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+}
+
+.remove-image-btn {
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-image-btn:hover {
+    background-color: rgba(220, 53, 69, 1);
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsividade geral */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .section-titulo {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Geração automática de slug
+    const nameInput = document.querySelector('input[name="categoria_nome"]');
+    const slugInput = document.querySelector('input[name="slug"]');
+    
+    if (nameInput && slugInput) {
+        nameInput.addEventListener('input', function() {
+            const slug = this.value
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')    // Remove caracteres especiais
+                .replace(/\s+/g, '-')        // Substitui espaços por hífens
+                .replace(/-+/g, '-')         // Remove múltiplos hífens
+                .replace(/^-+|-+$/g, '');    // Remove hífens do início e fim
+            
+            // Atualiza o campo slug oculto
+            slugInput.value = slug;
+        });
+    }
+    
+    // Checkbox para remover imagem
+    const removeImageCheck = document.getElementById('removerImagem');
+    const imageCard = document.querySelector('.existing-image-card');
+    
+    if (removeImageCheck && imageCard) {
+        removeImageCheck.addEventListener('change', function() {
+            if (this.checked) {
+                // Efeito visual para indicar que a imagem será removida
+                imageCard.style.opacity = '0.3';
+            } else {
+                // Restaurar opacidade normal
+                imageCard.style.opacity = '1';
+            }
+        });
+    }
+    
+    // ===== MODAL DE VISUALIZAÇÃO =====
+    // Referências para o modal de visualização de imagem
+    const previewImageModal = document.getElementById('previewImageModal');
+    const closePreviewModalX = document.getElementById('closePreviewModalX');
+    const closePreviewModalBtn = document.getElementById('closePreviewModalBtn');
+    const viewCurrentImageBtn = document.getElementById('view-current-image');
+    
+    // Função para fechar o modal
+    function hideModal() {
+        if (!previewImageModal) return;
+        
+        // Remover classes que mostram o modal
+        previewImageModal.classList.remove('show');
+        previewImageModal.style.display = 'none';
+        
+        // Remover backdrop
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) backdrop.remove();
+        
+        // Remover classe modal-open do body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+    
+    // Função para mostrar o modal
+    function showModal(imageSrc) {
+        if (!previewImageModal) return;
+        
+        // Definir a imagem no modal
+        const modalImage = document.getElementById('previewModalImage');
+        if (modalImage) {
+            modalImage.src = imageSrc;
+        }
+        
+        // Adicionar backdrop se não existir
+        if (!document.querySelector('.modal-backdrop')) {
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+        }
+        
+        // Adicionar classes para mostrar o modal
+        previewImageModal.classList.add('show');
+        previewImageModal.style.display = 'block';
+        
+        // Adicionar classe modal-open ao body
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = '17px'; // Compensação da barra de rolagem
+    }
+    
+    // Configurar eventos para o botão de visualização da imagem atual
+    if (viewCurrentImageBtn) {
+        viewCurrentImageBtn.addEventListener('click', function() {
+            const imageUrl = this.closest('.existing-image-card').querySelector('img').src;
+            showModal(imageUrl);
+        });
+    }
+    
+    // Configurar eventos para fechar o modal
+    if (closePreviewModalX) {
+        closePreviewModalX.addEventListener('click', hideModal);
+    }
+    
+    if (closePreviewModalBtn) {
+        closePreviewModalBtn.addEventListener('click', hideModal);
+    }
+    
+    // Fechar ao clicar fora do modal
+    window.addEventListener('click', function(event) {
+        if (event.target === previewImageModal) {
+            hideModal();
+        }
+    });
+    
+    // Fechar com tecla Escape
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            hideModal();
+        }
+    });
+    
+    // ===== UPLOAD E PREVIEW DE IMAGEM =====
+    // Configuração para o upload de imagem com preview
+    const customImageInput = document.getElementById('custom-image-input');
+    const previewContainer = document.getElementById('image-preview-container');
+    
+    if (customImageInput && previewContainer) {
+        customImageInput.addEventListener('change', function(e) {
+            // Limpar o preview atual
+            previewContainer.innerHTML = '';
+            
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Verificar se é uma imagem aceita
+                if (['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        // Criar a miniatura
+                        const col = document.createElement('div');
+                        col.className = 'col-md-4 offset-md-4 mb-3';
+                        
+                        const thumbnailContainer = document.createElement('div');
+                        thumbnailContainer.className = 'image-thumbnail-container';
+                        
+                        const img = document.createElement('img');
+                        img.className = 'image-thumbnail';
+                        img.src = e.target.result;
+                        img.alt = 'Nova imagem selecionada';
+                        
+                        const actions = document.createElement('div');
+                        actions.className = 'thumbnail-actions';
+                        
+                        // Botão para visualizar imagem
+                        const viewBtn = document.createElement('button');
+                        viewBtn.className = 'view-image-btn';
+                        viewBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
+                        viewBtn.type = 'button';
+                        viewBtn.onclick = function() {
+                            showModal(e.target.result);
+                        };
+                        
+                        // Botão para remover imagem
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-image-btn';
+                        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        removeBtn.type = 'button';
+                        removeBtn.onclick = function() {
+                            // Limpar o input e o preview
+                            customImageInput.value = '';
+                            previewContainer.innerHTML = '';
+                        };
+                        
+                        // Montar a estrutura
+                        actions.appendChild(viewBtn);
+                        actions.appendChild(removeBtn);
+                        thumbnailContainer.appendChild(img);
+                        thumbnailContainer.appendChild(actions);
+                        col.appendChild(thumbnailContainer);
+                        
+                        // Adicionar elementos ao container
+                        previewContainer.appendChild(col);
+                        
+                        // Adicionar texto com o nome do arquivo
+                        const fileInfo = document.createElement('div');
+                        fileInfo.className = 'col-12 text-center mt-2';
+                        fileInfo.innerHTML = `<small class="text-muted">Arquivo: ${file.name}</small>`;
+                        previewContainer.appendChild(fileInfo);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

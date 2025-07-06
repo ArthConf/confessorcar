@@ -1,68 +1,661 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col">
-            <h2>Gerenciar Categorias</h2>
-        </div>
-        <div class="col text-right">
-            <a href="{% url 'categoria:adicionar_categoria' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nova Categoria
-            </a>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary"><i class="fas fa-tags me-2"></i>Gerenciar Categorias</h2>
+        <a href="{% url 'categoria:adicionar_categoria' %}" class="btn btn-anuncieai">
+            <i class="fas fa-plus"></i> Nova Categoria
+        </a>
     </div>
 
     {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    {% endfor %}
     {% endif %}
 
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Imagem</th>
-                    <th>Nome</th>
-                    <th>Slug</th>
-                    <th>Descrição</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for categoria in categorias %}
-                <tr>
-                    <td>
-                        {% if categoria.categoria_imagem %}
-                        <img src="{{ categoria.categoria_imagem.url }}" alt="{{ categoria.categoria_nome }}" style="height: 50px;">
-                        {% else %}
-                        <span class="text-muted">Sem imagem</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ categoria.categoria_nome }}</td>
-                    <td>{{ categoria.slug }}</td>
-                    <td>{{ categoria.categoria_descricao|truncatewords:10 }}</td>
-                    <td>
-                        <a href="{% url 'categoria:editar_categoria' categoria.pk %}" class="btn btn-sm btn-warning">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'categoria:excluir_categoria' categoria.pk %}" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">Nenhuma categoria cadastrada.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th style="width: 100px">Imagem</th>
+                            <th>Nome</th>
+                            <th>Slug</th>
+                            <th>Descrição</th>
+                            <th>Veículos</th>
+                            <th style="width: 150px" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for categoria in categorias %}
+                        <tr>
+                            <td>
+                                {% if categoria.categoria_imagem %}
+                                <img src="{{ categoria.categoria_imagem.url }}" 
+                                     alt="{{ categoria.categoria_nome }}" 
+                                     class="categoria-thumbnail">
+                                {% else %}
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-folder text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ categoria.categoria_nome }}</div>
+                            </td>
+                            <td>
+                                <span class="slug-badge">{{ categoria.slug }}</span>
+                            </td>
+                            <td>
+                                <div class="descricao-text">{{ categoria.categoria_descricao|truncatewords:10 }}</div>
+                            </td>
+                            <td>
+                                <span class="count-badge">
+                                    <i class="fas fa-car-alt me-1"></i> {{ categoria.produto_set.count }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a href="{% url 'categoria:editar_categoria' categoria.pk %}" 
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" 
+                                       class="btn btn-sm btn-outline-info visualizar-btn"
+                                       data-categoria-nome="{{ categoria.categoria_nome }}"
+                                       data-categoria-descricao="{{ categoria.categoria_descricao }}"
+                                       data-categoria-slug="{{ categoria.slug }}"
+                                       data-categoria-imagem="{% if categoria.categoria_imagem %}{{ categoria.categoria_imagem.url }}{% endif %}"
+                                       title="Visualizar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button type="button"
+                                       class="btn btn-sm btn-outline-danger excluir-categoria-btn"
+                                       data-categoria-id="{{ categoria.pk }}"
+                                       data-categoria-nome="{{ categoria.categoria_nome }}"
+                                       data-categoria-count="{{ categoria.produto_set.count }}"
+                                       title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-folder-open fa-3x mb-3"></i>
+                                    <p class="mb-0">Nenhuma categoria cadastrada</p>
+                                    <a href="{% url 'categoria:adicionar_categoria' %}" class="btn btn-sm btn-anuncieai mt-3">
+                                        <i class="fas fa-plus"></i> Adicionar Categoria
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Modal de visualização de categoria -->
+<div class="modal fade" id="visualizarCategoriaModal" tabindex="-1" aria-labelledby="visualizarCategoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="visualizarCategoriaModalLabel">Detalhes da Categoria</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="categoria-preview text-center mb-3">
+                    <img src="" alt="Imagem da categoria" id="previewImagem" class="img-fluid categoria-preview-img">
+                    <div class="no-image-placeholder d-none" id="previewNoImage">
+                        <i class="fas fa-folder fa-3x"></i>
+                    </div>
+                </div>
+                <div class="categoria-details">
+                    <h4 id="previewNome" class="mb-2"></h4>
+                    <div class="mb-3">
+                        <span class="text-muted">Slug:</span>
+                        <span class="slug-badge" id="previewSlug"></span>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted">Descrição:</h6>
+                        <p id="previewDescricao"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Fechar</button>
+                <a href="#" class="btn btn-anuncieai" id="btnEditarModal">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação para excluir categoria -->
+<div class="modal fade" id="excluirCategoriaModal" tabindex="-1" aria-labelledby="excluirCategoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="excluirCategoriaModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span>Tem certeza que deseja excluir a categoria <strong id="excluirCategoriaNome"></strong>?</span>
+                </div>
+                <div id="categoriasVinculadasAlert" class="alert alert-danger d-none">
+                    <i class="fas fa-car-crash me-2"></i>
+                    <span>Esta categoria possui <strong id="excluirCategoriaCount"></strong> veículos vinculados. A exclusão removerá todos os veículos desta categoria ou os deixará sem categoria.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Cancelar</button>
+                <form id="excluirCategoriaForm" action="" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Confirmar Exclusão
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    /* Cores exatas da logo AnuncieAi */
+    --primary-color: #0a1e36;    /* Azul escuro do "Anuncie" */
+    --secondary-color: #30c5f5;  /* Azul claro/ciano do "Ai" */
+    --third-color: #0066cc;      /* Azul médio do gradiente */
+    --light-color: #f0f8ff;      /* Azul muito claro para fundos */
+    --gray-color: #707070;       /* Cinza do logotipo */
+    --gradient-primary: linear-gradient(135deg, #0a1e36 0%, #0066cc 50%, #30c5f5 100%);
+    --gradient-hover: linear-gradient(135deg, #30c5f5 0%, #0066cc 50%, #0a1e36 100%);
+}
+
+/* Estilos gerais */
+h2.text-primary {
+    color: var(--primary-color) !important;
+}
+
+h2.text-primary i {
+    color: var(--secondary-color);
+}
+
+/* Estilos da tabela */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    border: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 1rem;
+    background-color: #f5f9ff; /* Fundo mais azulado para o cabeçalho */
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(48, 197, 245, 0.05);
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(0, 102, 204, 0.1);
+}
+
+/* Estilo para o card */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(10, 30, 54, 0.08);
+    overflow: hidden;
+}
+
+/* Estilo para miniatura de categoria */
+.categoria-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid var(--secondary-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 102, 204, 0.1);
+}
+
+.categoria-thumbnail:hover {
+    transform: scale(1.05);
+    border-color: var(--third-color);
+    box-shadow: 0 5px 15px rgba(48, 197, 245, 0.2);
+}
+
+.no-image-placeholder {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f8ff;
+    border-radius: 10px;
+    border: 1px dashed var(--secondary-color);
+}
+
+.no-image-placeholder i {
+    font-size: 2rem;
+    color: var(--third-color);
+    opacity: 0.5;
+}
+
+/* Preview da categoria no modal */
+.categoria-preview-img {
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border: 3px solid var(--secondary-color);
+}
+
+#previewNoImage.no-image-placeholder {
+    width: 100%;
+    height: 150px;
+    margin: 0 auto;
+}
+
+/* Estilo para badges e status */
+.slug-badge {
+    background-color: #f0f8ff;
+    color: var(--third-color);
+    padding: 0.4em 1em;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-family: monospace;
+    border-left: 3px solid var(--secondary-color);
+    font-weight: 500;
+}
+
+.count-badge {
+    background-color: var(--light-color);
+    color: var(--primary-color);
+    padding: 0.4em 1em;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.count-badge i {
+    color: var(--secondary-color);
+}
+
+/* Estilo para descrição */
+.descricao-text {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 300px;
+}
+
+/* Estilo para botões */
+.btn-anuncieai {
+    color: white;
+    background: var(--gradient-primary);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.2);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-anuncieai:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-hover);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.btn-anuncieai:hover:before {
+    opacity: 1;
+}
+
+.btn-anuncieai:hover {
+    box-shadow: 0 6px 15px rgba(48, 197, 245, 0.3);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-anuncieai:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Melhorando os botões de ação */
+.btn-outline-primary {
+    color: var(--third-color);
+    border-color: var(--third-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--third-color);
+    border-color: var(--third-color);
+    color: white;
+}
+
+.btn-outline-info {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-info:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-outline-danger:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+.btn-sm {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Estado vazio */
+.empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: var(--gray-color);
+    background-color: #f8fbff;
+    border-radius: 8px;
+}
+
+.empty-state i {
+    color: var(--secondary-color);
+    filter: drop-shadow(0 3px 5px rgba(48, 197, 245, 0.2));
+}
+
+/* Estilizando o modal */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background-color: var(--light-color);
+    border-bottom: 1px solid rgba(48, 197, 245, 0.2);
+}
+
+.modal-header h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(48, 197, 245, 0.2);
+}
+
+/* Estilos específicos do modal de exclusão */
+.modal-header.bg-danger {
+    background: linear-gradient(to right, #e74c3c, #c0392b) !important;
+}
+
+/* Ajustes nos alertas */
+.alert {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.alert-success {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border-left: 4px solid #27ae60;
+}
+
+.alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border-left: 4px solid #c0392b;
+}
+
+.alert-warning {
+    background-color: rgba(241, 196, 15, 0.1);
+    color: #f39c12;
+    border-left: 4px solid #f39c12;
+}
+
+.alert-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    border-left: 4px solid #2980b9;
+}
+
+/* Efeito sutil na tabela para linhas alternadas */
+.table tbody tr:nth-child(odd) {
+    background-color: rgba(240, 248, 255, 0.3);
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+/* Estilo para categoria details */
+.categoria-details h4 {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.categoria-details p {
+    color: var(--gray-color);
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--third-color);
+}
+
+/* Correção para botão fechar modal */
+.btn-close:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Ajustes para compatibilidade com versões antigas do Bootstrap */
+[data-dismiss="modal"] {
+    cursor: pointer;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal de visualização
+    const visualizarBtns = document.querySelectorAll('.visualizar-btn');
+    
+    visualizarBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Obter dados da categoria
+            const nome = this.getAttribute('data-categoria-nome');
+            const descricao = this.getAttribute('data-categoria-descricao');
+            const slug = this.getAttribute('data-categoria-slug');
+            const imagem = this.getAttribute('data-categoria-imagem');
+            
+            // Preencher o modal
+            document.getElementById('previewNome').textContent = nome;
+            document.getElementById('previewSlug').textContent = slug;
+            document.getElementById('previewDescricao').textContent = descricao || 'Sem descrição disponível';
+            
+            // Configurar imagem ou placeholder
+            const previewImagem = document.getElementById('previewImagem');
+            const previewNoImage = document.getElementById('previewNoImage');
+            
+            if (imagem) {
+                previewImagem.src = imagem;
+                previewImagem.alt = nome;
+                previewImagem.classList.remove('d-none');
+                previewNoImage.classList.add('d-none');
+            } else {
+                previewImagem.classList.add('d-none');
+                previewNoImage.classList.remove('d-none');
+            }
+            
+            // Configurar botão de editar
+            document.getElementById('btnEditarModal').href = this.closest('tr').querySelector('a[title="Editar"]').href;
+            
+            // Mostrar o modal (usando jQuery ou Bootstrap nativo dependendo do que estiver disponível)
+            const visualizarModal = document.getElementById('visualizarCategoriaModal');
+            if (typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(visualizarModal);
+                modal.show();
+            } else if (typeof $ !== 'undefined') {
+                $(visualizarModal).modal('show');
+            } else {
+                // Fallback manual
+                visualizarModal.style.display = 'block';
+                visualizarModal.classList.add('show');
+                document.body.classList.add('modal-open');
+                
+                // Adicionar backdrop
+                const backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                document.body.appendChild(backdrop);
+            }
+        });
+    });
+    
+    // Modal de exclusão
+    const excluirBtns = document.querySelectorAll('.excluir-categoria-btn');
+    
+    excluirBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const categoriaId = this.getAttribute('data-categoria-id');
+            const categoriaNome = this.getAttribute('data-categoria-nome');
+            const categoriaCount = parseInt(this.getAttribute('data-categoria-count'));
+            
+            // Atualiza o formulário e o texto
+            document.getElementById('excluirCategoriaNome').textContent = categoriaNome;
+            document.getElementById('excluirCategoriaForm').action = "{% url 'categoria:excluir_categoria' 0 %}".replace('0', categoriaId);
+            
+            // Mostra alerta se houver veículos vinculados
+            const categoriasVinculadasAlert = document.getElementById('categoriasVinculadasAlert');
+            if (categoriaCount > 0) {
+                document.getElementById('excluirCategoriaCount').textContent = categoriaCount;
+                categoriasVinculadasAlert.classList.remove('d-none');
+            } else {
+                categoriasVinculadasAlert.classList.add('d-none');
+            }
+            
+            // Exibe o modal (usando jQuery ou Bootstrap nativo dependendo do que estiver disponível)
+            const excluirModal = document.getElementById('excluirCategoriaModal');
+            if (typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(excluirModal);
+                modal.show();
+            } else if (typeof $ !== 'undefined') {
+                $(excluirModal).modal('show');
+            } else {
+                // Fallback manual
+                excluirModal.style.display = 'block';
+                excluirModal.classList.add('show');
+                document.body.classList.add('modal-open');
+                
+                // Adicionar backdrop
+                const backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                document.body.appendChild(backdrop);
+            }
+        });
+    });
+    
+    // Garantir que os botões de fechar funcionem
+    const closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"], [data-dismiss="modal"]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Encontrar o modal pai
+            const modal = this.closest('.modal');
+            
+            // Fechar o modal (usando jQuery ou Bootstrap nativo dependendo do que estiver disponível)
+            if (typeof bootstrap !== 'undefined') {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            } else if (typeof $ !== 'undefined') {
+                $(modal).modal('hide');
+            } else {
+                // Fallback manual
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+                
+                // Remover backdrop
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+            }
+        });
+    });
+    
+    // Adicionar animação nos elementos da tabela quando carregados
+    function animateTableRows() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(20px)';
+            row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, 100 + (index * 50));
+        });
+    }
+    
+    // Animar elementos ao carregar a página
+    window.addEventListener('load', function() {
+        animateTableRows();
+    });
+});
+</script>
 {% endblock %}

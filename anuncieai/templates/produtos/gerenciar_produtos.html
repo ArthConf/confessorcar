@@ -59,7 +59,7 @@
                                 <span class="categoria-badge">{{ produto.categoria.categoria_nome }}</span>
                             </td>
                             <td>
-                                <span class="fw-bold">R$ {{ produto.preco|floatformat:2|intcomma }}</span>
+                                <span class="fw-bold preco-valor" data-valor="{{ produto.preco }}">R$ {{ produto.preco|floatformat:2|intcomma }}</span>
                             </td>
                             <td>
                                 {% if produto.esta_disponivel %}
@@ -124,14 +124,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="marcarVendidoModalLabel">Marcar veículo como vendido</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body">
                 <p>Tem certeza que deseja marcar este veículo como vendido?</p>
                 <p class="text-muted small">O veículo será marcado como indisponível e não aparecerá mais no site.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Cancelar</button>
                 <form id="marcarVendidoForm" action="{% url 'produtos:marcar_vendido' 0 %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-success">
@@ -245,6 +245,7 @@ h2.text-primary i {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color:white;
 }
 
 .badge.bg-success {
@@ -435,6 +436,17 @@ h2.text-primary i {
 .table tbody tr:nth-child(even) {
     background-color: white;
 }
+
+/* Correção para botão fechar modal */
+.btn-close:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Ajustes para compatibilidade com versões antigas do Bootstrap */
+[data-dismiss="modal"] {
+    cursor: pointer;
+}
 </style>
 
 <script>
@@ -442,31 +454,129 @@ document.addEventListener('DOMContentLoaded', function() {
     // Manipulação do botão "Marcar como Vendido"
     const marcarVendidoBtns = document.querySelectorAll('.marcar-vendido-btn');
     const marcarVendidoForm = document.getElementById('marcarVendidoForm');
-    const marcarVendidoModal = new bootstrap.Modal(document.getElementById('marcarVendidoModal'));
     
     marcarVendidoBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const produtoId = this.getAttribute('data-produto-id');
             // Atualiza o action do formulário com o ID correto
             marcarVendidoForm.action = marcarVendidoForm.action.replace('/0/', '/' + produtoId + '/');
-            // Exibe o modal
-            marcarVendidoModal.show();
+            
+            // Exibir o modal (usando abordagem compatível com diferentes versões do Bootstrap)
+            const marcarVendidoModal = document.getElementById('marcarVendidoModal');
+            
+            if (typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(marcarVendidoModal);
+                modal.show();
+            } else if (typeof $ !== 'undefined') {
+                $(marcarVendidoModal).modal('show');
+            } else {
+                // Fallback manual
+                marcarVendidoModal.style.display = 'block';
+                marcarVendidoModal.classList.add('show');
+                document.body.classList.add('modal-open');
+                
+                // Adicionar backdrop
+                const backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                document.body.appendChild(backdrop);
+            }
         });
     });
     
-    // Formatar preços na tabela (caso os filtros do Django não funcionem)
-    document.querySelectorAll('td:nth-child(4)').forEach(td => {
-        const priceText = td.textContent.trim();
-        if (priceText.startsWith('R$')) {
-            const priceValue = parseFloat(priceText.replace('R$', '').trim());
-            if (!isNaN(priceValue)) {
-                td.textContent = 'R$ ' + priceValue.toLocaleString('pt-BR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+    // Garantir que os botões de fechar funcionem
+    const closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"], [data-dismiss="modal"]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Encontrar o modal pai
+            const modal = this.closest('.modal');
+            
+            // Fechar o modal (usando jQuery ou Bootstrap nativo dependendo do que estiver disponível)
+            if (typeof bootstrap !== 'undefined') {
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            } else if (typeof $ !== 'undefined') {
+                $(modal).modal('hide');
+            } else {
+                // Fallback manual
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+                
+                // Remover backdrop
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
             }
-        }
+        });
     });
+    
+    // Corrigir formatação dos preços (devido ao problema detectado)
+    // Esta função garante que o formatador correto seja usado para valores grandes
+    function formatarPrecoCorretamente() {
+        const precoElements = document.querySelectorAll('.preco-valor');
+        
+        precoElements.forEach(el => {
+            // Obter o valor do atributo data-valor (valor original do backend)
+            let valor = el.getAttribute('data-valor');
+            
+            if (valor) {
+                // Converter para número
+                valor = parseFloat(valor);
+                
+                // Verificar se é um número válido
+                if (!isNaN(valor)) {
+                    // Formatar com separador de milhares e 2 casas decimais
+                    el.textContent = 'R$ ' + valor.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            }
+        });
+    }
+    
+    // Função alternativa caso o atributo data-valor não esteja disponível
+    function consertarFormatacaoPrecos() {
+        document.querySelectorAll('td:nth-child(4) span').forEach(td => {
+            const priceText = td.textContent.trim();
+            if (priceText.startsWith('R$')) {
+                try {
+                    // Remover o R$ e espaços
+                    let numText = priceText.replace('R$', '').trim();
+                    
+                    // Verificar se tem formato com vírgula decimal (123,45)
+                    if (numText.includes(',')) {
+                        // Remover pontos de separação de milhares se existirem
+                        let parts = numText.split(',');
+                        let intPart = parts[0].replace(/\./g, '');
+                        
+                        // Reconstruir o número com formato decimal correto para JS
+                        numText = intPart + '.' + parts[1];
+                    }
+                    
+                    // Converter para número
+                    const priceValue = parseFloat(numText);
+                    
+                    // Se é um número válido, formatar corretamente
+                    if (!isNaN(priceValue)) {
+                        td.textContent = 'R$ ' + priceValue.toLocaleString('pt-BR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    }
+                } catch (e) {
+                    console.error("Erro ao formatar preço:", e);
+                }
+            }
+        });
+    }
+    
+    // Executar ambas as funções para garantir que pelo menos uma funcione
+    formatarPrecoCorretamente();
+    consertarFormatacaoPrecos();
 });
 </script>
 {% endblock %}

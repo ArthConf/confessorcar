@@ -39,8 +39,10 @@ def editar_categoria(request, pk):
     else:
         form = CategoriaForm(instance=categoria)
     
-    return render(request, 'categoria/form_categoria.html', {
+    # Alterado para usar editar_categoria.html em vez de form_categoria.html
+    return render(request, 'categoria/editar_categoria.html', {
         'form': form,
+        'categoria': categoria,
         'title': 'Editar Categoria'
     })
 

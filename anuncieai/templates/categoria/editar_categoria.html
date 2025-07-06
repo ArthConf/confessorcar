@@ -1,39 +1,581 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Editar Categoria</h4>
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+<div class="produto-form-container py-4">
+    <div class="container">
+        <!-- Cabeçalho e breadcrumbs -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="page-title">
+                    <i class="fas fa-edit text-primary me-2"></i>Editar Categoria
+                </h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i></a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'categoria:gerenciar_categorias' %}">Categorias</a></li>
+                        <li class="breadcrumb-item active">Editar</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex">
+                <a href="{% url 'categoria:gerenciar_categorias' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {% if message.tags == 'success' %}
+                <i class="fas fa-check-circle me-2"></i>
+                {% elif message.tags == 'error' or message.tags == 'danger' %}
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {% elif message.tags == 'warning' %}
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                {% else %}
+                <i class="fas fa-info-circle me-2"></i>
+                {% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Formulário principal -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
                     
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {% for field in form %}
-                        <div class="form-group mb-3">
-                            <label>{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ field.errors }}
-                            </div>
-                            {% endif %}
+                    <!-- Card de informações básicas -->
+                    <div class="card form-card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informações Básicas</h5>
                         </div>
-                        {% endfor %}
-                        <button type="submit" class="btn btn-primary">Atualizar</button>
-                        <a href="{% url 'categoria:gerenciar_categorias' %}" class="btn btn-secondary">Voltar</a>
-                    </form>
-                </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="{{ form.categoria_nome.id_for_label }}" class="form-label">
+                                        {% if form.categoria_nome.field.required %}<span class="text-danger">*</span> {% endif %}
+                                        {{ form.categoria_nome.label }}
+                                    </label>
+                                    {{ form.categoria_nome }}
+                                    {% if form.categoria_nome.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.categoria_nome.errors }}
+                                    </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Nome que será exibido no site.</small>
+                                </div>
+                                
+                                <!-- Campo Slug totalmente oculto - será preenchido pelo JavaScript -->
+                                <div class="d-none">
+                                    {{ form.slug }}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.categoria_descricao.id_for_label }}" class="form-label">
+                                    {{ form.categoria_descricao.label }}
+                                </label>
+                                {{ form.categoria_descricao }}
+                                {% if form.categoria_descricao.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.categoria_descricao.errors }}
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">Breve descrição sobre esta categoria de veículos.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card de imagem -->
+                    <div class="card form-card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-image me-2"></i>Imagem da Categoria</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <div class="image-preview-container">
+                                        {% if form.instance.categoria_imagem %}
+                                        <img src="{{ form.instance.categoria_imagem.url }}" alt="Imagem atual" class="img-thumbnail img-preview">
+                                        <div class="mt-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="removerImagem" name="remover_imagem">
+                                                <label class="form-check-label" for="removerImagem">
+                                                    Remover imagem
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="no-image-placeholder">
+                                            <i class="fas fa-image"></i>
+                                            <p>Sem imagem</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-8">
+                                    <div class="upload-zone" id="drop-area">
+                                        <div class="upload-prompt">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                            <p>Arraste uma imagem aqui ou clique para selecionar</p>
+                                            <small class="text-muted d-block">JPG, PNG ou GIF • Máx. 2MB</small>
+                                        </div>
+                                        {{ form.categoria_imagem }}
+                                    </div>
+                                    {% if form.categoria_imagem.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.categoria_imagem.errors }}
+                                    </div>
+                                    {% endif %}
+                                    <div id="file-name" class="mt-2 text-center"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botões de ação -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'categoria:gerenciar_categorias' %}" class="btn btn-light">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-anuncieai">
+                            <i class="fas fa-save me-2"></i>Salvar Alterações
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+:root {
+    --primary-color: #0a1e36;    /* Azul escuro do "Anuncie" */
+    --secondary-color: #30c5f5;  /* Azul claro/ciano do "Ai" */
+    --third-color: #0066cc;      /* Azul médio do gradiente */
+    --light-color: #f0f8ff;      /* Azul muito claro para fundos */
+    --gradient-primary: linear-gradient(135deg, #0a1e36 0%, #0066cc 70%, #30c5f5 100%);
+    --gradient-hover: linear-gradient(135deg, #30c5f5 0%, #0066cc 50%, #0a1e36 100%);
+}
+
+/* Estilos gerais da página */
+body {
+    background-color: #f8f9fa;
+}
+
+.produto-form-container {
+    min-height: calc(100vh - 100px);
+}
+
+.page-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-bottom: 0.2rem;
+}
+
+.page-title i {
+    color: var(--secondary-color);
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.breadcrumb-item a {
+    color: var(--third-color);
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--secondary-color);
+}
+
+.breadcrumb-item.active {
+    color: #6c757d;
+}
+
+/* Cards */
+.form-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    background-color: #f5f9ff;
+    border-bottom: 1px solid rgba(48, 197, 245, 0.15);
+    padding: 1rem 1.25rem;
+}
+
+.card-header h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-header i {
+    color: var(--secondary-color);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Formulários */
+.form-label {
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--third-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.15);
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-text {
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Upload de imagem */
+.image-preview-container {
+    text-align: center;
+}
+
+.img-preview {
+    max-width: 100%;
+    height: auto;
+    max-height: 200px;
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+.no-image-placeholder {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    color: #6c757d;
+}
+
+.no-image-placeholder i {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+.upload-zone {
+    border: 2px dashed var(--third-color);
+    border-radius: 8px;
+    padding: 2rem 1rem;
+    text-align: center;
+    background-color: rgba(240, 248, 255, 0.5);
+    transition: all 0.3s;
+    position: relative;
+}
+
+.upload-zone:hover, .upload-zone.dragover {
+    background-color: rgba(48, 197, 245, 0.1);
+    border-color: var(--secondary-color);
+}
+
+.upload-prompt {
+    color: var(--primary-color);
+}
+
+.upload-prompt i {
+    font-size: 2.5rem;
+    color: var(--third-color);
+    margin-bottom: 1rem;
+}
+
+.upload-zone input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Botão AnuncieAI */
+.btn-anuncieai {
+    color: white;
+    background: var(--gradient-primary);
+    border: none;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.btn-anuncieai:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+    color: white;
+    background: var(--gradient-hover);
+}
+
+.btn-anuncieai:active {
+    transform: translateY(0);
+}
+
+/* Alertas */
+.alert {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.alert-success {
+    background-color: #d4f5e8;
+    color: #16a085;
+    border-left: 4px solid #16a085;
+}
+
+.alert-danger {
+    background-color: #fbe2e2;
+    color: #c0392b;
+    border-left: 4px solid #c0392b;
+}
+
+.alert-warning {
+    background-color: #fef1d6;
+    color: #e67e22;
+    border-left: 4px solid #e67e22;
+}
+
+.alert-info {
+    background-color: #d6eaf8;
+    color: #2980b9;
+    border-left: 4px solid #2980b9;
+}
+
+/* Cores e ícones atualizados */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-secondary {
+    color: var(--secondary-color) !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .upload-zone {
+        margin-top: 1rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Upload de arquivo com preview e drag & drop
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileNameDisplay = document.getElementById('file-name');
+    const imagePreview = document.querySelector('.img-preview');
+    const noImagePlaceholder = document.querySelector('.no-image-placeholder');
+    
+    if (dropArea && fileInput) {
+        // Eventos de drag & drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('dragover');
+        }
+        
+        // Processar arquivos soltos na área
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) {
+                fileInput.files = files;
+                updateFileInfo();
+            }
+        }
+        
+        // Atualizar quando o arquivo for selecionado
+        fileInput.addEventListener('change', updateFileInfo);
+        
+        function updateFileInfo() {
+            if (fileInput.files && fileInput.files[0]) {
+                // Mostrar nome do arquivo
+                let fileName = fileInput.files[0].name;
+                if (fileName.length > 25) {
+                    const extension = fileName.split('.').pop();
+                    fileName = fileName.substring(0, 22) + '...' + extension;
+                }
+                fileNameDisplay.innerHTML = `<span class="badge bg-primary"><i class="fas fa-check me-1"></i> ${fileName}</span>`;
+                
+                // Mostrar preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (imagePreview) {
+                        imagePreview.src = e.target.result;
+                    } else {
+                        // Se não existir preview, criar um novo
+                        const newPreview = document.createElement('img');
+                        newPreview.src = e.target.result;
+                        newPreview.alt = 'Preview da imagem';
+                        newPreview.className = 'img-thumbnail img-preview';
+                        
+                        const previewContainer = document.querySelector('.image-preview-container');
+                        if (noImagePlaceholder) {
+                            noImagePlaceholder.style.display = 'none';
+                        }
+                        previewContainer.prepend(newPreview);
+                    }
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    }
+    
+    // Geração automática de slug
+    const nameInput = document.querySelector('input[name="categoria_nome"]');
+    const slugInput = document.querySelector('input[name="slug"]');
+    
+    if (nameInput && slugInput) {
+        // Atualizar o slug automaticamente quando o nome mudar
+        nameInput.addEventListener('input', function() {
+            const slug = this.value
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')    // Remove caracteres especiais
+                .replace(/\s+/g, '-')        // Substitui espaços por hífens
+                .replace(/-+/g, '-')         // Remove múltiplos hífens
+                .replace(/^-+|-+$/g, '');    // Remove hífens do início e fim
+            
+            // Atualizar o campo oculto
+            slugInput.value = slug;
+        });
+    }
+    
+    // Checkbox para remover imagem
+    const removeImageCheck = document.getElementById('removerImagem');
+    if (removeImageCheck && imagePreview) {
+        removeImageCheck.addEventListener('change', function() {
+            if (this.checked) {
+                // Indicar visualmente que será removido
+                imagePreview.style.opacity = '0.3';
+                dropArea.style.opacity = '0.3';
+                dropArea.style.pointerEvents = 'none';
+                fileInput.disabled = true;
+            } else {
+                // Restaurar
+                imagePreview.style.opacity = '1';
+                dropArea.style.opacity = '1';
+                dropArea.style.pointerEvents = 'auto';
+                fileInput.disabled = false;
+            }
+        });
+    }
+    
+    // Bootstrap validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Encontrar o primeiro campo inválido e dar foco a ele
+                const invalidField = form.querySelector(':invalid');
+                if (invalidField) {
+                    invalidField.focus();
+                    
+                    // Scroll suave até o elemento
+                    const yOffset = -100;
+                    const y = invalidField.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+    
+    // Animação suave para todos os elementos carregados
+    function animateElements() {
+        const elements = document.querySelectorAll('.form-card');
+        elements.forEach((el, i) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 100 + (i * 100));
+        });
+    }
+    
+    // Executar animações quando a página carregar
+    animateElements();
+});
+</script>
 {% endblock %}
