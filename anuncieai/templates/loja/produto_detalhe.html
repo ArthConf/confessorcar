@@ -305,34 +305,37 @@
             </div>
             
             <div class="contact-actions">
-                {% with whatsapp_number=produto.user.profile.whatsapp|default:"" %}
-                    {% if whatsapp_number %}
-                        <a href="https://wa.me/55{{ whatsapp_number|cut:' '|cut:'-'|cut:'('|cut:')'|cut:'+'|cut:'.' }}" class="btn btn-whatsapp btn-block" target="_blank">
-                            <i class="fab fa-whatsapp"></i> Conversar pelo WhatsApp
-                        </a>
-                        <div id="phoneNumber" class="phone-number mt-3">
-                            <div class="phone-number-hidden" id="phoneHidden">
-                                <span>Ver telefone de contato</span>
-                                <button onclick="showPhoneNumber()" class="btn btn-outline-racing btn-sm">
-                                    <i class="fas fa-phone-alt"></i> Mostrar
-                                </button>
+                <!-- Verificação se existe o objeto profile e se tem whatsapp -->
+                {% if produto.user.profile and produto.user.profile.whatsapp %}
+                    {% with whatsapp_number=produto.user.profile.whatsapp %}
+                        {% with clean_number=whatsapp_number|cut:" "|cut:"-"|cut:"("|cut:")"|cut:"+"|cut:"." %}
+                            <a href="https://wa.me/55{{ clean_number }}" class="btn btn-whatsapp btn-block" target="_blank">
+                                <i class="fab fa-whatsapp"></i> Conversar pelo WhatsApp
+                            </a>
+                            <div id="phoneNumber" class="phone-number mt-3">
+                                <div class="phone-number-hidden" id="phoneHidden">
+                                    <span>Ver telefone de contato</span>
+                                    <button onclick="showPhoneNumber()" class="btn btn-outline-racing btn-sm">
+                                        <i class="fas fa-phone-alt"></i> Mostrar
+                                    </button>
+                                </div>
+                                <div class="phone-number-visible" id="phoneVisible" style="display: none;">
+                                    <span>Telefone de contato:</span>
+                                    <a href="tel:+55{{ clean_number }}" class="btn btn-outline-racing btn-sm">
+                                        <i class="fas fa-phone-alt"></i> {{ whatsapp_number }}
+                                    </a>
+                                </div>
                             </div>
-                            <div class="phone-number-visible" id="phoneVisible" style="display: none;">
-                                <span>Telefone de contato:</span>
-                                <a href="tel:+55{{ whatsapp_number|cut:' '|cut:'-'|cut:'('|cut:')'|cut:'+'|cut:'.' }}" class="btn btn-outline-racing btn-sm">
-                                    <i class="fas fa-phone-alt"></i> {{ whatsapp_number }}
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <button class="btn btn-outline-racing btn-block" disabled>
-                            <i class="fab fa-whatsapp"></i> WhatsApp não informado
-                        </button>
-                        <div class="alert alert-info mt-3 small">
-                            <i class="fas fa-info-circle me-1"></i> O anunciante não cadastrou um número de WhatsApp.
-                        </div>
-                    {% endif %}
-                {% endwith %}
+                        {% endwith %}
+                    {% endwith %}
+                {% else %}
+                    <button class="btn btn-outline-racing btn-block" disabled>
+                        <i class="fab fa-whatsapp"></i> WhatsApp não informado
+                    </button>
+                    <div class="alert alert-info mt-3 small">
+                        <i class="fas fa-info-circle me-1"></i> O anunciante não cadastrou um número de WhatsApp.
+                    </div>
+                {% endif %}
                 
                 <button class="btn btn-outline-racing btn-block mt-2">
                     <i class="fas fa-envelope"></i> Enviar Mensagem
@@ -350,6 +353,7 @@
             </div>
         </div>
     </div>
+</div>
             
             <!-- Vehicle Price & Status Card -->
             <div class="card mb-4 price-card">

@@ -294,6 +294,21 @@ def adicionar_produto(request):
                 # Associar o usuário logado ao produto
                 produto.user = request.user
                 
+                # Processa o campo cidade_texto para encontrar ou criar um objeto Cidade
+                cidade_nome = form.cleaned_data.get('cidade_texto')
+                estado = form.cleaned_data.get('estado')
+                
+                if cidade_nome and estado:
+                    # Tenta encontrar a cidade, se não existir, cria
+                    cidade, created = Cidade.objects.get_or_create(
+                        nome=cidade_nome, 
+                        estado=estado
+                    )
+                    produto.cidade = cidade  # Associa a cidade ao produto
+                    print(f"Cidade associada: {cidade.nome}/{cidade.estado} (ID: {cidade.id}, Created: {created})")
+                else:
+                    print("Sem cidade ou estado para associar")
+                
                 # Agora sim, salvar o produto com o usuário associado
                 produto.save()
                 
@@ -384,6 +399,24 @@ def editar_produto(request, pk):
             # Salvar produto, mas não comitar ainda para processar as imagens
             produto = form.save(commit=False)
             
+            # Processa o campo cidade_texto para encontrar ou criar um objeto Cidade
+            cidade_nome = form.cleaned_data.get('cidade_texto')
+            estado = form.cleaned_data.get('estado')
+            
+            if cidade_nome and estado:
+                # Tenta encontrar a cidade, se não existir, cria
+                cidade, created = Cidade.objects.get_or_create(
+                    nome=cidade_nome, 
+                    estado=estado
+                )
+                produto.cidade = cidade  # Associa a cidade ao produto
+                print(f"Cidade associada ao editar: {cidade.nome}/{cidade.estado} (ID: {cidade.id})")
+            else:
+                # Se o usuário removeu a cidade ou o estado, remova a referência
+                produto.cidade = None
+                print("Removida associação de cidade")
+            
+           
             # Processar quais imagens serão mantidas/removidas
             imagens_a_manter = []
             imagens_a_remover = []

@@ -11,7 +11,6 @@
         <div class="row align-items-center">
             <div class="col-lg-7">
                 <div class="banner-content">
-                    <span class="pre-title">Confessa Car</span>
                     <h1 class="shop-title"><span class="regular-text">Encontre o</span> <span class="highlight-text">Veículo dos Seus Sonhos</span></h1>
                     <p class="shop-subtitle">Os melhores carros, motos e caminhões estão aqui. Encontre o modelo perfeito para você!</p>
                     <form action="" method="get" class="banner-search-form">
@@ -103,10 +102,10 @@
                                                 {% if categoria.id|stringformat:"i" in categorias_selecionadas %}checked{% endif %}
                                                 onchange="updateCategorySelection()">
                                             <label for="cat-{{ categoria.id }}" class="filter-label">
-    <span class="check-indicator"></span>
-    <span class="category-name">{{ categoria.categoria_nome }}</span>
-    <span class="filter-count">{{ categoria.produto_count }}</span>
-</label>
+                                                <span class="check-indicator"></span>
+                                                <span class="category-name">{{ categoria.categoria_nome }}</span>
+                                                <span class="filter-count">{{ categoria.produto_count }}</span>
+                                            </label>
                                         </div>
                                         {% endfor %}
                                     </div>
@@ -302,11 +301,16 @@
                                             <i class="fas fa-calendar-alt"></i> {{ prod.ano_fabricacao }}/{{ prod.ano_modelo }}
                                         </span>
                                         <span class="meta-item">
-                                            <i class="fas fa-tachometer-alt"></i> {{ prod.km|default:"0" }} km
+                                            <i class="fas fa-tachometer-alt"></i> {{ prod.quilometragem|default:"0" }} km
                                         </span>
                                         <span class="meta-item">
-                                            <i class="fas fa-map-marker-alt"></i> {{ prod.cidade }}/{{ prod.estado }}
+                                            <i class="fas fa-map-marker-alt"></i> {{ prod.localizacao }}
                                         </span>
+                                        {% if prod.ipva_pago %}
+                                        <span class="meta-item ipva-pago">
+                                            <i class="fas fa-check-circle"></i> IPVA Pago
+                                        </span>
+                                        {% endif %}
                                     </div>
                                     <div class="vehicle-price">
                                         <span class="price" data-value="{{ prod.preco }}">R$ {{ prod.preco|floatformat:2 }}</span>
