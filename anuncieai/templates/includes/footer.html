@@ -1,70 +1,257 @@
 {% load static %}
 <!-- Footer Start -->
-    <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
+<footer class="footer-area bg-dark">
+    <div class="container-fluid bg-primary-gradient pt-5">
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <a href="" class="text-decoration-none">
-                    <h1 class="mb-4 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border border-white px-3 mr-1">AnuncieAI</h1>
-                </a>
-                <p>Dolore erat dolor sit lorem vero amet. Sed sit lorem magna, ipsum no sit erat lorem et magna ipsum dolore amet erat.</p>
-                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
-                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
-                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
+                <div class="footer-logo-area mb-4">
+    <a href="{% url 'home' %}" class="text-decoration-none">
+        <!-- Usando o mesmo caminho que funciona na navbar -->
+        <img src="{% static 'img/logo_circular.png' %}" alt="AnuncieAI" class="footer-logo img-fluid" style="max-height: 60px; filter: none;">
+    </a>
+</div>
+                <p class="text-white mb-4">Seu marketplace de veículos. Anuncie, encontre e negocie com facilidade, segurança e confiabilidade. Transformando a experiência de compra e venda de automóveis.</p>
+                <div class="contact-info">
+                    <p class="text-white mb-2"><i class="fas fa-map-marker-alt text-secondary mr-3"></i>Cuiabá, MT - Brasil</p>
+                    <p class="text-white mb-2"><i class="fas fa-envelope text-secondary mr-3"></i>arthur-confessor@hotmail.com</p>
+                    <p class="text-white mb-4"><i class="fas fa-phone-alt text-secondary mr-3"></i>(65) 9 992490737</p>
+                </div>
+                <div class="footer-social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/arthconf?igsh=OW8yeXR5aW1lM3Z3&utm_source=qr" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@arthuroctavio8491" class="social-link"><i class="fab fa-youtube"></i></a>
+                    <a href="https://wa.me/5565992490737?text=Ol%C3%A1%2C%20quero%20saber%20como%20anunciar" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
             <div class="col-lg-8 col-md-12">
                 <div class="row">
                     <div class="col-md-4 mb-5">
-                        <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-dark mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                            <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                            <a class="text-dark mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                            <a class="text-dark mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                            <a class="text-dark" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        <h5 class="font-weight-bold text-white mb-4">Links Rápidos</h5>
+                        <div class="d-flex flex-column justify-content-start footer-links">
+                            <a href="{% url 'home' %}"><i class="fas fa-chevron-right mr-2"></i>Página Inicial</a>
+                            <a href="{% url 'produtos:loja' %}"><i class="fas fa-chevron-right mr-2"></i>Loja</a>
+                            <a href="{% url 'produtos:adicionar_produto' %}"><i class="fas fa-chevron-right mr-2"></i>Anunciar Veículo</a>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'users:dashboard' %}"><i class="fas fa-chevron-right mr-2"></i>Minha Conta</a>
+                            <a href="{% url 'produtos:gerenciar_produtos' %}"><i class="fas fa-chevron-right mr-2"></i>Meus Anúncios</a>
+                            {% else %}
+                            <a href="{% url 'users:login' %}"><i class="fas fa-chevron-right mr-2"></i>Entrar</a>
+                            <a href="{% url 'users:register' %}"><i class="fas fa-chevron-right mr-2"></i>Cadastrar</a>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-dark mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                            <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                            <a class="text-dark mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                            <a class="text-dark mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                            <a class="text-dark" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        <h5 class="font-weight-bold text-white mb-4">Categorias</h5>
+                        <div class="d-flex flex-column justify-content-start footer-links">
+                            {% for cat in opcoes %}
+                            <a href="{% url 'produtos:produto_por_categoria' cat.slug %}"><i class="fas fa-chevron-right mr-2"></i>{{ cat.categoria_nome }}</a>
+                            {% endfor %}
+                            <!-- Links de fallback se "opcoes" não estiver disponível -->
+                            {% if not opcoes %}
+                            <a href="{% url 'produtos:loja' %}"><i class="fas fa-chevron-right mr-2"></i>Todos os Veículos</a>
+                            <a href="#"><i class="fas fa-chevron-right mr-2"></i>Sedans</a>
+                            <a href="#"><i class="fas fa-chevron-right mr-2"></i>SUVs</a>
+                            <a href="#"><i class="fas fa-chevron-right mr-2"></i>Hatches</a>
+                            <a href="#"><i class="fas fa-chevron-right mr-2"></i>Picapes</a>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="font-weight-bold text-dark mb-4">Newsletter</h5>
-                        <form action="">
+                        <h5 class="font-weight-bold text-white mb-4">Fique por dentro</h5>
+                        <p class="text-white mb-4">Cadastre seu e-mail e receba novidades, ofertas exclusivas e dicas para compra e venda de veículos.</p>
+                        <form action="#" method="post" class="footer-subscribe-form">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <input type="text" class="form-control border-0 py-4" placeholder="Your Name" required="required" />
-                            </div>
-                            <div class="form-group">
-                                <input type="email" class="form-control border-0 py-4" placeholder="Your Email"
-                                    required="required" />
+                                <input type="email" class="form-control newsletter-input" placeholder="Seu melhor e-mail" required="required" />
                             </div>
                             <div>
-                                <button class="btn btn-primary btn-block border-0 py-3" type="submit">Subscribe Now</button>
+                                <button class="btn btn-secondary btn-block py-3" type="submit">
+                                    <i class="fas fa-paper-plane mr-2"></i>Inscrever-se
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row border-top border-light mx-xl-5 py-4">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-dark">
-                    &copy; <a class="text-dark font-weight-semi-bold" href="#">Your Site Name</a>. All Rights Reserved. Designed
-                    by
-                    <a class="text-dark font-weight-semi-bold" href="https://htmlcodex.com">HTML Codex</a><br>
-                    Distributed By <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                </p>
-            </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="">
+    </div>
+    
+    <div class="footer-bottom py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="copyright mb-md-0 text-center text-md-left text-white">
+                        &copy; {% now "Y" %} <span class="font-weight-bold">AnuncieAI</span>. Todos os direitos reservados.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-right">
+                    <div class="footer-payment-methods">
+                        <span class="text-white mr-2">Desenvolvido por:</span>
+                        <img src="{% static 'img/logo-icon.png' %}" alt="AnuncieAI" class="img-fluid footer-developer-logo" style="max-height: 30px;">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- Footer End -->
+</footer>
+<!-- Footer End -->
+
+<!-- CSS para o Footer -->
+<style>
+    .footer-area {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .bg-primary-gradient {
+        background: linear-gradient(135deg, var(--primary) 0%, #0a3a6d 100%);
+        position: relative;
+    }
+    
+    .bg-primary-gradient:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('{% static "img/tire-pattern.png" %}');
+        background-repeat: repeat;
+        opacity: 0.05;
+        z-index: 1;
+    }
+    
+    .footer-area .row {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .footer-logo {
+        filter: brightness(0) invert(1);
+    }
+    
+    .contact-info i {
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        border-radius: 50%;
+        background: rgba(48, 197, 245, 0.2);
+        color: var(--secondary) !important;
+    }
+    
+    .footer-social-links {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .social-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 18px;
+        transition: all 0.3s ease;
+    }
+    
+    .social-link:hover {
+        background: var(--secondary);
+        color: var(--primary);
+        transform: translateY(-3px);
+    }
+    
+    .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        padding: 8px 0;
+        transition: all 0.3s ease;
+        display: block;
+    }
+    
+    .footer-links a:hover {
+        color: var(--secondary);
+        transform: translateX(5px);
+        text-decoration: none;
+    }
+    
+    .footer-links a i {
+        color: var(--secondary);
+        font-size: 12px;
+    }
+    
+    .newsletter-input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 12px 15px;
+        border-radius: 4px;
+    }
+    
+    .newsletter-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .newsletter-input:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: var(--secondary);
+        color: white;
+        box-shadow: 0 0 0 0.2rem rgba(48, 197, 245, 0.25);
+    }
+    
+    .footer-bottom {
+        background: #07162a;
+    }
+    
+    .copyright {
+        font-size: 14px;
+        margin: 0;
+    }
+    
+    .footer-payment-methods {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    
+    .footer-developer-logo {
+        filter: brightness(0) invert(1);
+        transition: all 0.3s ease;
+    }
+    
+    .footer-developer-logo:hover {
+        filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(48, 197, 245, 0.8));
+    }
+    
+    @media (max-width: 767px) {
+        .footer-payment-methods {
+            justify-content: center;
+            margin-top: 15px;
+        }
+    }
+    
+    /* Botão de newsletter estilizado conforme o tema */
+    .btn-secondary {
+        background-color: var(--secondary);
+        border: none;
+        color: white;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background-color: white;
+        color: var(--primary);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(48, 197, 245, 0.3);
+    }
+    
+    /* Efeito hover nos links do footer */
+    .footer-links a:hover i {
+        transform: translateX(3px);
+        transition: transform 0.3s ease;
+    }
+</style>

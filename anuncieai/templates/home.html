@@ -172,59 +172,87 @@
             <p class="section-subtitle">Confira os melhores anúncios da nossa plataforma</p>
         </div>
         
-        <div class="row g-4 mt-4">
-            {% for prod in produtos %}
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="product-card">
-                    <div class="product-top">
+        <div class="products-container view-grid">
+    <div class="row">
+        {% for prod in produtos %}
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="vehicle-card">
+                <div class="vehicle-image">
+                    <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}">
                         {% if prod.get_primeira_imagem %}
-                            <img src="{{ prod.get_primeira_imagem.url }}" alt="{{ prod.produto_nome }}" class="product-img">
+                            <img src="{{ prod.get_primeira_imagem.url }}" alt="{{ prod.produto_nome }}" class="img-fluid">
                         {% else %}
-                            <img src="{% static 'img/default-vehicle.jpg' %}" alt="{{ prod.produto_nome }}" class="product-img">
+                            <img src="{% static 'img/default-vehicle.jpg' %}" alt="{{ prod.produto_nome }}" class="img-fluid">
                         {% endif %}
-                        
-                        {% if prod.esta_disponivel %}
-                            <div class="product-label">DISPONÍVEL</div>
-                        {% else %}
-                            <div class="product-label sold">VENDIDO</div>
-                        {% endif %}
-                        
-                        <div class="product-actions">
-                            <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}" class="action-btn view-btn">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="#" class="action-btn fav-btn">
-                                <i class="fas fa-heart"></i>
-                            </a>
+                    </a>
+                    
+                    {% if prod.esta_disponivel %}
+                        <div class="vehicle-badge available">
+                            <span>Disponível</span>
                         </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-specs">
-                            <div class="spec">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>{{ prod.ano_fabricacao }}/{{ prod.ano_modelo }}</span>
-                            </div>
-                            <div class="spec">
-                                <i class="fas fa-gas-pump"></i>
-                                <span>{{ prod.combustivel }}</span>
-                            </div>
-                            {% if prod.quilometragem %}
-                            <div class="spec">
-                                <i class="fas fa-tachometer-alt"></i>
-                                <span>{{ prod.quilometragem|intcomma }} km</span>
-                            </div>
-                            {% endif %}
+                    {% else %}
+                        <div class="vehicle-badge sold">
+                            <span>Vendido</span>
                         </div>
-                        <h4 class="product-title">{{ prod.produto_nome }}</h4>
-                        <div class="product-price">R$ {{ prod.preco|floatformat:0|intcomma }}</div>
-                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}" class="btn-view-details">
-                            VER DETALHES <i class="fas fa-arrow-right"></i>
+                    {% endif %}
+                </div>
+                <div class="vehicle-info">
+                    <div class="vehicle-category">{{ prod.categoria.nome }}</div>
+                    <h3 class="vehicle-title">
+                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}">
+                            {{ prod.get_marca_display }} {{ prod.produto_nome }}
                         </a>
+                    </h3>
+                    <div class="vehicle-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-calendar-alt"></i> {{ prod.ano_fabricacao }}/{{ prod.ano_modelo }}
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-gas-pump"></i> {{ prod.combustivel }}
+                        </span>
+                        {% if prod.quilometragem %}
+                        <span class="meta-item">
+                            <i class="fas fa-tachometer-alt"></i> {{ prod.quilometragem|intcomma }} km
+                        </span>
+                        {% endif %}
+                        {% if prod.cidade and prod.estado %}
+                        <span class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i> {{ prod.cidade }}/{{ prod.estado }}
+                        </span>
+                        {% endif %}
+                        {% if prod.ipva_pago %}
+                        <span class="meta-item ipva-pago">
+                            <i class="fas fa-check-circle"></i> IPVA Pago
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="vehicle-price">
+                        <span class="price" data-valor="{{ prod.preco }}">R$ {{ prod.preco|floatformat:2 }}</span>
+                    </div>
+                    <div class="vehicle-buttons">
+                        <a href="{% url 'produtos:produto_detalhe' prod.categoria.slug prod.slug %}" class="btn btn-outline-third btn-sm">
+                            <i class="fas fa-eye"></i> Ver Detalhes
+                        </a>
+                        {% if prod.user.profile and prod.user.profile.whatsapp %}
+                            {% with whatsapp_number=prod.user.profile.whatsapp %}
+                                {% with clean_number=whatsapp_number|cut:" "|cut:"-"|cut:"("|cut:")"|cut:"+"|cut:"." %}
+                                    <a href="https://wa.me/55{{ clean_number }}" class="btn btn-third btn-sm" target="_blank">
+                                        <i class="fab fa-whatsapp"></i> Contatar
+                                    </a>
+                                {% endwith %}
+                            {% endwith %}
+                        {% else %}
+                            <button class="btn btn-third btn-sm" disabled>
+                                <i class="fab fa-whatsapp"></i> Indisponível
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
+    </div>
+</div>
         
         <div class="text-center mt-5">
             <a href="{% url 'produtos:loja' %}" class="btn btn-racing py-2 px-4">
@@ -235,23 +263,6 @@
     </div>
 </div>
 
-<!-- CTA Banner -->
-<div class="container-fluid cta-banner">
-    <div class="container py-5">
-        <div class="row align-items-center">
-            <div class="col-lg-8 col-md-7">
-                <h2>ANUNCIE OU ENCONTRE SEU PRÓXIMO CARRO</h2>
-                <p>A melhor plataforma para conectar compradores e vendedores de veículos</p>
-            </div>
-            <div class="col-lg-4 col-md-5 text-center text-md-end">
-                <a href="{% url 'produtos:loja' %}" class="btn btn-light-racing py-2 px-4">
-                    <span>EXPLORAR ANÚNCIOS</span>
-                    <i class="fas fa-chevron-right ms-2"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
 /* ==== VARIÁVEIS DE CORES ==== */
@@ -544,6 +555,7 @@ a {
     font-weight: 600;
     margin-bottom: 5px;
     font-size: 18px;
+    color: white
 }
 
 .feature-text p {
@@ -1165,6 +1177,188 @@ a {
     font-weight: 600;
 }
 
+
+/* Cards de Veículos */
+.vehicle-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    height: 100%;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.vehicle-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.vehicle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+}
+
+.vehicle-card:hover .vehicle-image img {
+    transform: scale(1.05);
+}
+
+.vehicle-badge {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    padding: 6px 15px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 2;
+    clip-path: polygon(10% 0%, 100% 0, 100% 100%, 10% 100%, 0 50%);
+}
+
+.vehicle-badge.available {
+    background-color: var(--third);
+    color: white;
+}
+
+.vehicle-badge.sold {
+    background-color: var(--racing-red);
+    color: white;
+}
+
+.vehicle-info {
+    padding: 20px;
+}
+
+.vehicle-category {
+    font-size: 0.85rem;
+    color: var(--third);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.vehicle-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    height: 48px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.vehicle-title a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.vehicle-title a:hover {
+    color: var(--third);
+}
+
+.vehicle-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.meta-item i {
+    margin-right: 5px;
+    color: var(--third);
+}
+
+.meta-item.ipva-pago i {
+    color: #2ecc71;
+}
+
+.vehicle-price {
+    margin-bottom: 20px;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--third);
+}
+
+.vehicle-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.vehicle-buttons .btn {
+    flex: 1;
+    padding: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-outline-third {
+    color: var(--third);
+    border-color: var(--third);
+    background-color: transparent;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.btn-outline-third:hover {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-third {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.btn-third:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 767px) {
+    .vehicle-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .vehicle-buttons {
+        flex-direction: column;
+    }
+}
 </style>
 <!-- Modal para gerenciar carrossel (apenas administradores) -->
 {% if user.is_staff %}
@@ -1414,6 +1608,18 @@ a {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Verificar se Bootstrap 5 está disponível
+
+    // Formatação de preços
+    const priceElements = document.querySelectorAll('.price');
+    priceElements.forEach(element => {
+        const value = parseFloat(element.getAttribute('data-valor') || 0);
+        if (!isNaN(value)) {
+            element.textContent = 'R$ ' + value.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    });
     if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap 5 não está carregado. Carregando biblioteca...');
         
