@@ -32,7 +32,7 @@
                         {% endif %}
                         <h2 class="text-light text-uppercase font-weight-bold mb-4">{{ slide.title }}</h2>
                         <p class="text-light mb-4">{{ slide.subtitle }}</p>
-                        <a href="{% url slide.button_url %}" class="btn btn-racing py-2 px-4">
+                        <a href="{% url slide.button_url %}{% if slide.button_filters %}?{{ slide.button_filters }}{% endif %}" class="btn btn-racing py-2 px-4">
                             <span>{{ slide.button_text }}</span>
                             <i class="{{ slide.button_icon }} ms-2"></i>
                         </a>
@@ -212,7 +212,7 @@
                         </span>
                         {% if prod.quilometragem %}
                         <span class="meta-item">
-                            <i class="fas fa-tachometer-alt"></i> {{ prod.quilometragem|intcomma }} km
+                            <i class="fas fa-tachometer-alt"></i> <span class="formatted-km" data-km="{{ prod.quilometragem }}">{{ prod.quilometragem }}</span> km
                         </span>
                         {% endif %}
                         {% if prod.cidade and prod.estado %}
@@ -1522,24 +1522,29 @@ a {
                                 
                                 <div class="col-md-6">
                                     <!-- Configurações do botão -->
-                                    <div class="card mb-4">
-                                        <div class="card-header">
-                                            Botão do Slide
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        Botão do Slide
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="button_text" class="form-label">Texto do Botão</label>
+                                            <input type="text" class="form-control" id="button_text" name="button_text" value="VER MAIS">
                                         </div>
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <label for="button_text" class="form-label">Texto do Botão</label>
-                                                <input type="text" class="form-control" id="button_text" name="button_text" value="VER MAIS">
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="button_url" class="form-label">URL do Botão</label>
-                                                <input type="text" class="form-control" id="button_url" name="button_url" value="produtos:loja">
-                                                <div class="form-text">Nome da URL (ex: produtos:loja)</div>
-                                            </div>
-                                            
+                                        
+                                        <div class="mb-3">
+                                            <label for="button_url" class="form-label">URL do Botão</label>
+                                            <input type="text" class="form-control" id="button_url" name="button_url" value="produtos:loja">
+                                            <div class="form-text">Nome da URL (ex: produtos:loja)</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="button_filters" class="form-label">Filtros do Botão</label>
+                                            <input type="text" class="form-control" id="button_filters" name="button_filters" value="">
+                                            <div class="form-text">Filtros para aplicar na URL (ex: marca=nissan ou categoria=sedan)</div>
                                         </div>
                                     </div>
+                                </div>
                                     
                                     <!-- Configurações gerais -->
                                     <div class="card">
@@ -1620,6 +1625,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Formatação de quilometragem com ponto como separador de milhar
+    const kmElements = document.querySelectorAll('.formatted-km');
+    kmElements.forEach(element => {
+        const value = parseInt(element.getAttribute('data-km') || 0);
+        if (!isNaN(value)) {
+            element.textContent = value.toLocaleString('pt-BR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+                useGrouping: true
+            }).replace(',', '.');
+        }
+    });
+    
     if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap 5 não está carregado. Carregando biblioteca...');
         
@@ -1728,28 +1747,30 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // O restante do código de inicialização permanece igual
         const editButtons = document.querySelectorAll('.edit-slide');
-        editButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const slideId = this.getAttribute('data-id');
-                const title = this.getAttribute('data-title');
-                const subtitle = this.getAttribute('data-subtitle');
-                const badge = this.getAttribute('data-badge');
-                const btnText = this.getAttribute('data-btn-text');
-                const btnUrl = this.getAttribute('data-btn-url');
-                const btnIcon = this.getAttribute('data-btn-icon');
-                const order = this.getAttribute('data-order');
-                const active = this.getAttribute('data-active') === 'true';
-                
-                // Preencher o formulário com os dados do slide
-                document.getElementById('slide_id').value = slideId;
-                document.getElementById('title').value = title;
-                document.getElementById('subtitle').value = subtitle;
-                document.getElementById('badge_text').value = badge;
-                document.getElementById('button_text').value = btnText;
-                document.getElementById('button_url').value = btnUrl;
-                document.getElementById('button_icon').value = btnIcon;
-                document.getElementById('order').value = order;
-                document.getElementById('active').checked = active;
+editButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const slideId = this.getAttribute('data-id');
+        const title = this.getAttribute('data-title');
+        const subtitle = this.getAttribute('data-subtitle');
+        const badge = this.getAttribute('data-badge');
+        const btnText = this.getAttribute('data-btn-text');
+        const btnUrl = this.getAttribute('data-btn-url');
+        const btnFilters = this.getAttribute('data-btn-filters'); // Adicione esta linha
+        const btnIcon = this.getAttribute('data-btn-icon');
+        const order = this.getAttribute('data-order');
+        const active = this.getAttribute('data-active') === 'true';
+        
+        // Preencher o formulário com os dados do slide
+        document.getElementById('slide_id').value = slideId;
+        document.getElementById('title').value = title;
+        document.getElementById('subtitle').value = subtitle;
+        document.getElementById('badge_text').value = badge;
+        document.getElementById('button_text').value = btnText;
+        document.getElementById('button_url').value = btnUrl;
+        document.getElementById('button_filters').value = btnFilters; // Adicione esta linha
+        document.getElementById('button_icon').value = btnIcon;
+        document.getElementById('order').value = order;
+        document.getElementById('active').checked = active;
                 
                 // Ativar manualmente a aba de adição/edição
                 document.querySelectorAll('.nav-link').forEach(tab => {

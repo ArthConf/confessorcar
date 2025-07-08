@@ -8,6 +8,8 @@ class CarouselSlide(models.Model):
     image = models.ImageField(_('Imagem'), upload_to='carousel/')
     button_text = models.CharField(_('Texto do Botão'), max_length=50, default='VER MAIS')
     button_url = models.CharField(_('URL do Botão'), max_length=200, default='produtos:loja')
+    button_filters = models.CharField(_('Filtros do Botão'), max_length=200, blank=True)  # Novo campo
+    button_icon = models.CharField(_('Ícone do Botão'), max_length=50, default='fas fa-chevron-right')
     active = models.BooleanField(_('Ativo'), default=True)
     order = models.PositiveIntegerField(_('Ordem'), default=0)
 

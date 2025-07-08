@@ -97,14 +97,14 @@
                                         </div>
                                     </div>
                                     
+                                    
                                     <div class="highlight-item">
                                         <i class="fas fa-tachometer-alt"></i>
                                         <div class="highlight-content">
                                             <h4>Quilometragem</h4>
-                                            <p>{{ produto.quilometragem|floatformat:0|intcomma }} km</p>
+                                            <p><span class="formatted-km" data-km="{{ produto.quilometragem|floatformat:0 }}">{{ produto.quilometragem|floatformat:0 }}</span> km</p>
                                         </div>
                                     </div>
-                                    
                                     <div class="highlight-item">
                                         <i class="fas fa-gas-pump"></i>
                                         <div class="highlight-content">
@@ -194,7 +194,7 @@
                                             </div>
                                             <div class="spec-item">
                                                 <span class="spec-label">Quilometragem</span>
-                                                <span class="spec-value">{{ produto.quilometragem|floatformat:0|intcomma }} km</span>
+                                                <span class="spec-value"><span class="formatted-km" data-km="{{ produto.quilometragem|floatformat:0 }}">{{ produto.quilometragem|floatformat:0 }}</span> km</span>
                                             </div>
                                             <div class="spec-item">
                                                 <span class="spec-label">Final da Placa</span>
@@ -1806,6 +1806,20 @@
 <!-- JavaScript for Gallery & Slider -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
+     // Formatação de quilometragem com ponto como separador de milhar
+    const kmElements = document.querySelectorAll('.formatted-km');
+    kmElements.forEach(element => {
+        const value = parseInt(element.getAttribute('data-km') || 0);
+        if (!isNaN(value)) {
+            element.textContent = value.toLocaleString('pt-BR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+                useGrouping: true
+            }).replace(',', '.');
+        }
+    });
+
     // Load Swiper JS if not available
     function loadScript(url, callback) {
         var script = document.createElement('script');
