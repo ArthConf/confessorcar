@@ -39,9 +39,12 @@
                         {% endif %}
                         <h5 class="user-name">{{ user.get_full_name|default:user.username }}</h5>
                         {% if user.profile.whatsapp %}
-                        <span class="badge bg-success"><i class="fab fa-whatsapp"></i> WhatsApp Cadastrado</span>
+                        <span style="color:white" class="badge bg-success">
+                            <i class="fab fa-whatsapp" style="color:white"></i> WhatsApp Cadastrado
+                        </span>
+
                         {% else %}
-                        <span class="badge bg-warning text-dark"><i class="fab fa-whatsapp"></i> WhatsApp não cadastrado</span>
+                        <span style="color:white" class="badge bg-warning text-dark"><i class="fab fa-whatsapp"></i> WhatsApp não cadastrado</span>
                         {% endif %}
                     </div>
                     
@@ -92,9 +95,9 @@
                     </div>
                     <hr>
                     <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-third text-white" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <a href="{% url 'users:edit_profile' %}" class="btn btn-third text-white">
                             <i class="fas fa-edit"></i> Editar Perfil
-                        </button>
+                        </a>
                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                             <i class="fas fa-key"></i> Alterar Senha
                         </button>
@@ -148,13 +151,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-6">
-                            <div class="stat-item">
-                                <div class="stat-icon bg-success">
-                                    <i class="fas fa-heart"></i>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>

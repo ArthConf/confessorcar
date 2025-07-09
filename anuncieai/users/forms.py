@@ -180,6 +180,34 @@ class RegisterForm(UserCreationForm):
                 raise ValidationError(f'Formato de WhatsApp inválido: {str(e)}')
         return whatsapp
 
+        # Na classe RegisterForm em users/forms.py, adicione este método save():
+    def save(self, commit=True):
+        # Primeiro salve o usuário usando o método save do UserCreationForm
+        user = super().save(commit=False)
+        user.email = self.cleaned_data.get('email')
+        user.first_name = self.cleaned_data.get('first_name')
+        user.last_name = self.cleaned_data.get('last_name')
+        
+        if commit:
+            user.save()
+            
+            # Agora, salve os dados do perfil
+            profile = user.profile  # O profile já foi criado pelo signal
+            
+            # Atribuir os valores dos campos adicionais ao perfil
+            profile.cpf = self.cleaned_data.get('cpf', '')
+            profile.endereco = self.cleaned_data.get('endereco', '')
+            profile.bairro = self.cleaned_data.get('bairro', '')
+            profile.cidade = self.cleaned_data.get('cidade', '')
+            profile.estado = self.cleaned_data.get('estado', '')
+            profile.cep = self.cleaned_data.get('cep', '')
+            profile.whatsapp = self.cleaned_data.get('whatsapp', '')
+            
+            # Salvar o perfil
+            profile.save()
+            
+        return user
+
 # users/forms.py
 class ProfileEditForm(forms.ModelForm):
     class Meta:

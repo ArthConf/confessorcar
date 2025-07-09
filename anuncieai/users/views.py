@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -9,18 +10,55 @@ import logging
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from .forms import ProfileEditForm
-
+from localflavor.br.br_states import STATE_CHOICES
 @login_required
 def edit_profile_view(request):
+    """
+    View para edição de perfil do usuário
+    """
+    # Lista de estados para o formulário
+    estados = STATE_CHOICES
+    
     if request.method == 'POST':
-        form = ProfileEditForm(request.POST, request.FILES, instance=request.user.profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Seu perfil foi atualizado com sucesso!')
-            return redirect('users:dashboard')
-        else:
-            messages.error(request, 'Ocorreram erros ao atualizar seu perfil.')
-    return redirect('users:dashboard')
+        # Atualizar dados do usuário
+        request.user.first_name = request.POST.get('first_name', '')
+        request.user.last_name = request.POST.get('last_name', '')
+        request.user.email = request.POST.get('email', '')
+        request.user.save()
+        
+        # Atualizar dados do perfil
+        profile = request.user.profile
+        profile.whatsapp = request.POST.get('whatsapp', '')
+        profile.cpf = request.POST.get('cpf', '')
+        profile.endereco = request.POST.get('endereco', '')
+        profile.bairro = request.POST.get('bairro', '')
+        profile.cidade = request.POST.get('cidade', '')
+        profile.estado = request.POST.get('estado', '')
+        profile.cep = request.POST.get('cep', '')
+        
+        # Processar avatar
+        if 'avatar' in request.FILES:
+            # Excluir avatar antigo se existir
+            if profile.avatar:
+                try:
+                    if os.path.isfile(profile.avatar.path):
+                        os.remove(profile.avatar.path)
+                except Exception as e:
+                    print(f"Erro ao excluir avatar: {e}")
+            
+            profile.avatar = request.FILES['avatar']
+        
+        profile.save()
+        
+        messages.success(request, "Perfil atualizado com sucesso!")
+        return redirect('users:dashboard')
+    
+    context = {
+        'estados': estados,
+        'user': request.user,
+    }
+    
+    return render(request, 'users/edit_profile.html', context)
 
 @login_required
 def change_password_view(request):

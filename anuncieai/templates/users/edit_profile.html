@@ -1,0 +1,555 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-third text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-edit me-3 fa-2x"></i>
+                        <h4 style="color:white" class="card-title mb-0">Editar Perfil</h4>
+                    </div>
+                </div>
+                <div class="card-body p-4 bg-white">
+                    {% if messages %}
+                    <div class="messages-container mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="{% if message.tags == 'success' %}fas fa-check-circle{% elif message.tags == 'error' %}fas fa-exclamation-circle{% elif message.tags == 'warning' %}fas fa-exclamation-triangle{% else %}fas fa-info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'users:edit_profile' %}" enctype="multipart/form-data" class="profile-form">
+                        {% csrf_token %}
+                        
+                        <!-- Informações Pessoais -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-4">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-user me-2"></i>Informações Pessoais
+                                </h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label fw-medium">Nome</label>
+                                    <input type="text" class="form-control form-control-lg" id="first_name" name="first_name" value="{{ user.first_name }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label fw-medium">Sobrenome</label>
+                                    <input type="text" class="form-control form-control-lg" id="last_name" name="last_name" value="{{ user.last_name }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label fw-medium">E-mail</label>
+                                    <input type="email" class="form-control form-control-lg" id="email" name="email" value="{{ user.email }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label fw-medium">Nome de Usuário</label>
+                                    <input type="text" class="form-control form-control-lg bg-light" id="username" value="{{ user.username }}" disabled>
+                                    <small class="text-muted">O nome de usuário não pode ser alterado</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Foto de Perfil -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-4">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-camera me-2"></i>Foto de Perfil
+                                </h5>
+                            </div>
+                            <div class="row align-items-center">
+                                <div class="col-md-4 mb-3 text-center">
+                                    <div class="avatar-container">
+                                        {% if user.profile.avatar %}
+                                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="profile-avatar mb-2">
+                                        {% else %}
+                                        <div class="profile-avatar-placeholder mb-2">
+                                            <i class="fas fa-user-circle fa-5x"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="small text-muted">Foto atual</div>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label for="avatar" class="form-label fw-medium">Alterar Foto</label>
+                                    <input type="file" class="form-control form-control-lg" id="avatar" name="avatar" accept="image/*">
+                                    <div class="form-text mt-2">Tamanho máximo: 2MB. Formatos: JPG, PNG</div>
+                                    <div class="preview-container mt-3 d-none">
+                                        <p class="fw-medium">Prévia:</p>
+                                        <img id="avatar-preview" src="" alt="Prévia" class="img-thumbnail" style="max-height: 150px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contato -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-4">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-phone me-2"></i>Contato
+                                </h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="whatsapp" class="form-label fw-medium">WhatsApp</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="fab fa-whatsapp text-success"></i></span>
+                                        <input type="text" class="form-control form-control-lg phone-mask" id="whatsapp" name="whatsapp" placeholder="(00) 00000-0000" value="{{ user.profile.whatsapp }}">
+                                    </div>
+                                    <div class="form-text">Formato: (99) 99999-9999</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cpf" class="form-label fw-medium">CPF</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                        <input type="text" class="form-control form-control-lg cpf-mask" id="cpf" name="cpf" placeholder="000.000.000-00" value="{{ user.profile.cpf }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Endereço -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-4">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Endereço
+                                </h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="cep" class="form-label fw-medium">CEP</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="fas fa-map-pin"></i></span>
+                                        <input type="text" class="form-control form-control-lg cep-mask" id="cep" name="cep" placeholder="00000-000" value="{{ user.profile.cep }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label for="endereco" class="form-label fw-medium">Endereço</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="fas fa-home"></i></span>
+                                        <input type="text" class="form-control form-control-lg" id="endereco" name="endereco" placeholder="Rua, número, complemento" value="{{ user.profile.endereco }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="bairro" class="form-label fw-medium">Bairro</label>
+                                    <input type="text" class="form-control form-control-lg" id="bairro" name="bairro" placeholder="Seu bairro" value="{{ user.profile.bairro }}">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="estado" class="form-label fw-medium">Estado</label>
+                                    <select class="form-select form-select-lg" id="estado" name="estado">
+                                        <option value="">Selecione o Estado</option>
+                                        {% for uf, nome in estados %}
+                                        <option value="{{ uf }}" {% if user.profile.estado == uf %}selected{% endif %}>{{ nome }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="cidade" class="form-label fw-medium">Cidade</label>
+                                    <div class="cidade-wrapper">
+                                        <select class="form-select form-select-lg cidade-select" id="cidade" name="cidade" disabled>
+                                            <option value="">Selecione um estado primeiro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons mt-4 d-flex gap-3">
+                            <button type="submit" class="btn btn-third btn-lg px-5">
+                                <i class="fas fa-save me-2"></i>Salvar Alterações
+                            </button>
+                            <a href="{% url 'users:dashboard' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Voltar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary: #0a1e36;
+    --secondary: #30c5f5;
+    --third: #0066cc;
+    --text-dark: #343a40;
+    --text-light: #6c757d;
+    --border-color: #dee2e6;
+    --form-bg: #f8f9fa;
+}
+
+body {
+    background-color: #f5f7fa;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    background-color: white;
+}
+
+.card-body {
+    background-color: white;
+}
+
+.card-header {
+    padding: 1.25rem 1.5rem;
+    background-color: var(--third);
+    border-bottom: none;
+   
+}
+
+.form-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    margin-bottom: 30px;
+}
+
+.section-header {
+    border-bottom: 1px solid rgba(0, 102, 204, 0.1);
+    margin-bottom: 25px;
+}
+
+.form-section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.form-control, .form-select {
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--third);
+    box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.2);
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+.profile-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--third);
+    box-shadow: 0 5px 15px rgba(0, 102, 204, 0.2);
+}
+
+.profile-avatar-placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background-color: rgba(0, 102, 204, 0.08);
+    color: var(--third);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 3px solid var(--third);
+    box-shadow: 0 5px 15px rgba(0, 102, 204, 0.2);
+}
+
+.avatar-container {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-third {
+    background-color: var(--third);
+    border-color: var(--third);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-third:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 5px 15px rgba(10, 30, 54, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-outline-secondary {
+    color: var(--text-dark);
+    border-color: #ccc;
+    font-weight: 500;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f1f3f5;
+    color: var(--primary);
+}
+
+/* Estilo para campos desabilitados */
+.form-control:disabled, 
+.form-control[readonly], 
+.form-select:disabled {
+    background-color: #f8f9fa;
+    opacity: 0.8;
+}
+
+/* Estilo para campos com foco */
+.form-control:focus, .form-select:focus {
+    border-color: var(--third);
+    box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.2);
+}
+
+/* Estilo para grupo de entrada com ícone */
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+/* Corrigindo o campo cidade */
+.cidade-wrapper {
+    width: 100%;
+    position: relative;
+}
+
+.cidade-select {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Estilo personalizado para a lista dropdown */
+select option {
+    white-space: normal;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Visualização prévia da imagem
+    const avatarInput = document.getElementById('avatar');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const previewContainer = document.querySelector('.preview-container');
+
+    if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    avatarPreview.src = e.target.result;
+                    previewContainer.classList.remove('d-none');
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                previewContainer.classList.add('d-none');
+            }
+        });
+    }
+
+    // Máscaras para campos
+    const applyCPFMask = function(input) {
+        input.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            
+            if (value.length > 9) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            } else if (value.length > 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+            } else if (value.length > 3) {
+                value = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            }
+            
+            e.target.value = value;
+        });
+    };
+
+    const applyPhoneMask = function(input) {
+        input.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            
+            if (value.length > 6) {
+                value = value.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+            } else if (value.length > 2) {
+                value = value.replace(/(\d{2})(\d{1,5})/, '($1) $2');
+            }
+            
+            e.target.value = value;
+        });
+    };
+
+    const applyCEPMask = function(input) {
+        input.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 8) value = value.slice(0, 8);
+            
+            if (value.length > 5) {
+                value = value.replace(/(\d{5})(\d{1,3})/, '$1-$2');
+            }
+            
+            e.target.value = value;
+        });
+    };
+
+    // Aplicar máscaras
+    const cpfInput = document.getElementById('cpf');
+    if (cpfInput) applyCPFMask(cpfInput);
+
+    const whatsappInput = document.getElementById('whatsapp');
+    if (whatsappInput) applyPhoneMask(whatsappInput);
+
+    const cepInput = document.getElementById('cep');
+    if (cepInput) {
+        applyCEPMask(cepInput);
+        
+        // Busca de CEP para autopreenchimento
+        cepInput.addEventListener('blur', function() {
+            const cep = this.value.replace(/\D/g, '');
+            
+            if (cep.length !== 8) return;
+            
+            // Mostrar indicador de carregamento
+            const endereco = document.getElementById('endereco');
+            const bairro = document.getElementById('bairro');
+            const cidade = document.getElementById('cidade');
+            const estado = document.getElementById('estado');
+            
+            endereco.value = 'Carregando...';
+            bairro.value = 'Carregando...';
+            
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        endereco.value = data.logradouro;
+                        bairro.value = data.bairro;
+                        
+                        // Selecionar estado
+                        for (let i = 0; i < estado.options.length; i++) {
+                            if (estado.options[i].value === data.uf) {
+                                estado.selectedIndex = i;
+                                // Disparar evento change para carregar as cidades
+                                estado.dispatchEvent(new Event('change'));
+                                
+                                // Definir a cidade após carregar as opções (com pequeno delay)
+                                setTimeout(() => {
+                                    // Procurar pela cidade nas opções
+                                    const cidadeOptions = cidade.options;
+                                    for (let j = 0; j < cidadeOptions.length; j++) {
+                                        if (cidadeOptions[j].textContent === data.localidade) {
+                                            cidade.selectedIndex = j;
+                                            break;
+                                        }
+                                    }
+                                }, 500);
+                                
+                                break;
+                            }
+                        }
+                    } else {
+                        endereco.value = '';
+                        bairro.value = '';
+                        alert('CEP não encontrado. Verifique o número informado.');
+                    }
+                })
+                .catch(error => {
+                    endereco.value = '';
+                    bairro.value = '';
+                    console.error('Erro ao buscar CEP:', error);
+                    alert('Erro ao buscar CEP. Tente novamente mais tarde.');
+                });
+        });
+    }
+
+    // ----- CIDADES POR ESTADO -----
+    // Carregar cidades quando o estado for selecionado
+    const estadoSelect = document.getElementById('estado');
+    const cidadeSelect = document.getElementById('cidade');
+    const cidadeAtual = "{{ user.profile.cidade }}";
+
+    if (estadoSelect && cidadeSelect) {
+        estadoSelect.addEventListener('change', function() {
+            const estado = this.value;
+            if (!estado) {
+                cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+                cidadeSelect.disabled = true;
+                return;
+            }
+            
+            // Ativar o select de cidades e mostrar loading
+            cidadeSelect.disabled = true;
+            cidadeSelect.innerHTML = '<option value="">Carregando cidades...</option>';
+            
+            // Usar API do IBGE para carregar cidades por estado
+            fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios?orderBy=nome`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar cidades');
+                    }
+                    return response.json();
+                })
+                .then(cidades => {
+                    // Limpar opções anteriores
+                    cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+                    
+                    // Adicionar novas opções ordenadas
+                    cidades.forEach(cidade => {
+                        const option = document.createElement('option');
+                        option.value = cidade.nome;
+                        option.textContent = cidade.nome;
+                        option.style.overflow = 'hidden';
+                        option.style.textOverflow = 'ellipsis';
+                        
+                        // Selecionar a cidade do usuário se existir
+                        if (cidade.nome === cidadeAtual) {
+                            option.selected = true;
+                        }
+                        
+                        cidadeSelect.appendChild(option);
+                    });
+                    
+                    cidadeSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar cidades:', error);
+                    cidadeSelect.innerHTML = '<option value="">Erro ao carregar cidades</option>';
+                    cidadeSelect.disabled = false;
+                });
+        });
+        
+        // Disparar o evento change se um estado já estiver selecionado
+        if (estadoSelect.value) {
+            estadoSelect.dispatchEvent(new Event('change'));
+        }
+    }
+});
+</script>
+{% endblock %}
