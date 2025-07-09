@@ -5,11 +5,11 @@
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
                 <div class="footer-logo-area mb-4">
-    <a href="{% url 'home' %}" class="text-decoration-none">
-        <!-- Usando o mesmo caminho que funciona na navbar -->
-        <img src="{% static 'img/logo_circular.png' %}" alt="AnuncieAI" class="footer-logo img-fluid" style="max-height: 60px; filter: none;">
-    </a>
-</div>
+                    <a href="{% url 'home' %}" class="text-decoration-none">
+                        <!-- Usando o mesmo caminho que funciona na navbar -->
+                        <img src="{% static 'img/logo_circular.png' %}" alt="AnuncieAI" class="footer-logo img-fluid" style="max-height: 60px; filter: none;">
+                    </a>
+                </div>
                 <p class="text-white mb-4">Seu marketplace de veículos. Anuncie, encontre e negocie com facilidade, segurança e confiabilidade. Transformando a experiência de compra e venda de automóveis.</p>
                 <div class="contact-info">
                     <p class="text-white mb-2"><i class="fas fa-map-marker-alt text-secondary mr-3"></i>Cuiabá, MT - Brasil</p>
@@ -56,21 +56,6 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="font-weight-bold text-white mb-4">Fique por dentro</h5>
-                        <p class="text-white mb-4">Cadastre seu e-mail e receba novidades, ofertas exclusivas e dicas para compra e venda de veículos.</p>
-                        <form action="#" method="post" class="footer-subscribe-form">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <input type="email" class="form-control newsletter-input" placeholder="Seu melhor e-mail" required="required" />
-                            </div>
-                            <div>
-                                <button class="btn btn-secondary btn-block py-3" type="submit">
-                                    <i class="fas fa-paper-plane mr-2"></i>Inscrever-se
-                                </button>
-                            </div>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
@@ -78,17 +63,11 @@
     
     <div class="footer-bottom py-3">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="copyright mb-md-0 text-center text-md-left text-white">
+            <div class="row">
+                <div class="col-12 text-center"> <!-- Alterado para col-12 e text-center -->
+                    <p class="copyright text-white mb-0">
                         &copy; {% now "Y" %} <span class="font-weight-bold">AnuncieAI</span>. Todos os direitos reservados.
                     </p>
-                </div>
-                <div class="col-md-6 text-center text-md-right">
-                    <div class="footer-payment-methods">
-                        <span class="text-white mr-2">Desenvolvido por:</span>
-                        <img src="{% static 'img/logo-icon.png' %}" alt="AnuncieAI" class="img-fluid footer-developer-logo" style="max-height: 30px;">
-                    </div>
                 </div>
             </div>
         </div>
