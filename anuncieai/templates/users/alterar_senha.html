@@ -1,0 +1,399 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-key me-3 fa-2x"></i>
+                        <h4 style = "color: white" class="card-title mb-0">Alterar Senha</h4>
+                    </div>
+                </div>
+                <div class="card-body p-4 bg-white">
+                    {% if messages %}
+                    <div class="messages-container mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="{% if message.tags == 'success' %}fas fa-check-circle{% elif message.tags == 'error' %}fas fa-exclamation-circle{% elif message.tags == 'warning' %}fas fa-exclamation-triangle{% else %}fas fa-info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'users:change_password' %}" class="password-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-4">
+                                <h5 class="form-section-title">
+                                    <i class="fas fa-lock me-2"></i>Informações de Segurança
+                                </h5>
+                                <p class="text-muted">Para alterar sua senha, insira sua senha atual e a nova senha desejada.</p>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <label for="old_password" class="form-label fw-medium">Senha Atual</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="form-control form-control-lg" id="old_password" name="old_password" placeholder="Digite sua senha atual" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Informe sua senha atual para verificação de segurança.</div>
+                                </div>
+                                
+                                <div class="col-md-12 mb-4">
+                                    <label for="new_password1" class="form-label fw-medium">Nova Senha</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                        <input type="password" class="form-control form-control-lg" id="new_password1" name="new_password1" placeholder="Digite sua nova senha" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="password-strength-meter mt-2">
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar" role="progressbar" style="width: 0%;" id="password-strength-bar"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-1">
+                                            <small class="text-muted">Força da senha: <span id="password-strength-text">Muito fraca</span></small>
+                                            <small class="text-muted" id="password-length-counter">0/8 caracteres</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12 mb-4">
+                                    <label for="new_password2" class="form-label fw-medium">Confirmar Nova Senha</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="fas fa-check-double"></i></span>
+                                        <input type="password" class="form-control form-control-lg" id="new_password2" name="new_password2" placeholder="Confirme sua nova senha" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div id="password-match-message" class="form-text"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="password-requirements bg-light p-3 rounded mb-4">
+                                <h6 class="mb-2"><i class="fas fa-shield-alt me-2"></i>Requisitos de Senha</h6>
+                                <ul class="mb-0 ps-3">
+                                    <li id="req-length" class="password-req"><span class="req-icon me-2"><i class="far fa-circle"></i></span>Pelo menos 8 caracteres</li>
+                                    <li id="req-uppercase" class="password-req"><span class="req-icon me-2"><i class="far fa-circle"></i></span>Pelo menos uma letra maiúscula</li>
+                                    <li id="req-lowercase" class="password-req"><span class="req-icon me-2"><i class="far fa-circle"></i></span>Pelo menos uma letra minúscula</li>
+                                    <li id="req-number" class="password-req"><span class="req-icon me-2"><i class="far fa-circle"></i></span>Pelo menos um número</li>
+                                    <li id="req-special" class="password-req"><span class="req-icon me-2"><i class="far fa-circle"></i></span>Pelo menos um caractere especial</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons mt-4 d-flex gap-3">
+                            <button type="submit" class="btn btn-dark btn-lg px-4">
+                                <i class="fas fa-save me-2"></i>Alterar Senha
+                            </button>
+                            <a href="{% url 'users:dashboard' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-arrow-left me-2"></i>Voltar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary: #0a1e36;
+    --secondary: #30c5f5;
+    --third: #0066cc;
+    --text-dark: #343a40;
+    --text-light: #6c757d;
+    --border-color: #dee2e6;
+    --form-bg: #f8f9fa;
+    --very-weak: #dc3545;
+    --weak: #ffc107;
+    --medium: #fd7e14;
+    --strong: #20c997;
+    --very-strong: #198754;
+}
+
+body {
+    background-color: #f5f7fa;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: none;
+}
+
+.card-header .card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.form-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    margin-bottom: 30px;
+}
+
+.section-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+}
+
+.form-section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.form-control, .form-select {
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--text-dark);
+    box-shadow: 0 0 0 0.25rem rgba(52, 58, 64, 0.2);
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+.btn-dark {
+    background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-dark:hover {
+    background: linear-gradient(135deg, #212529 0%, #16181b 100%);
+    box-shadow: 0 5px 15px rgba(33, 37, 41, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-outline-secondary {
+    color: var(--text-dark);
+    border-color: #ccc;
+    font-weight: 500;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f1f3f5;
+    color: var(--primary);
+}
+
+/* Estilo para o medidor de força de senha */
+.password-strength-meter .progress-bar {
+    transition: width 0.3s ease;
+}
+
+.password-strength-meter .progress-bar.very-weak { background-color: var(--very-weak); }
+.password-strength-meter .progress-bar.weak { background-color: var(--weak); }
+.password-strength-meter .progress-bar.medium { background-color: var(--medium); }
+.password-strength-meter .progress-bar.strong { background-color: var(--strong); }
+.password-strength-meter .progress-bar.very-strong { background-color: var(--very-strong); }
+
+/* Estilo para os requisitos de senha */
+.password-requirements {
+    border-left: 3px solid var(--text-dark);
+    background-color: #f8f9fa;
+}
+
+.password-req {
+    margin-bottom: 5px;
+    color: var(--text-light);
+    transition: color 0.3s ease;
+}
+
+.password-req.met {
+    color: var(--strong);
+}
+
+.password-req.met .req-icon i {
+    color: var(--strong);
+}
+
+.req-icon i {
+    transition: all 0.3s ease;
+}
+
+.password-req.met .req-icon i:before {
+    content: "\f058"; /* Font Awesome check-circle icon */
+}
+
+/* Estilo para o botão de toggle password */
+.toggle-password {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Estilo para mensagem de confirmação de senha */
+#password-match-message.match {
+    color: var(--strong);
+}
+
+#password-match-message.no-match {
+    color: var(--very-weak);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle Password Visibility
+    const toggleButtons = document.querySelectorAll('.toggle-password');
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+    
+    // Password Strength Meter
+    const newPassword = document.getElementById('new_password1');
+    const strengthBar = document.getElementById('password-strength-bar');
+    const strengthText = document.getElementById('password-strength-text');
+    const lengthCounter = document.getElementById('password-length-counter');
+    
+    // Password requirements
+    const reqLength = document.getElementById('req-length');
+    const reqUppercase = document.getElementById('req-uppercase');
+    const reqLowercase = document.getElementById('req-lowercase');
+    const reqNumber = document.getElementById('req-number');
+    const reqSpecial = document.getElementById('req-special');
+    
+    if (newPassword) {
+        newPassword.addEventListener('input', function() {
+            const value = this.value;
+            
+            // Update length counter
+            lengthCounter.textContent = `${value.length}/8 caracteres`;
+            
+            // Check requirements
+            const hasLength = value.length >= 8;
+            const hasUppercase = /[A-Z]/.test(value);
+            const hasLowercase = /[a-z]/.test(value);
+            const hasNumber = /[0-9]/.test(value);
+            const hasSpecial = /[^A-Za-z0-9]/.test(value);
+            
+            // Update requirement indicators
+            toggleRequirement(reqLength, hasLength);
+            toggleRequirement(reqUppercase, hasUppercase);
+            toggleRequirement(reqLowercase, hasLowercase);
+            toggleRequirement(reqNumber, hasNumber);
+            toggleRequirement(reqSpecial, hasSpecial);
+            
+            // Calculate strength
+            let strength = 0;
+            if (hasLength) strength += 20;
+            if (hasUppercase) strength += 20;
+            if (hasLowercase) strength += 20;
+            if (hasNumber) strength += 20;
+            if (hasSpecial) strength += 20;
+            
+            // Update strength bar
+            strengthBar.style.width = `${strength}%`;
+            
+            // Remove previous classes
+            strengthBar.classList.remove('very-weak', 'weak', 'medium', 'strong', 'very-strong');
+            
+            // Add appropriate class and update text
+            if (strength <= 20) {
+                strengthBar.classList.add('very-weak');
+                strengthText.textContent = 'Muito fraca';
+            } else if (strength <= 40) {
+                strengthBar.classList.add('weak');
+                strengthText.textContent = 'Fraca';
+            } else if (strength <= 60) {
+                strengthBar.classList.add('medium');
+                strengthText.textContent = 'Média';
+            } else if (strength <= 80) {
+                strengthBar.classList.add('strong');
+                strengthText.textContent = 'Forte';
+            } else {
+                strengthBar.classList.add('very-strong');
+                strengthText.textContent = 'Muito forte';
+            }
+        });
+    }
+    
+    // Helper function to toggle requirement state
+    function toggleRequirement(element, isMet) {
+        if (isMet) {
+            element.classList.add('met');
+        } else {
+            element.classList.remove('met');
+        }
+    }
+    
+    // Check if passwords match
+    const confirmPassword = document.getElementById('new_password2');
+    const matchMessage = document.getElementById('password-match-message');
+    
+    if (confirmPassword && newPassword) {
+        confirmPassword.addEventListener('input', checkPasswordMatch);
+        newPassword.addEventListener('input', checkPasswordMatch);
+        
+        function checkPasswordMatch() {
+            const password = newPassword.value;
+            const confirm = confirmPassword.value;
+            
+            if (confirm.length === 0) {
+                matchMessage.textContent = '';
+                matchMessage.classList.remove('match', 'no-match');
+            } else if (password === confirm) {
+                matchMessage.textContent = 'As senhas coincidem!';
+                matchMessage.classList.add('match');
+                matchMessage.classList.remove('no-match');
+            } else {
+                matchMessage.textContent = 'As senhas não coincidem!';
+                matchMessage.classList.add('no-match');
+                matchMessage.classList.remove('match');
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

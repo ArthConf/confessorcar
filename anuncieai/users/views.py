@@ -68,9 +68,12 @@ def change_password_view(request):
             user = form.save()
             update_session_auth_hash(request, user)  # Mantém o usuário logado após a mudança de senha
             messages.success(request, 'Sua senha foi alterada com sucesso!')
+            return redirect('users:dashboard')
         else:
-            messages.error(request, 'Por favor, corrija os erros abaixo.')
-    return redirect('users:dashboard')
+            for error in form.errors.values():
+                messages.error(request, error[0])
+    
+    return render(request, 'users/alterar_senha.html')
 # Configure o logger
 logger = logging.getLogger(__name__)
 
